@@ -4,9 +4,9 @@ hide:
   - navigation
 ---
 
-# Sparkle Cleaner
+# ChibangaRx Cleaner
 
-The Sparkle Cleaner helps free up disk space and remove unnecessary system files.
+The ChibangaRx Cleaner helps free up disk space and remove unnecessary system files.
 
 ## 1. Clean Temporary Files
 

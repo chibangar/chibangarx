@@ -2,7 +2,7 @@ blank_issues_enabled: true
 contact_links:
   - name: Questions
     url: https://dsc.gg/parcoil
-    about: You can join the discord to ask questions about Sparkle or get help with any issues you may be having.
-  - name: Sparkle Docs
-    url: https://docs.getsparkle.net
-    about: The official documentation for Sparkle.
+    about: You can join the discord to ask questions about ChibangaRx or get help with any issues you may be having.
+  - name: ChibangaRx Docs
+    url: https://github.com/chibangar/chibangarx
+    about: The official documentation for ChibangaRx.

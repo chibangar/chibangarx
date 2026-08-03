@@ -2,10 +2,10 @@
 Clear-Host
 
 # GitHub config
-$repo = "Parcoil/Sparkle"
+$repo = "chibangar/chibangarx"
 $apiUrl = "https://api.github.com/repos/$repo/releases/latest"
 $headers = @{
-    "User-Agent" = "Sparkle-Fetcher"
+    "User-Agent" = "ChibangaRx-Fetcher"
     "Accept"     = "application/vnd.github.v3+json"
 }
 
@@ -27,13 +27,12 @@ $versionLabel = $tag -replace "^v", ""  # Remove leading "v" if present
 
 # ASCII art header
 $asciiHeader = @"
+ ___  __   ___  __  _____  ____
+/ __\/  | / __\/  ||_   _|/ ___|
+/ /  /| | / /\/| | |  | | | |
+/ /__| |_| \__ \|__|  | | | |___
+\____/\___/ \___/\__|  |_| \____|
 
-███████╗██████╗  █████╗ ██████╗ ██╗  ██╗██╗     ███████╗
-██╔════╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██║     ██╔════╝
-███████╗██████╔╝███████║██████╔╝█████╔╝ ██║     █████╗  
-╚════██║██╔═══╝ ██╔══██║██╔══██╗██╔═██╗ ██║     ██╔══╝  
-███████║██║     ██║  ██║██║  ██║██║  ██╗███████╗███████╗
-╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝                       
 "@
 
 Write-Host $asciiHeader -ForegroundColor Cyan
@@ -41,7 +40,7 @@ Write-Host "Version: v$versionLabel" -ForegroundColor Yellow
 Write-Host ""
 
 # Find installer asset
-$asset = $release.assets | Where-Object { $_.name -match "^sparkle-.*-setup\.exe$" }
+$asset = $release.assets | Where-Object { $_.name -match "^chibangarx-.*-setup\.exe$" -or $_.name -match "^sparkle-.*-setup\.exe$" }
 
 if (-not $asset) {
     Write-Host "[X] No installer (.exe) found in latest release." -ForegroundColor Red
@@ -88,7 +87,7 @@ try {
     $process.WaitForExit()
     Remove-Item -Path $downloadPath -Force
     Write-Host "[🗑️] Deleted installer after installer exited." -ForegroundColor DarkYellow
-    Write-Host "[>] Thanks For using Sparkle" -ForegroundColor Magenta
+    Write-Host "[>] Thanks for using ChibangaRx" -ForegroundColor Magenta
 }
 catch {
     Write-Host "[X] Failed to launch installer or delete file." -ForegroundColor Red

@@ -149,18 +149,18 @@ function getUserName(): string {
 }
 
 export async function getAdminStatus(): Promise<boolean> {
-  console.log("[Sparkle]: Checking admin status...")
+  console.log("[ChibangaRx]: Checking admin status...")
   try {
     const { execSync } = await import("child_process")
     execSync("net session", { stdio: "pipe" })
-    console.log("[Sparkle]: Admin status: true")
+    console.log("[ChibangaRx]: Admin status: true")
     return true
   } catch (error) {
-    console.log("[Sparkle]: Not running as admin")
+    console.log("[ChibangaRx]: Not running as admin")
     return false
   }
 }
-function clearSparkleCache(): ClearCacheResult {
+function clearChibangaRxCache(): ClearCacheResult {
   systemInfoCache.clear()
   clearGpuCache()
   try {
@@ -207,7 +207,7 @@ function clearSparkleCache(): ClearCacheResult {
       logsCleared = true
       console.log("ChibangaRx logs directory files cleared successfully.")
     } else {
-      console.warn("Sparkle logs directory does not exist.")
+      console.warn("ChibangaRx logs directory does not exist.")
       errors.push("Logs directory does not exist.")
     }
 
@@ -496,14 +496,14 @@ export async function checkWinget(): Promise<{ success: boolean; installed: bool
 export const setupSystemHandlers = (): void => {
   ipcMain.handle("restart", restartSystem)
   ipcMain.handle("open-log-folder", openLogFolder)
-  ipcMain.handle("clear-sparkle-cache", clearSparkleCache)
+  ipcMain.handle("clear-sparkle-cache", clearChibangaRxCache)
   ipcMain.handle("get-system-info", getSystemInfo)
   ipcMain.handle("get-user-name", getUserName)
   ipcMain.handle("restart-explorer", restartExplorer)
   ipcMain.handle("check-winget", async () => checkWinget())
   ipcMain.handle("get-admin-status", async () => getAdminStatus())
   ipcMain.handle("install-winget", ensureWinget)
-  console.log("[Sparkle main/system.ts]: System handlers setup complete")
+  console.log("[ChibangaRx main/system.ts]: System handlers setup complete")
 }
 
 export const cleanupSystemHandlers = (): void => {

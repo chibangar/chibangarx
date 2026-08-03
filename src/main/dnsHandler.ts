@@ -352,7 +352,7 @@ export const setupDNSHandlers = (): void => {
       return { success: false, error: error.message }
     }
   })
-  console.log("[Sparkle main/dnsHandler.ts]: DNS handlers setup complete")
+  console.log("[ChibangaRx main/dnsHandler.ts]: DNS handlers setup complete")
 }
 
 export const cleanupDNSHandlers = (): void => {

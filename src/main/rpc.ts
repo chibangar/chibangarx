@@ -39,7 +39,7 @@ async function startDiscordRPC(): Promise<boolean> {
           .setDetails("Optimizing your PC")
           .setState(`Running ChibangaRx v${jsonData.version ?? "2"}`)
           .setLargeImage("sparklelogo", "ChibangaRx")
-          .addButton("Download ChibangaRx", "https://parcoil.com/sparkle")
+          .addButton("Download ChibangaRx", "https://github.com/chibangar/chibangarx")
           .addButton("Join Discord", "https://discord.com/invite/En5YJYWj3Z")
           .build()
 

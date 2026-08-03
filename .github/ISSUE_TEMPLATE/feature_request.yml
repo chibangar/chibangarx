@@ -1,5 +1,5 @@
 name: 🔧 Feature Request
-description: Suggest a new feature or improvement for Sparkle
+description: Suggest a new feature or improvement for ChibangaRx
 title: "[Feature Request]: "
 labels:
   - enhancement
@@ -76,5 +76,5 @@ body:
   - type: markdown
     attributes:
       value: >-
-        Thanks for helping improve Sparkle ✨   Well-explained feature requests
+        Thanks for helping improve ChibangaRx ✨   Well-explained feature requests
         help shape the future of the app.

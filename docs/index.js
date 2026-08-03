@@ -96,7 +96,7 @@ ${
 ${
   tweak.addedversion 
   ? `!!! note 
-    This tweak was added in ${tweak.addedversion}, Sparkle ${tweak.addedversion}+ is required.
+    This tweak was added in ${tweak.addedversion}, ChibangaRx ${tweak.addedversion}+ is required.
   ` 
   : ""
 }
@@ -138,9 +138,9 @@ const tweaksIndex = `
 ---
 title: "List of All Tweaks"
 ---
+# All ChibangaRx Tweaks
 
-# All Sparkle Tweaks
-A collection of tweaks to customize and enhance your Windows experience using Sparkle.
+A collection of tweaks to customize and enhance your Windows experience using ChibangaRx.
 
 _New to tweaks? Read [What Are Tweaks?](./what-are-tweaks) for an overview._
 

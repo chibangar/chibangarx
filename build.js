@@ -50,7 +50,7 @@ async function buildRegistry() {
         addedversion: meta.addedversion,
         updatedversion: meta.updatedversion,
         docsurl: `https://docs.getsparkle.net/tweaks/${folder}`,
-        source: `https://github.com/Parcoil/Sparkle/blob/v2/tweaks/${folder}/meta.json`,
+        source: `https://github.com/chibangar/chibangarx/blob/main/tweaks/${folder}/meta.json`,
       }
 
       registryNormal.push(baseTweak)

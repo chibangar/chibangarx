@@ -3,8 +3,8 @@
   "version": "2.22.0",
   "description": "ChibangaRx",
   "main": "./out/main/index.js",
-  "author": "Parcoil",
-  "homepage": "https://getsparkle.net",
+  "author": "chibangar",
+  "homepage": "https://github.com/chibangar/chibangarx",
   "scripts": {
     "lint": "eslint .",
     "format": "prettier --write .",
@@ -71,7 +71,7 @@
     "vite": "^7.3.6",
     "vitest": "^4.1.10"
   },
-  "repository": "https://github.com/Parcoil/Sparkle",
+  "repository": "https://github.com/chibangar/chibangarx",
   "build": {
     "electronLanguages": [
       "en-US"
@@ -79,8 +79,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "Parcoil",
-        "repo": "Sparkle",
+        "owner": "chibangar",
+        "repo": "chibangarx",
         "releaseType": "release"
       }
     ],
@@ -95,8 +95,8 @@
         ]
       }
     ],
-    "appId": "com.parcoil.sparkle",
-    "productName": "sparkle",
+    "appId": "com.chibangarx.app",
+    "productName": "ChibangaRx",
     "directories": {
       "buildResources": "build"
     },
@@ -158,7 +158,7 @@
       "!node_modules/remark-gfm/**"
     ],
     "win": {
-      "executableName": "sparkle",
+      "executableName": "chibangarx",
       "requestedExecutionLevel": "requireAdministrator",
       "icon": "resources/sparkle2.ico",
       "target": [

@@ -1,6 +1,6 @@
 {
   "name": "docs",
-  "description": "sparkle docs is made using mkdocs",
+  "description": "ChibangaRx docs is made using mkdocs",
   "main": "index.js",
   "type": "module",
   "directories": {

@@ -5,20 +5,20 @@ hide:
 
 <img src="https://raw.githubusercontent.com/Parcoil/logos/refs/heads/main/logos/sparklelogo.png" width="120" height="120">
 
-# Welcome to the Sparkle documentation
+# Welcome to the ChibangaRx documentation
 
 A Windows app to debloat and optimize your PC
 
 <!-- The ultimate Windows optimizer - fast, private, and lightweight. -->
 
-[:material-download: Get Sparkle](https://github.com/parcoil/sparkle/releases/latest){ .md-button .md-button--primary }
-[:material-github: GitHub](https://github.com/Parcoil/Sparkle){ .md-button }
+[:material-download: Get ChibangaRx](https://github.com/parcoil/sparkle/releases/latest){ .md-button .md-button--primary }
+[:material-github: GitHub](https://github.com/Parcoil/ChibangaRx){ .md-button }
 
 ---
 
-## :octicons-sparkles-fill-24: What is Sparkle?
+## :octicons-sparkles-fill-24: What is ChibangaRx?
 
-Sparkle is a **free and open-source Windows optimization tool**.  
+ChibangaRx is a **free and open-source Windows optimization tool**.  
 It helps you:
 
 - Debloat/Remove unwanted apps
@@ -60,12 +60,12 @@ It helps you:
 
     1. Visit [getsparkle.net](https://getsparkle.net)
     2. Choose **Portable** or **Installer**
-    3. Run Sparkle
+    3. Run ChibangaRx
     4. Apply Tweaks
 
 === "GitHub Releases"
 
-    1. Download from [GitHub Releases](https://github.com/Parcoil/Sparkle/releases)
+    1. Download from [GitHub Releases](https://github.com/Parcoil/ChibangaRx/releases)
     2. Extract and run `sparkle-{version}-setup.exe`
     3. Apply Tweaks
 
@@ -83,15 +83,15 @@ It helps you:
    Learn what tweaks are and how they work.
 
 - [:material-tune: **View Tweaks**](tweaks)  
-   View all of the tweaks in Sparkle
+   View all of the tweaks in ChibangaRx
 
 - [:material-code-braces: **Creating Tweaks**](creating-tweaks)  
    Build your own custom tweak scripts.
 
 - [:material-web: **Official Website**](https://getsparkle.net)  
-   Download The latest version of Sparkle.
+   Download The latest version of ChibangaRx.
 
-- [:material-github: **GitHub Repository**](https://github.com/Parcoil/Sparkle)  
+- [:material-github: **GitHub Repository**](https://github.com/Parcoil/ChibangaRx)  
    Explore the source code.
 
 </div>
@@ -101,6 +101,6 @@ It helps you:
 !!! question "Need Help?"
 
     Join our [Discord Server](https://discord.gg/En5YJYWj3Z)
-    or open an issue on [GitHub](https://github.com/Parcoil/Sparkle/issues).
+    or open an issue on [GitHub](https://github.com/Parcoil/ChibangaRx/issues).
 
 *Some Tweaks cannot be unapplied and require manual app reinstalls or manual setting changes.

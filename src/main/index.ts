@@ -63,11 +63,11 @@ if (!gotTheLock) {
 let mainWindow: BrowserWindow | null = null
 
 function createWindow(): void {
-  console.log("[Sparkle]: createWindow called")
-  console.log("[Sparkle]: __dirname =", __dirname)
-  console.log("[Sparkle]: icon path =", path.join(__dirname, "../../resources/sparkle2.ico"))
-  console.log("[Sparkle]: preload path =", join(__dirname, "../preload/index.js"))
-  console.log("[Sparkle]: renderer path =", join(__dirname, "../renderer/index.html"))
+  console.log("[ChibangaRx]: createWindow called")
+  console.log("[ChibangaRx]: __dirname =", __dirname)
+  console.log("[ChibangaRx]: icon path =", path.join(__dirname, "../../resources/sparkle2.ico"))
+  console.log("[ChibangaRx]: preload path =", join(__dirname, "../preload/index.js"))
+  console.log("[ChibangaRx]: renderer path =", join(__dirname, "../renderer/index.html"))
 
   try {
     mainWindow = new BrowserWindow({
@@ -89,10 +89,10 @@ function createWindow(): void {
         spellcheck: false,
       },
     })
-    console.log("[Sparkle]: BrowserWindow created")
+    console.log("[ChibangaRx]: BrowserWindow created")
     setMainWindow(mainWindow)
   } catch (err: any) {
-    console.error("[Sparkle]: BrowserWindow creation failed:", err)
+    console.error("[ChibangaRx]: BrowserWindow creation failed:", err)
     throw err
   }
 
@@ -102,22 +102,22 @@ function createWindow(): void {
   })
 
   if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
-    console.log("[Sparkle]: Loading renderer from URL:", process.env["ELECTRON_RENDERER_URL"])
+    console.log("[ChibangaRx]: Loading renderer from URL:", process.env["ELECTRON_RENDERER_URL"])
     mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"])
   } else {
-    console.log("[Sparkle]: Loading renderer from file")
+    console.log("[ChibangaRx]: Loading renderer from file")
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"))
   }
 
   mainWindow.once("ready-to-show", () => {
-    console.log("[Sparkle]: Window ready to show")
+    console.log("[ChibangaRx]: Window ready to show")
     mainWindow!.show()
   })
 
   mainWindow.webContents.on(
     "did-fail-load",
     (_event: Electron.Event, errorCode: number, errorDescription: string) => {
-      console.error("[Sparkle]: Renderer failed to load:", errorCode, errorDescription)
+      console.error("[ChibangaRx]: Renderer failed to load:", errorCode, errorDescription)
     },
   )
 }
@@ -125,22 +125,22 @@ app.commandLine.appendSwitch("no-sandbox")
 app
   .whenReady()
   .then(() => {
-    console.log("[Sparkle]: App ready, creating window...")
+    console.log("[ChibangaRx]: App ready, creating window...")
     try {
       createWindow()
-      console.log("[Sparkle]: Window created successfully")
+      console.log("[ChibangaRx]: Window created successfully")
     } catch (err: any) {
-      console.error("[Sparkle]: createWindow failed:", err)
+      console.error("[ChibangaRx]: createWindow failed:", err)
     }
     initAutoUpdater(() => mainWindow)
-    console.log("[Sparkle]: Auto updater initialized")
+    console.log("[ChibangaRx]: Auto updater initialized")
     if (store.get("showTray")) {
-      console.log("[Sparkle]: Creating tray...")
+      console.log("[ChibangaRx]: Creating tray...")
       try {
         trayInstance = createTray(mainWindow!)
-        console.log("[Sparkle]: Tray created")
+        console.log("[ChibangaRx]: Tray created")
       } catch (err: any) {
-        console.error("[Sparkle]: Tray creation failed:", err)
+        console.error("[ChibangaRx]: Tray creation failed:", err)
       }
     }
     setupPowerShellHandlers()
@@ -152,7 +152,7 @@ app
     if (store.get("rpcEnabled") !== false) {
       startDiscordRPC()
     }
-    console.log("[Sparkle]: Handlers setup complete")
+    console.log("[ChibangaRx]: Handlers setup complete")
 
     ipcMain.on("window-minimize", () => {
       if (mainWindow) mainWindow.minimize()
@@ -189,5 +189,5 @@ app
     })
   })
   .catch((err: any) => {
-    console.error("[Sparkle]: app.whenReady failed:", err)
+    console.error("[ChibangaRx]: app.whenReady failed:", err)
   })

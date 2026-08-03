@@ -141,7 +141,7 @@ export const setupBackupHandlers = (): void => {
       })
     })
   })
-  console.log("[Sparkle main/backup.ts]: Backup handlers setup complete")
+  console.log("[ChibangaRx main/backup.ts]: Backup handlers setup complete")
 }
 
 export const cleanupBackupHandlers = (): void => {

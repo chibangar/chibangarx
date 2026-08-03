@@ -312,7 +312,7 @@ export const setupPowerShellHandlers = (): void => {
         console.error(`Unknown action: ${action}`)
     }
   })
-  console.log("[Sparkle main/powershell.ts]: PowerShell handlers setup complete")
+  console.log("[ChibangaRx main/powershell.ts]: PowerShell handlers setup complete")
 }
 
 export const cleanupPowerShellHandlers = (): void => {

@@ -12,7 +12,7 @@ The **Apps Page** is a comprehensive app installer that supports both **Winget**
 
 ### Package Manager Support
 
-Sparkle supports two package managers:
+ChibangaRx supports two package managers:
 
 - **Winget** - Windows Package Manager (default)
 - **Chocolatey** - Community package manager

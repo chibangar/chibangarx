@@ -1,6 +1,6 @@
-# Sparkle Docs
+# ChibangaRx Docs
 
-sparkle docs is made using mkdocs
+ChibangaRx docs is made using mkdocs
 
 warning: the tweaks.md and /tweaks/ folder is auto-generated, do not edit directly
 

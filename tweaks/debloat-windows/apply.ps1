@@ -1,6 +1,6 @@
-# Sparkle Debloat Script
+# ChibangaRx Debloat Script
 # This script provides options for different debloat methods
-# Made by Parcoil
+# Made by chibangar
 # Credits to Raphire for his debloat script: https://github.com/Raphire
 
 param(
@@ -17,7 +17,7 @@ function Test-IsAdmin {
 }
 
 if (-not (Test-IsAdmin)) {
-    Write-Host "[Sparkle Debloat] This script must be run as Administrator." -ForegroundColor Red
+    Write-Host "[ChibangaRx Debloat] This script must be run as Administrator." -ForegroundColor Red
     Read-Host "Press Enter to exit"
     exit 1
 }
@@ -177,7 +177,7 @@ function Show-ScriptSelectionDialog {
     [xml]$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Sparkle Debloat v$version" 
+        Title="ChibangaRx Debloat v$version" 
         Height="300" Width="650" 
         WindowStartupLocation="CenterScreen"
         Topmost="True"
@@ -251,8 +251,8 @@ function Show-ScriptSelectionDialog {
                 Padding="20"
                 Margin="0,0,0,20">
             <StackPanel>
-                <RadioButton x:Name="RadioSparkle" 
-                            Content="Sparkle Debloat (Choose which apps to remove) - Recommended" 
+                <RadioButton x:Name="RadioChibangaRx" 
+                             Content="ChibangaRx Debloat (Choose which apps to remove) - Recommended" 
                             Margin="0,0,0,16" 
                             IsChecked="True"/>
                 <RadioButton x:Name="RadioRaphire" 
@@ -303,7 +303,7 @@ function Show-BehaviorChangeWarning {
     [xml]$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Sparkle Debloat - Important Change" 
+        Title="ChibangaRx Debloat - Important Change" 
         Height="420" Width="550" 
         WindowStartupLocation="CenterScreen"
         Topmost="True"
@@ -437,7 +437,7 @@ function Show-AppSelectionDialog {
     [xml]$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Sparkle Debloat v$version" 
+    Title="ChibangaRx Debloat v$version" 
     Height="750" Width="650" 
     WindowStartupLocation="CenterScreen"
     ResizeMode="NoResize"
@@ -638,7 +638,7 @@ function Show-AppSelectionDialog {
 function Remove-SelectedApps {
     param([string[]]$AppsToRemove)
 
-    Write-Host "Starting Sparkle debloat..." -ForegroundColor Green
+    Write-Host "Starting ChibangaRx debloat..." -ForegroundColor Green
 
     # display friendly names in console output
     $removeNames = $AppsToRemove | ForEach-Object { Get-FriendlyName $_ }
@@ -675,13 +675,13 @@ function Remove-SelectedApps {
         }
     }
 
-    Write-Host "Sparkle debloat completed!" -ForegroundColor Green
+    Write-Host "ChibangaRx debloat completed!" -ForegroundColor Green
 }
 
 try {
     $script:appsWereRemoved = $false
     
-    Write-Host "Starting Sparkle Debloat script..." -ForegroundColor Green
+    Write-Host "Starting ChibangaRx Debloat script..." -ForegroundColor Green
     Write-Host "Script Choice: '$ScriptChoice'" -ForegroundColor Yellow
     Write-Host "Apps to Remove Count: $($AppsToRemove.Count)" -ForegroundColor Yellow
     
@@ -694,7 +694,7 @@ try {
     }
     elseif ($ScriptChoice -eq "custom") {
         if ($AppsToRemove.Count -gt 0) {
-            Write-Host "Running Sparkle debloat to remove $($AppsToRemove.Count) apps..." -ForegroundColor Green
+            Write-Host "Running ChibangaRx debloat to remove $($AppsToRemove.Count) apps..." -ForegroundColor Green
             Remove-SelectedApps -AppsToRemove $AppsToRemove
             $script:appsWereRemoved = $true
         }
@@ -759,14 +759,14 @@ try {
         Write-Host "Unknown script choice '$ScriptChoice', defaulting to Raphire's script..." -ForegroundColor Yellow
         & ([scriptblock]::Create((Invoke-RestMethod 'https://debloat.raphi.re/'))) -Silent -RemoveApps
     }
-    Write-Host "Debloat Script From https://getsparkle.net" -ForegroundColor Cyan
+    Write-Host "Debloat Script From https://github.com/chibangar/chibangarx" -ForegroundColor Cyan
 
-    if ($script:appsWereRemoved -and -not (Get-Process -Name "Sparkle" -ErrorAction SilentlyContinue)) {
+    if ($script:appsWereRemoved -and -not (Get-Process -Name "ChibangaRx" -ErrorAction SilentlyContinue)) {
         [xml]$xaml = @"
 <Window 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Sparkle Debloat" 
+    Title="ChibangaRx Debloat" 
     Height="200" 
     Width="480"
     WindowStartupLocation="CenterScreen"

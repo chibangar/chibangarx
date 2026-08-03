@@ -4,9 +4,9 @@ hide:
   - navigation
 ---
 
-# Contributing to Sparkle
+# Contributing to ChibangaRx
 
-Thank you for your interest in contributing to Sparkle! This guide covers the different ways you can help improve the project.
+Thank you for your interest in contributing to ChibangaRx! This guide covers the different ways you can help improve the project.
 
 ## Ways to Contribute
 
@@ -16,7 +16,7 @@ Found a bug or have a feature request? Open an issue on [GitHub](https://github.
 
 When reporting bugs, include:
 
-- Sparkle version
+- ChibangaRx version
 - Windows version
 - Log file (Located at C:\\Users\\YOUR_USER\\AppData\\Roaming\\sparkle\\logs)
 - Steps to reproduce
@@ -33,7 +33,7 @@ We welcome pull requests. To get started:
 
 ## Adding New Apps
 
-You can add new applications to the Sparkle app installer by editing the `apps.json` file.
+You can add new applications to the ChibangaRx app installer by editing the `apps.json` file.
 
 See the full guide: [Contributing New Apps](/apps/#contributing-new-apps)
 
@@ -45,7 +45,7 @@ See the full guide: [Creating Tweaks](/creating-tweaks/)
 
 ## Development Setup
 
-To run Sparkle locally:
+To run ChibangaRx locally:
 
 ```bash
 # Clone the repository

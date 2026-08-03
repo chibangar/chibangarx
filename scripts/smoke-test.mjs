@@ -6,7 +6,7 @@ const TIMEOUT = 15_000
 const WAIT_BEFORE_CHECK = 8_000
 
 const unpackedDir = path.join(process.cwd(), "dist", "win-unpacked")
-const exe = path.join(unpackedDir, "sparkle.exe")
+const exe = path.join(unpackedDir, "chibangarx.exe")
 
 if (!fs.existsSync(exe)) {
   console.error(`Executable not found: ${exe}`)

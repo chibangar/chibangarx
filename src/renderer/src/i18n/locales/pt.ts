@@ -127,7 +127,7 @@ export const pt = {
     viewChangelog: "O que há de novo",
     loadingChangelog: "A carregar registo de alterações...",
     changelogError: "Falha ao carregar registo de alterações. Verifique a sua ligação à internet.",
-    copyright: "© Parcoil",
+    copyright: "© chibangar",
     developerOptions: "Opções de Programador",
     devWarning:
       "Não é recomendado modificar estas opções a menos que seja um programador ou colaborador.",
@@ -548,7 +548,7 @@ export const pt = {
   tweakData: {
     "24-hour-clock": { title: "Definir Relógio 24 Horas", description: "Altera o relógio para mostrar o formato de 24 horas." },
     "align-taskbar-left": { title: "Alinhar Barra de Tarefas à Esquerda", description: "Alinha a barra de tarefas ao lado esquerdo do ecrã." },
-    "debloat-windows": { title: "Desbloquear Windows", description: "Escolha entre o script Sparkle Debloat ou o script Raphire's Win11Debloat para remover aplicações integradas e bloatware do Windows." },
+    "debloat-windows": { title: "Desbloquear Windows", description: "Escolha entre o script ChibangaRx Debloat ou o script Raphire's Win11Debloat para remover aplicações integradas e bloatware do Windows." },
     "detailed-bsod": { title: "BSOD Detalhado", description: "Adiciona informações detalhadas ao ecrã de Tela Azul da Morte (BSOD)." },
     "disable-background-ms-store-apps": { title: "Desativar Aplicações MS Store em Segundo Plano", description: "Impede que as aplicações da Microsoft Store funcionem em segundo plano." },
     "consumer-features": { title: "Desativar Funcionalidades de Consumidor", description: "Impede o Windows de instalar automaticamente jogos, aplicações de terceiros ou ligações de aplicações da Microsoft Store." },

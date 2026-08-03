@@ -199,7 +199,7 @@ export const setupTweaksHandlers = (): void => {
   ipcMain.handle("tweak:active", (): string[] => {
     return getActiveTweaks()
   })
-  console.log("[Sparkle main/tweakHandler.ts]: Tweak handlers setup complete")
+  console.log("[ChibangaRx main/tweakHandler.ts]: Tweak handlers setup complete")
 }
 
 const getActiveTweaks = (): string[] => {

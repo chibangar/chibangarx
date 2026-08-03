@@ -1,5 +1,5 @@
 name: Tweak Request / Suggestion
-description: Suggest a new tweak for Sparkle
+description: Suggest a new tweak for ChibangaRx
 title: "[Tweak Request]: "
 labels:
   - enhancement
@@ -11,7 +11,7 @@ body:
       value: |-
         ## 📘 Before You Start
         Please read the tweak creation guidelines before submitting:
-        👉 https://docs.getsparkle.net/creating-tweaks/
+        👉 https://github.com/chibangar/chibangarx
         Submissions that do not follow the format or lack detail may be closed.
   - type: textarea
     id: tweak_description
@@ -89,4 +89,4 @@ body:
   - type: markdown
     attributes:
       value: >-
-        Thanks for contributing to Sparkle ✨
+        Thanks for contributing to ChibangaRx ✨

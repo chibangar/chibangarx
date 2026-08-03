@@ -1,7 +1,7 @@
 S$ErrorActionPreference = 'Stop'
 
 $packageName = $env:ChocolateyPackageName
-$softwareName = 'sparkle*'
+$softwareName = 'chibangarx*'
 
 $installed = Get-ItemProperty -Path @(
   'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*',
@@ -25,7 +25,7 @@ if ($installed) {
     }
   }
 } else {
-  Write-Warning "Sparkle was not found in the registry. It may have already been uninstalled."
+  Write-Warning "ChibangaRx was not found in the registry. It may have already been uninstalled."
 }
 
 

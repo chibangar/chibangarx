@@ -1,12 +1,12 @@
 @echo off
 REM Chocolatey Package Publisher
-REM This script packs and publishes the Sparkle Chocolatey package
+REM This script packs and publishes the ChibangaRx Chocolatey package
 
 setlocal enabledelayedexpansion
 
 echo.
 echo ========================================
-echo   Sparkle Chocolatey Package Publisher
+echo   ChibangaRx Chocolatey Package Publisher
 echo ========================================
 echo.
 
@@ -38,13 +38,13 @@ if !errorlevel! neq 0 (
     exit /b 1
 )
 
-set NUPKG=sparkle.!VERSION!.nupkg
+set NUPKG=chibangarx.!VERSION!.nupkg
 
 if not exist "!NUPKG!" (
     echo ERROR: Package file not created: !NUPKG!
     echo.
     echo Checking for alternate filenames...
-    dir sparkle.*.nupkg 2>nul
+    dir chibangarx.*.nupkg 2>nul
     if !errorlevel! neq 0 (
         echo No .nupkg files found
     )
@@ -115,6 +115,6 @@ echo ========================================
 echo.
 echo Package: !NUPKG!
 echo Version: !VERSION!
-echo Repository: https://community.chocolatey.org/packages/sparkle
+echo Repository: https://community.chocolatey.org/packages/chibangarx
 echo.
 pause

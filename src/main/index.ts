@@ -179,6 +179,9 @@ app
     })
 
     ipcMain.handle("get-resources-path", () => {
+      if (app.isPackaged) {
+        return join(path.dirname(app.getPath("exe")), "resources")
+      }
       return join(app.getAppPath(), "../resources")
     })
 

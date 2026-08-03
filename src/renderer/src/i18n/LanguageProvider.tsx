@@ -14,7 +14,7 @@ export const InitLanguage = () => {
   useEffect(() => {
     const savedLang = getSavedLanguage()
     const systemLang = getSystemLanguage()
-    const lang = savedLang !== "en" ? savedLang : systemLang
+    const lang = savedLang && savedLang !== "en" ? savedLang : systemLang
     instance.changeLanguage(lang)
   }, [instance])
 

@@ -54,6 +54,12 @@ export default function UpdateManager(): React.ReactElement {
       setIsDownloading(false)
       setDownloadPercent(100)
       setIsDownloaded(true)
+      toast.success("Update downloaded successfully!")
+    }
+    const onDownloadError = (_e: any, payload: UpdatePayload) => {
+      console.error("[UpdateManager] Download error:", payload?.error)
+      toast.error(payload?.error ?? "Download failed")
+      setIsDownloading(false)
     }
 
     window.electron.ipcRenderer.on("updater:available", onAvailable)
@@ -61,6 +67,7 @@ export default function UpdateManager(): React.ReactElement {
     window.electron.ipcRenderer.on("updater:error", onError)
     window.electron.ipcRenderer.on("updater:download-progress", onProgress)
     window.electron.ipcRenderer.on("updater:downloaded", onDownloaded)
+    window.electron.ipcRenderer.on("updater:download-error", onDownloadError)
 
     return () => {
       window.electron.ipcRenderer.removeListener("updater:available", onAvailable)
@@ -68,22 +75,15 @@ export default function UpdateManager(): React.ReactElement {
       window.electron.ipcRenderer.removeListener("updater:error", onError)
       window.electron.ipcRenderer.removeListener("updater:download-progress", onProgress)
       window.electron.ipcRenderer.removeListener("updater:downloaded", onDownloaded)
+      window.electron.ipcRenderer.removeListener("updater:download-error", onDownloadError)
     }
   }, [])
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     setIsDownloading(true)
     setDownloadPercent(0)
-    try {
-      const result = await window.electron.ipcRenderer.invoke("updater:download")
-      if (!result.ok) {
-        toast.error(result.error ?? "Download failed")
-        setIsDownloading(false)
-      }
-    } catch (err) {
-      toast.error(String(err))
-      setIsDownloading(false)
-    }
+    setIsDownloaded(false)
+    window.electron.ipcRenderer.send("updater:download")
   }
 
   const handleInstall = async () => {

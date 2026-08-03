@@ -11,6 +11,7 @@ interface UpdatePayload {
   message?: string
   percent?: number
   releaseNotes?: string
+  error?: string
 }
 
 export default function UpdateManager(): React.ReactElement {

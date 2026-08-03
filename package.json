@@ -1,6 +1,6 @@
 {
   "name": "chibangarx",
-  "version": "2.37.11",
+  "version": "2.37.12",
   "description": "ChibangaRx",
   "main": "./out/main/index.js",
   "author": "chibangar",
@@ -92,7 +92,8 @@
           "*.exe",
           "*.nip",
           "*.pow",
-          "*.mp3"
+          "*.mp3",
+          "*.ico"
         ]
       }
     ],

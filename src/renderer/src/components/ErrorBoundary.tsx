@@ -49,10 +49,10 @@ class ErrorBoundary extends Component<Props, State> {
           {/* @ts-expect-error */}
           <TitleBar />
           <div className="max-w-xl w-full rounded-2xl border border-chibangarx-border bg-chibangarx-card p-8">
-            <h1 className="text-2xl font-semibold text-red-500 mb-2">Something went wrong</h1>
+            <h1 className="text-2xl font-semibold text-red-500 mb-2">Ocorreu um erro</h1>
             <p className="text-chibangarx-text-secondary mb-4">
-              ChibangaRx encountered an unexpected error. Please help us fix it by reporting this
-              issue.
+              O ChibangaRx encontrou um erro inesperado. Ajude-nos a corrigi-lo ao reportar este
+              problema.
             </p>
             <pre className="mb-6 p-4 rounded-lg bg-chibangarx-accent text-xs text-chibangarx-text overflow-x-auto overflow-y-auto max-h-40 border border-chibangarx-border select-all">
               {errorMessage}
@@ -60,23 +60,23 @@ class ErrorBoundary extends Component<Props, State> {
             </pre>
             <div className="flex flex-wrap gap-3 mb-6">
               <Button variant="primary" onClick={this.handleOpenLogFolder} size="md">
-                Open Log Folder
+                Abrir pasta de registos
               </Button>
               <Button variant="secondary" onClick={this.handleRetry} size="md">
-                Try Again
+                Tentar novamente
               </Button>
             </div>
             <p className="text-sm text-chibangarx-text-muted">
-              Please{" "}
+                Crie um{" "}
               <a
                 href={GITHUB_ISSUES}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-chibangarx-primary hover:underline"
               >
-                create a GitHub issue
+                problema no GitHub
               </a>{" "}
-              or share the error and log file in our{" "}
+                ou partilhe o erro e o ficheiro de registo no nosso{" "}
               <a
                 href={DISCORD_INVITE}
                 target="_blank"
@@ -85,7 +85,7 @@ class ErrorBoundary extends Component<Props, State> {
               >
                 Discord
               </a>{" "}
-              so we can fix it.
+                para podermos corrigi-lo.
             </p>
           </div>
         </div>

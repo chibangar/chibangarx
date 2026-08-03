@@ -3,6 +3,7 @@ import Modal from "./ui/modal"
 import useAppInstallStore from "@/store/appInstallStore"
 import { Loader2, CheckCircle2, XCircle, X } from "lucide-react"
 import Button from "./ui/button"
+import { useTranslation } from "react-i18next"
 
 interface InstallConsoleModalProps {
   open: boolean
@@ -10,6 +11,7 @@ interface InstallConsoleModalProps {
 }
 
 function InstallConsoleModal({ open, onClose }: InstallConsoleModalProps) {
+  const { t } = useTranslation()
   const { apps, action } = useAppInstallStore()
   const scrollRef = useRef<HTMLDivElement>(null)
   const totalLogs = apps.reduce((sum, app) => sum + app.logs.length, 0)
@@ -28,7 +30,7 @@ function InstallConsoleModal({ open, onClose }: InstallConsoleModalProps) {
     }
   }, [apps, onClose])
 
-  const actionText = action === "uninstall" ? "Uninstalling" : "Installing"
+  const actionText = action === "uninstall" ? "A desinstalar" : "A instalar"
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -36,7 +38,7 @@ function InstallConsoleModal({ open, onClose }: InstallConsoleModalProps) {
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xl font-semibold text-chibangarx-text flex items-center gap-2">
             <Loader2 className="animate-spin text-chibangarx-primary w-5 h-5" />
-            {actionText} {apps.length === 1 ? apps[0]?.name : `${apps.length} apps`}
+            {actionText} {apps.length === 1 ? apps[0]?.name : `${apps.length} aplicações`}
           </h3>
           <button
             onClick={onClose}
@@ -72,7 +74,7 @@ function InstallConsoleModal({ open, onClose }: InstallConsoleModalProps) {
                     </div>
                   ))
                 ) : (
-                  <div className="text-chibangarx-text-muted italic">Waiting for output...</div>
+                   <div className="text-chibangarx-text-muted italic">A aguardar resultados...</div>
                 )}
               </div>
             </div>
@@ -80,7 +82,7 @@ function InstallConsoleModal({ open, onClose }: InstallConsoleModalProps) {
         </div>
         <div className="flex justify-end">
           <Button variant="secondary" onClick={onClose}>
-            Close
+             {t("common.close")}
           </Button>
         </div>
       </div>

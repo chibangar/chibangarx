@@ -1,6 +1,6 @@
 import i18n from "i18next"
 import { initReactI18next } from "react-i18next"
-import { saveLanguage, getSavedLanguage, getSystemLanguage } from "@/lib/language"
+import { saveLanguage, getSavedLanguage } from "@/lib/language"
 import { en } from "./locales/en"
 import { pt } from "./locales/pt"
 
@@ -10,9 +10,9 @@ const getLanguage = (): Language => {
   if (typeof window !== "undefined") {
     const saved = getSavedLanguage()
     if (saved) return saved
-    return getSystemLanguage()
+    return "pt"
   }
-  return "en"
+  return "pt"
 }
 
 i18n.use(initReactI18next).init({

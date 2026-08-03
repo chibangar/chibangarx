@@ -22,24 +22,13 @@ function Greeting() {
     }
   }, [])
 
-  const generalGreetings = [
-    "Hi",
-    "Hello",
-    "Hey",
-    "Greetings",
-    "Yo",
-    "Howdy",
-    "What's up",
-    "Good to see you",
-    "Welcome Back",
-    "Ahoy",
-  ]
+  const generalGreetings = ["Olá", "Bem-vindo", "Boas", "Saudações"]
 
   const timeGreetings = () => {
     const hour = new Date().getHours()
-    if (hour < 12) return ["Good morning"]
-    if (hour < 18) return ["Good afternoon"]
-    return ["Good evening"]
+    if (hour < 12) return ["Bom dia"]
+    if (hour < 18) return ["Boa tarde"]
+    return ["Boa noite"]
   }
 
   const randomGreeting = useMemo(() => {
@@ -51,7 +40,7 @@ function Greeting() {
     <h1 className="text-2xl font-bold mb-4">
       {randomGreeting},{" "}
       <span className="bg-linear-to-r from-chibangarx-primary to-chibangarx-secondary bg-clip-text text-transparent">
-        {name || "friend"}
+         {name || "amigo"}
       </span>
     </h1>
   )

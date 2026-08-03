@@ -58,47 +58,46 @@ export default function FirstTime(): React.ReactElement {
   return (
     <Modal open={open} onClose={undefined}>
       <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-2xl max-w-2xl w-full mx-4 flex flex-col items-center text-center">
-        <h1 className="text-3xl font-bold text-chibangarx-text mb-4">Welcome to ChibangaRx</h1>
+        <h1 className="text-3xl font-bold text-chibangarx-text mb-4">Bem-vindo ao ChibangaRx</h1>
 
         <p className="text-chibangarx-text-secondary mb-6">
-          It looks like this is your first time here. <br />
-          Would you like to create a restore point before you start?
+          Parece ser a sua primeira utilização. <br />
+          Deseja criar um ponto de restauro antes de começar?
         </p>
 
         <p className="text-chibangarx-text-secondary mb-4 text-sm">
           <span className="font-medium">
-            By clicking <strong>Yes</strong>, ChibangaRx will create a restore point and disable the
-            cooldown for future restore points.
+            Ao clicar em <strong>Sim</strong>, o ChibangaRx criará um ponto de restauro e desativará o
+            intervalo entre futuros pontos de restauro.
           </span>
         </p>
 
         <p className="text-chibangarx-text-secondary mb-4 text-sm">
-Please only download from <strong>GitHub</strong> or <strong>getchibangarx.net</strong>.
+Descarregue apenas a partir do <strong>GitHub</strong> ou de <strong>getchibangarx.net</strong>.
         </p>
 
         <p className="text-red-500 mb-8 text-sm">
-          If you download from any other source, this may be malware. Please uninstall and reinstall
-          from{" "}
+          Se descarregar de outra fonte, poderá tratar-se de malware. Desinstale e reinstale a partir de{" "}
           <a href="https://getchibangarx.net" target="_blank" className="text-blue-500">
             getchibangarx.net
           </a>
 , or{" "}
            <a href="https://github.com/chibangar/chibangarx" target="_blank" className="text-blue-500">
-             our GitHub
+             nosso GitHub
            </a>
            .
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-          <Button onClick={handleGetStarted}>Yes (Recommended)</Button>
+          <Button onClick={handleGetStarted}>Sim (Recomendado)</Button>
           <Button onClick={handleSkipRestorePoint} variant="danger">
-            No (Not Recommended)
+            Não (Não recomendado)
           </Button>
         </div>
 
         <p className="text-chibangarx-text-secondary mt-4 text-sm">
-          <span className="font-semibold">ChibangaRx Version:</span>{" "}
-          {data?.version || "Error fetching version"}
+          <span className="font-semibold">Versão do ChibangaRx:</span>{" "}
+          {data?.version || "Erro ao obter a versão"}
         </p>
       </div>
     </Modal>

@@ -1,4 +1,11 @@
 export const pt = {
+  audio: {
+    play: "Reproduzir música",
+    pause: "Pausar música",
+    mute: "Silenciar",
+    unmute: "Ativar som",
+    volume: "Volume: {{volume}}%",
+  },
   nav: {
     dashboard: "Painel",
     tweaks: "Ajustes",
@@ -417,8 +424,8 @@ export const pt = {
     running: "A executar",
     completed: "concluído",
     failed: "Falha ao",
-    stateEnabled: "enabled",
-    stateDisabled: "disabled",
+    stateEnabled: "ativado",
+    stateDisabled: "desativado",
   },
   dns: {
     title: "Gestor DNS",
@@ -562,6 +569,8 @@ export const pt = {
     refresh: "Actualizar",
     operationSuccess: "Operação concluída com sucesso!",
     operationError: "Ocorreu um erro durante a operação. Por favor, tente novamente.",
+    enabled: "ativado",
+    disabled: "desativado",
   },
   firstTime: {
     creatingRestorePoint: "A criar ponto de restauração... Por espere antes de aplicar ajustes.",

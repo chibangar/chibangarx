@@ -10,11 +10,9 @@ import { toast } from "react-toastify"
 import Card from "@/components/ui/Card"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useTranslation } from "react-i18next"
-import { setLanguage, getCurrentLanguage, Language } from "@/i18n/i18n"
 
 function Settings() {
   const { t } = useTranslation()
-  const [language, setLanguageState] = useState<Language>(getCurrentLanguage())
 
   const themes = [
     { label: t("settings.system"), value: "system" },
@@ -48,11 +46,6 @@ function Settings() {
   )
   const [rpcEnabled, setRpcEnabled] = useState(true)
   const [rpcLoading, setRpcLoading] = useState(false)
-
-  const handleLanguageChange = (newLang: Language) => {
-    setLanguage(newLang)
-    setLanguageState(newLang)
-  }
 
   const checkForUpdates = async () => {
     try {
@@ -231,25 +224,6 @@ function Settings() {
                        const newValue = animationMap[value]
                        setAnimationDirection(newValue)
                        localStorage.setItem("pageAnimation", newValue)
-                     }}
-                   />
-                </div>
-              </SettingCard>
-              <SettingCard>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
-                      {t("settings.language")}
-                    </h3>
-                    <p className="text-sm text-chibangarx-text-secondary">
-                      {t("settings.languageDesc")}
-                    </p>
-                  </div>
-                    <Dropdown
-                     value={language === "pt" ? t("settings.languageNames.pt") : t("settings.languageNames.en")}
-                     options={[t("settings.languageNames.en"), t("settings.languageNames.pt")]}
-                     onChange={(value) => {
-                       handleLanguageChange(value === t("settings.languageNames.pt") ? "pt" : "en")
                      }}
                    />
                 </div>

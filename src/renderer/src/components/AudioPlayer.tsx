@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react"
 import { Volume2, VolumeX } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 export default function AudioPlayer(): React.ReactElement {
+  const { t } = useTranslation()
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(false)
@@ -63,7 +65,7 @@ export default function AudioPlayer(): React.ReactElement {
       <button
         onClick={handlePlayPause}
         className="h-8 w-8 inline-flex items-center justify-center rounded-md text-chibangarx-text-secondary hover:bg-chibangarx-accent hover:text-chibangarx-primary transition-colors"
-        title={playing ? "Pause music" : "Play music"}
+         title={playing ? t("audio.pause") : t("audio.play")}
       >
         {playing ? (
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -79,7 +81,7 @@ export default function AudioPlayer(): React.ReactElement {
       <button
         onClick={handleMute}
         className="h-8 w-8 inline-flex items-center justify-center rounded-md text-chibangarx-text-secondary hover:bg-chibangarx-accent hover:text-chibangarx-primary transition-colors"
-        title={muted ? "Unmute" : "Mute"}
+         title={muted ? t("audio.unmute") : t("audio.mute")}
       >
         {muted || volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
       </button>
@@ -90,7 +92,7 @@ export default function AudioPlayer(): React.ReactElement {
         value={muted ? 0 : volume}
         onChange={handleVolumeChange}
         className="w-20 h-1 accent-chibangarx-primary cursor-pointer"
-        title={`Volume: ${volume}%`}
+         title={t("audio.volume", { volume })}
       />
     </div>
   )

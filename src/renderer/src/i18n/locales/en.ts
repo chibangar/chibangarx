@@ -1,4 +1,11 @@
 export const en = {
+  audio: {
+    play: "Play music",
+    pause: "Pause music",
+    mute: "Mute",
+    unmute: "Unmute",
+    volume: "Volume: {{volume}}%",
+  },
   nav: {
     dashboard: "Dashboard",
     tweaks: "Tweaks",
@@ -554,6 +561,8 @@ export const en = {
     refresh: "Refresh",
     operationSuccess: "Operation completed successfully!",
     operationError: "There was an error during the operation. Please try again.",
+    enabled: "enabled",
+    disabled: "disabled",
   },
   firstTime: {
     creatingRestorePoint: "Creating restore point... Please wait before applying tweaks.",

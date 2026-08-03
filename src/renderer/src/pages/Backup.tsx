@@ -595,23 +595,22 @@ function AppliedTweaksTab() {
             onClick={() => setShowWhyNotReversible(true)}
             className="flex items-center gap-2"
           >
-            <HelpCircle size={16} /> Why are some tweaks not reversible?
+            <HelpCircle size={16} /> Porque é que alguns ajustes não são reversíveis?
           </Button>
         </div>
         {appliedTweaks.length > 0 && (
           <p className="text-center text-amber-600 text-sm">
-            Note: Some undo scripts reinstall apps, so this process may take a while.
+            Nota: Alguns scripts de reversão reinstalam aplicações, por isso este processo pode demorar.
           </p>
         )}
       </div>
       <Modal open={confirmUndoAll} onClose={() => !processing && setConfirmUndoAll(false)}>
         <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
-          <h3 className="text-lg font-medium text-chibangarx-text">Undo All Tweaks</h3>
+          <h3 className="text-lg font-medium text-chibangarx-text">Reverter todos os ajustes</h3>
           <div className="p-4 pr-0">
             <p className="text-chibangarx-text-secondary mb-4">
-              Are you sure you want to undo all {appliedTweakFiltered.length} applied tweak
-              {appliedTweakFiltered.length !== 1 ? "s" : ""}? This will run the unapply script for
-              each tweak and may require a restart.
+              Tem a certeza de que deseja reverter os {appliedTweakFiltered.length} ajustes aplicados?
+              Isto executará o script de reversão de cada ajuste e poderá exigir um reinício.
             </p>
             <div className="flex justify-end gap-3">
               <Button
@@ -619,13 +618,13 @@ function AppliedTweaksTab() {
                 onClick={() => !processing && setConfirmUndoAll(false)}
                 disabled={processing}
               >
-                Cancel
+                Cancelar
               </Button>
               <Button variant="danger" onClick={handleUndoAll} disabled={processing}>
                 {processing ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : (
-                  `Undo All (${appliedTweakFiltered.length})`
+                  `Reverter todos (${appliedTweakFiltered.length})`
                 )}
               </Button>
             </div>
@@ -635,39 +634,36 @@ function AppliedTweaksTab() {
       <Modal open={showWhyNotReversible} onClose={() => setShowWhyNotReversible(false)}>
         <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
           <h3 className="text-lg font-medium text-chibangarx-text mb-4">
-            Why are some tweaks not reversible?
+            Porque é que alguns ajustes não são reversíveis?
           </h3>
           <div className="text-chibangarx-text-secondary text-sm leading-6 space-y-3">
             <p>
-              Some tweaks make changes that can't be automatically reversed by ChibangaRx. However,
-              most of these changes can still be undone manually:
+              Alguns ajustes fazem alterações que não podem ser revertidas automaticamente pelo
+              ChibangaRx. No entanto, a maioria destas alterações pode ser revertida manualmente:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-2">
               <li>
-                <strong className="text-chibangarx-text">Debloating Windows:</strong> Removed apps can
-                be reinstalled from the Microsoft Store
+                <strong className="text-chibangarx-text">Remover aplicações do Windows:</strong> As aplicações removidas podem ser reinstaladas a partir da Microsoft Store
               </li>
               <li>
-                <strong className="text-chibangarx-text">Optimize NVIDIA Settings:</strong> Settings
-                can be reset through the NVIDIA Control Panel
+                <strong className="text-chibangarx-text">Otimizar definições NVIDIA:</strong> As definições podem ser repostas através do Painel de Controlo NVIDIA
               </li>
               <li>
-                <strong className="text-chibangarx-text">Service modifications:</strong> Services can
-                be re-enabled through Windows Services Manager
+                <strong className="text-chibangarx-text">Alterações de serviços:</strong> Os serviços podem ser reativados através do Gestor de Serviços do Windows
               </li>
             </ul>
             <p>
-              While these tweaks don't have an automatic undo button, you can always create a
-              restore point before applying them.
+              Embora estes ajustes não tenham um botão de reversão automática, pode criar sempre um
+              ponto de restauro antes de os aplicar.
             </p>
             <p className="text-orange-400 text-xs">
-              Tip: Create a restore point before applying non-reversible tweaks so you have an easy
-              fallback option.
+              Dica: Crie um ponto de restauro antes de aplicar ajustes irreversíveis para ter uma
+              opção de recuperação fácil.
             </p>
           </div>
           <div className="flex justify-end mt-6">
             <Button variant="primary" onClick={() => setShowWhyNotReversible(false)}>
-              Got it
+              Entendi
             </Button>
           </div>
         </div>

@@ -14,6 +14,7 @@ import {
   Wrench,
   WifiOff,
   Bubbles,
+  Video,
 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -36,6 +37,7 @@ const tabIcons = {
   dns: <EthernetPort size={20} />,
   apps: <LayoutGrid size={20} />,
   proSettings: <Trophy size={20} />,
+  clips: <Video size={20} />,
   settings: <Settings size={20} />,
 }
 
@@ -63,6 +65,7 @@ function Nav({ collapsed }) {
     dns: { label: t("nav.dns"), path: "/dns" },
     apps: { label: t("nav.apps"), path: "/apps" },
     proSettings: { label: t("nav.proSettings"), path: "/pro-settings" },
+    clips: { label: t("nav.clips"), path: "/clips" },
     settings: { label: t("nav.settings"), path: "/settings" },
   }
 

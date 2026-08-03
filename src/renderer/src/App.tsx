@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next"
 import Debloat from "./pages/Debloat"
 import NoAdmin from "./components/noAdmin"
 import ProSettings from "./pages/ProSettings"
+import Clips from "./pages/Clips"
 
 function App() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
@@ -164,6 +165,7 @@ function App() {
             <Route path="/apps" element={<Apps />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/pro-settings" element={<ProSettings />} />
+            <Route path="/clips" element={<Clips />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

@@ -1,4 +1,5 @@
-import { app, shell, BrowserWindow, ipcMain, Tray } from "electron"
+import { app, shell, BrowserWindow, ipcMain, Tray, desktopCapturer, globalShortcut } from "electron"
+import { promises as fs } from "fs"
 import path, { join } from "path"
 import log from "electron-log"
 import { createTray } from "@main/tray"
@@ -52,6 +53,37 @@ ipcMain.handle("tray:set", (_event: Electron.IpcMainInvokeEvent, value: boolean)
     }
   }
   return store.get("showTray")
+})
+
+ipcMain.handle("clips:get-sources", async () => {
+  const sources = await desktopCapturer.getSources({
+    types: ["window", "screen"],
+    thumbnailSize: { width: 320, height: 180 },
+  })
+
+  return sources.map((source) => ({
+    id: source.id,
+    name: source.name,
+    thumbnail: source.thumbnail.toDataURL(),
+  }))
+})
+
+ipcMain.handle(
+  "clips:save",
+  async (_event: Electron.IpcMainInvokeEvent, payload: { data: ArrayBuffer }) => {
+    const clipsDirectory = join(app.getPath("videos"), "ChibangaRx Clips")
+    await fs.mkdir(clipsDirectory, { recursive: true })
+    const timestamp = new Date().toISOString().replace(/[.:]/g, "-")
+    const filePath = join(clipsDirectory, `clip-${timestamp}.webm`)
+    await fs.writeFile(filePath, Buffer.from(payload.data))
+    return filePath
+  },
+)
+
+ipcMain.handle("open-clips-folder", async () => {
+  const clipsDirectory = join(app.getPath("videos"), "ChibangaRx Clips")
+  await fs.mkdir(clipsDirectory, { recursive: true })
+  await shell.openPath(clipsDirectory)
 })
 
 const gotTheLock = app.requestSingleInstanceLock()
@@ -162,6 +194,10 @@ app
     }
     console.log("[ChibangaRx]: Handlers setup complete")
 
+    globalShortcut.register("CommandOrControl+Shift+F10", () => {
+      mainWindow?.webContents.send("clips:save-request")
+    })
+
     ipcMain.on("window-minimize", () => {
       if (mainWindow) mainWindow.minimize()
     })
@@ -209,6 +245,8 @@ app
     app.on("activate", function () {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
+
+    app.on("will-quit", () => globalShortcut.unregisterAll())
   })
   .catch((err: any) => {
     console.error("[ChibangaRx]: app.whenReady failed:", err)

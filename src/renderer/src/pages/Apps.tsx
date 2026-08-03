@@ -709,7 +709,7 @@ function Apps() {
           <p className="text-center text-chibangarx-text-muted">
             {t("apps.appsRequestMore")}{" "}
             <a
-              href="https://github.com/parcoil/chibangarx"
+              href="https://github.com/chibangar/chibangarx"
               target="_blank"
               rel="noopener noreferrer"
               className="text-chibangarx-primary"

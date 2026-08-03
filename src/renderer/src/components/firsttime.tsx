@@ -71,8 +71,7 @@ export default function FirstTime(): React.ReactElement {
         </p>
 
         <p className="text-chibangarx-text-secondary mb-4 text-sm">
-          Please only download from <strong>GitHub</strong>, <strong>parcoil.com</strong>, or{" "}
-          <strong>getchibangarx.net</strong>.
+Please only download from <strong>GitHub</strong> or <strong>getchibangarx.net</strong>.
         </p>
 
         <p className="text-red-500 mb-8 text-sm">
@@ -81,15 +80,11 @@ export default function FirstTime(): React.ReactElement {
           <a href="https://getchibangarx.net" target="_blank" className="text-blue-500">
             getchibangarx.net
           </a>
-          ,{" "}
-          <a href="https://github.com/Parcoil/ChibangaRx" target="_blank" className="text-blue-500">
-            our GitHub
-          </a>
-          , or{" "}
-          <a href="https://parcoil.com" target="_blank" className="text-blue-500">
-            parcoil.com
-          </a>
-          .
+, or{" "}
+           <a href="https://github.com/chibangar/chibangarx" target="_blank" className="text-blue-500">
+             our GitHub
+           </a>
+           .
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">

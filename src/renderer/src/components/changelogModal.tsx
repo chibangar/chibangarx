@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
 import { useTranslation } from "react-i18next"
 
-const GITHUB_REPO = "Parcoil/ChibangaRx"
+const GITHUB_REPO = "chibangar/chibangarx"
 
 interface Release {
   tag_name: string

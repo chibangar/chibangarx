@@ -527,7 +527,7 @@ function Settings() {
                     </Button>
                     <div className="text-right">
                       <p className="text-sm text-chibangarx-text-secondary">
-                        © {new Date().getFullYear()} Parcoil
+                        © {new Date().getFullYear()} ChibangaRx
                       </p>
                     </div>
                   </div>

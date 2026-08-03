@@ -25,9 +25,8 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
     win?.webContents.send("updater:not-available", { currentVersion: app.getVersion() })
   })
 
-  autoUpdater.on("error", (err: Error) => {
-    const win = getMainWindow()
-    win?.webContents.send("updater:error", { message: String(err) })
+  autoUpdater.on("error", () => {
+    // silently ignore update errors (e.g. no internet, no release)
   })
 
   autoUpdater.on("download-progress", (progress: any) => {

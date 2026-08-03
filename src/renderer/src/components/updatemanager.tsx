@@ -24,10 +24,10 @@ export default function UpdateManager(): React.ReactElement {
       setDownloadPercent(0)
     }
     const onNotAvailable = () => {
-      toast.success("You're up to date")
+      // silently ignore - no update available
     }
-    const onError = (_e: any, payload: UpdatePayload) => {
-      toast.error(payload?.message ?? "Update error")
+    const onError = () => {
+      // silently ignore update errors
       setIsDownloading(false)
     }
     const onProgress = (_e: any, payload: UpdatePayload) => {

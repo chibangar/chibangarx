@@ -90,10 +90,13 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   })
 
   ipcMain.handle("updater:download", async () => {
+    console.log("[ChibangaRx] Downloading update...")
     try {
       await autoUpdater.downloadUpdate()
+      console.log("[ChibangaRx] Download complete")
       return { ok: true }
     } catch (error: any) {
+      console.error("[ChibangaRx] Download failed:", error.message)
       return { ok: false, error: String(error) }
     }
   })

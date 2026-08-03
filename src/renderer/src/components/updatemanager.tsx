@@ -4,6 +4,7 @@ import Button from "@/components/ui/button"
 import { Bell } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import { useTranslation } from "react-i18next"
+import { toast } from "react-toastify"
 
 interface UpdatePayload {
   version?: string
@@ -73,7 +74,16 @@ export default function UpdateManager(): React.ReactElement {
   const handleDownload = async () => {
     setIsDownloading(true)
     setDownloadPercent(0)
-    await window.electron.ipcRenderer.invoke("updater:download")
+    try {
+      const result = await window.electron.ipcRenderer.invoke("updater:download")
+      if (!result.ok) {
+        toast.error(result.error ?? "Download failed")
+        setIsDownloading(false)
+      }
+    } catch (err) {
+      toast.error(String(err))
+      setIsDownloading(false)
+    }
   }
 
   const handleInstall = async () => {

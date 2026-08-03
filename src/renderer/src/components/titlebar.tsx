@@ -45,8 +45,8 @@ function TitleBar({
           </button>
           <img src={sparkleLogo} alt="ChibangaRx" className="h-5 w-5" />
           <span className="text-sparkle-text text-sm font-medium">ChibangaRx</span>
-          <div className="bg-sparkle-card border border-sparkle-border-secondary p-1 rounded-xl w-16 text-center text-sm text-sparkle-text">
-            {t("nav.beta")}
+          <div className="bg-sparkle-card border border-sparkle-border-secondary p-1 rounded-xl text-center text-xs text-sparkle-text-secondary px-2">
+            {t("nav.beta")} v2.28
           </div>
         </div>
         <div>

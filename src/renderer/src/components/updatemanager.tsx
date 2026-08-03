@@ -92,52 +92,52 @@ export default function UpdateManager(): React.ReactElement {
     <>
       <button
         onClick={() => setModalOpen(true)}
-        className="relative h-8 w-8 inline-flex items-center justify-center rounded-md text-sparkle-text-secondary hover:bg-sparkle-accent hover:text-sparkle-primary transition-colors"
+        className="relative h-8 w-8 inline-flex items-center justify-center rounded-md text-chibangarx-text-secondary hover:bg-chibangarx-accent hover:text-chibangarx-primary transition-colors"
         title={t("updater.title")}
         style={{ WebkitAppRegion: "no-drag" } as any}
       >
         <Bell size={14} />
         {hasUpdate && (
-          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-sparkle-bg" />
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-chibangarx-bg" />
         )}
       </button>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-5 shadow-xl max-w-lg w-full mx-4">
-          <h2 className="text-xl font-semibold mb-1 text-sparkle-primary">{t("updater.title")}</h2>
-          <p className="text-xs text-sparkle-text-secondary mb-4">
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-5 shadow-xl max-w-lg w-full mx-4">
+          <h2 className="text-xl font-semibold mb-1 text-chibangarx-primary">{t("updater.title")}</h2>
+          <p className="text-xs text-chibangarx-text-secondary mb-4">
             {t("updater.currentVersion")}: {currentVersion}
           </p>
 
           {!hasUpdate && !isDownloaded && (
             <div className="text-center py-6">
-              <p className="text-sparkle-text mb-4">{t("updater.noUpdate")}</p>
+              <p className="text-chibangarx-text mb-4">{t("updater.noUpdate")}</p>
               <Button onClick={handleCheckNow}>{t("updater.checkNow")}</Button>
             </div>
           )}
 
           {hasUpdate && !isDownloaded && (
             <div>
-              <div className="bg-sparkle-bg rounded-xl p-3 mb-4 border border-sparkle-border-secondary">
-                <p className="text-sm text-sparkle-text mb-2">
+              <div className="bg-chibangarx-bg rounded-xl p-3 mb-4 border border-chibangarx-border-secondary">
+                <p className="text-sm text-chibangarx-text mb-2">
                   {t("updater.newVersion")}:{" "}
-                  <span className="font-bold text-sparkle-primary">{updateVersion}</span>
+                  <span className="font-bold text-chibangarx-primary">{updateVersion}</span>
                 </p>
                 {releaseNotes && (
-                  <div className="text-xs text-sparkle-text-secondary max-h-48 overflow-y-auto prose prose-invert prose-headings:text-sparkle-primary prose-li:text-sparkle-text">
+                  <div className="text-xs text-chibangarx-text-secondary max-h-48 overflow-y-auto prose prose-invert prose-headings:text-chibangarx-primary prose-li:text-chibangarx-text">
                     <ReactMarkdown>{releaseNotes}</ReactMarkdown>
                   </div>
                 )}
               </div>
               {isDownloading ? (
                 <div>
-                  <div className="flex justify-between text-xs text-sparkle-text-secondary mb-1">
+                  <div className="flex justify-between text-xs text-chibangarx-text-secondary mb-1">
                     <span>{t("updater.downloading")}</span>
                     <span>{Math.floor(downloadPercent)}%</span>
                   </div>
-                  <div className="w-full h-2 bg-sparkle-border-secondary rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-chibangarx-border-secondary rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-sparkle-primary rounded-full transition-all duration-300"
+                      className="h-full bg-chibangarx-primary rounded-full transition-all duration-300"
                       style={{ width: `${downloadPercent}%` }}
                     />
                   </div>
@@ -146,7 +146,7 @@ export default function UpdateManager(): React.ReactElement {
                 <div className="flex justify-end gap-3">
                   <Button
                     onClick={handleCheckNow}
-                    className="bg-sparkle-border-secondary hover:bg-sparkle-border text-sparkle-text"
+                    className="bg-chibangarx-border-secondary hover:bg-chibangarx-border text-chibangarx-text"
                   >
                     {t("updater.checkAgain")}
                   </Button>
@@ -161,7 +161,7 @@ export default function UpdateManager(): React.ReactElement {
               <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-3 mb-4">
                 <p className="text-sm text-green-400">{t("updater.downloaded")}</p>
               </div>
-              <p className="text-xs text-sparkle-text-secondary mb-4">
+              <p className="text-xs text-chibangarx-text-secondary mb-4">
                 {t("updater.restartInfo")}
               </p>
               <Button

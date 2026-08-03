@@ -256,15 +256,15 @@ export default function DNSPage() {
   return (
     <>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="bg-sparkle-card p-4 rounded-2xl border border-sparkle-border text-sparkle-text w-[90vw] max-w-md">
+        <div className="bg-chibangarx-card p-4 rounded-2xl border border-chibangarx-border text-chibangarx-text w-[90vw] max-w-md">
           <h2 className="text-lg font-semibold mb-4">{t("dns.confirmDNSChange")}</h2>
            {selectedProvider && (
              <>
                <p className="mb-4">
                  {t("dns.aboutToChangeDNS")}{" "}
-                                   <span className="text-sparkle-primary font-medium">{t(selectedProvider.nameKey)}</span>.
+                                   <span className="text-chibangarx-primary font-medium">{t(selectedProvider.nameKey)}</span>.
                </p>
-               <div className="bg-sparkle-border-secondary border border-sparkle-border p-3 rounded-md mb-4">
+               <div className="bg-chibangarx-border-secondary border border-chibangarx-border p-3 rounded-md mb-4">
                  <div className="text-sm">
                    <div>
                      <strong>{t("dns.primary")}:</strong> {selectedProvider.primary}
@@ -274,7 +274,7 @@ export default function DNSPage() {
                    </div>
                  </div>
                </div>
-               <p className="text-sm text-sparkle-text-secondary mb-4">
+               <p className="text-sm text-chibangarx-text-secondary mb-4">
                  {t("dns.dnsChangeWarning")}
                </p>
              </>
@@ -305,12 +305,12 @@ export default function DNSPage() {
                   <div key={index} className="flex items-center gap-2 text-sm">
                     <Check className="w-4 h-4 text-green-500" />
                     <span className="font-medium">{dns.adapter}:</span>
-                    <span className="text-sparkle-text-secondary">{dns.servers}</span>
+                    <span className="text-chibangarx-text-secondary">{dns.servers}</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-sm text-sparkle-text-secondary">
+              <div className="flex items-center gap-2 text-sm text-chibangarx-text-secondary">
                 <AlertCircle className="w-4 h-4" />
                 <span>{t("dns.loadingNetworkInfo")}</span>
               </div>
@@ -358,7 +358,7 @@ export default function DNSPage() {
                       className={`flex items-center justify-between text-sm p-2 rounded-md ${
                         index === 0 && result.latency !== null
                           ? "bg-green-500/10 border border-green-500/30"
-                          : "bg-sparkle-border-secondary"
+                          : "bg-chibangarx-border-secondary"
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -368,7 +368,7 @@ export default function DNSPage() {
                           <X className="w-4 h-4 text-red-500" />
                         )}
                         <span className="font-medium">{result.name}</span>
-                        <span className="text-sparkle-text-secondary">({result.server})</span>
+                        <span className="text-chibangarx-text-secondary">({result.server})</span>
                       </div>
                       <div className="flex items-center gap-2">
                         {result.latency !== null ? (
@@ -386,7 +386,7 @@ export default function DNSPage() {
             )}
 
             {!pingResults && !pingLoading && (
-              <p className="text-sm text-sparkle-text-secondary">
+              <p className="text-sm text-chibangarx-text-secondary">
                 {t("dns.lowestPingServer")}
               </p>
             )}
@@ -397,7 +397,7 @@ export default function DNSPage() {
                 key={provider.id}
                 onClick={() => openConfirmationModal(provider)}
                 disabled={loading}
-                className="bg-sparkle-card border border-sparkle-border p-4 rounded-2xl hover:border-sparkle-primary transition text-left"
+                className="bg-chibangarx-card border border-chibangarx-border p-4 rounded-2xl hover:border-chibangarx-primary transition text-left"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className={provider.color}>{provider.icon}</div>
@@ -406,19 +406,19 @@ export default function DNSPage() {
                      <h3 className="font-semibold">
                       {t(provider.nameKey)}
                       {provider.recommended && (
-                        <span className="text-xs text-sparkle-primary ml-2">{t("dns.recommended")}</span>
+                        <span className="text-xs text-chibangarx-primary ml-2">{t("dns.recommended")}</span>
                       )}
                     </h3>
 
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {provider.primary} / {provider.secondary}
                     </p>
                   </div>
                 </div>
-                <p className="text-sm text-sparkle-text-secondary">{t(provider.descKey)}</p>
+                <p className="text-sm text-chibangarx-text-secondary">{t(provider.descKey)}</p>
                 <div className="flex flex-wrap gap-1 mt-3">
                   {provider.featureKeys.map((key, index) => (
-                    <span key={index} className="px-2 py-1 bg-sparkle-border text-xs rounded-md">
+                    <span key={index} className="px-2 py-1 bg-chibangarx-border text-xs rounded-md">
                       {t(key)}
                     </span>
                   ))}
@@ -448,7 +448,7 @@ export default function DNSPage() {
                         setCustomDNS((prev) => ({ ...prev, primary: e.target.value }))
                       }
                       placeholder={t("dns.primaryDNSPlaceholder")}
-                      className="w-full px-3 py-2 bg-sparkle-border border border-sparkle-border-secondary rounded-lg text-sparkle-text focus:outline-hidden focus:border-sparkle-primary"
+                      className="w-full px-3 py-2 bg-chibangarx-border border border-chibangarx-border-secondary rounded-lg text-chibangarx-text focus:outline-hidden focus:border-chibangarx-primary"
                     />
                   </div>
                   <div>
@@ -462,12 +462,12 @@ export default function DNSPage() {
                         setCustomDNS((prev) => ({ ...prev, secondary: e.target.value }))
                       }
                       placeholder={t("dns.secondaryDNSPlaceholder")}
-                      className="w-full px-3 py-2 bg-sparkle-border border border-sparkle-border-secondary rounded-lg text-sparkle-text focus:outline-hidden focus:border-sparkle-primary"
+                      className="w-full px-3 py-2 bg-chibangarx-border border border-chibangarx-border-secondary rounded-lg text-chibangarx-text focus:outline-hidden focus:border-chibangarx-primary"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm text-sparkle-text-secondary">
+                <div className="flex items-center gap-2 text-sm text-chibangarx-text-secondary">
                   <Info className="w-4 h-4" />
                   <span>{t("dns.validIPv4Hint")}</span>
                 </div>

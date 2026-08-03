@@ -94,9 +94,9 @@ async function loadTweaks(): Promise<Tweak[]> {
 
 const getNipPath = (): string => {
   if (isDev) {
-    return path.resolve(process.cwd(), "resources", "sparklenvidia.nip")
+    return path.resolve(process.cwd(), "resources", "chibangarxnvidia.nip")
   }
-  return path.join(process.resourcesPath, "sparklenvidia.nip")
+  return path.join(process.resourcesPath, "chibangarxnvidia.nip")
 }
 
 function isGPUTweak(tweak: Tweak): boolean {

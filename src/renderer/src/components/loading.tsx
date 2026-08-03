@@ -54,7 +54,7 @@
 //         transition={{ duration: 0.5 }}
 //       >
 //         <motion.div
-//           className="text-2xl font-medium mb-8 text-sparkle-text"
+//           className="text-2xl font-medium mb-8 text-chibangarx-text"
 //           variants={pulseVariants}
 //           initial="initial"
 //           animate="animate"
@@ -63,9 +63,9 @@
 //           {steps[loadingStep]}
 //         </motion.div>
 
-//         <div className="w-64 h-1 bg-sparkle-accent rounded-full ">
+//         <div className="w-64 h-1 bg-chibangarx-accent rounded-full ">
 //           <motion.div
-//             className="h-full bg-sparkle-primary"
+//             className="h-full bg-chibangarx-primary"
 //             variants={progressVariants}
 //             custom={loadingStep}
 //             initial="initial"
@@ -77,7 +77,7 @@
 //           {steps.map((_, i) => (
 //             <motion.div
 //               key={i}
-//               className={`w-3 h-3 rounded-full ${i === loadingStep ? "bg-sparkle-primary" : "bg-sparkle-accent"}`}
+//               className={`w-3 h-3 rounded-full ${i === loadingStep ? "bg-chibangarx-primary" : "bg-chibangarx-accent"}`}
 //               animate={{
 //                 scale: i === loadingStep ? [1, 1.2, 1] : 1,
 //                 opacity: i === loadingStep ? 1 : 0.6,

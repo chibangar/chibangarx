@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Loader2, Menu, Minus, Shield, Square, Terminal, X } from "lucide-react"
 import { close, minimize, toggleMaximize } from "../lib/electron"
-import sparkleLogo from "../../../../resources/sparklelogo.png"
+import chibangarxLogo from "../../../../resources/chibangarxlogo.png"
 import Card from "./ui/Card"
 import useAppInstallStore from "@/store/appInstallStore"
 import InstallConsoleModal from "./installConsoleModal"
@@ -33,19 +33,19 @@ function TitleBar({
       <InstallConsoleModal open={consoleOpen} onClose={() => setConsoleOpen(false)} />
       <div
         style={{ WebkitAppRegion: "drag" } as any}
-        className="h-[50px] fixed top-0 left-0 right-0 flex justify-between items-center pl-4 bg-sparkle-bg z-50"
+        className="h-[50px] fixed top-0 left-0 right-0 flex justify-between items-center pl-4 bg-chibangarx-bg z-50"
       >
         <div className="flex items-center gap-3 h-full pr-4">
           <button
             onClick={onToggleSidebar}
-            className="h-7 w-7 inline-flex items-center justify-center text-sparkle-text-secondary hover:bg-sparkle-accent transition-colors rounded"
+            className="h-7 w-7 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors rounded"
             style={{ WebkitAppRegion: "no-drag" } as any}
           >
             <Menu size={16} />
           </button>
-          <img src={sparkleLogo} alt="ChibangaRx" className="h-5 w-5" />
-          <span className="text-sparkle-text text-sm font-medium">ChibangaRx</span>
-          <div className="bg-sparkle-card border border-sparkle-border-secondary p-1 rounded-xl text-center text-xs text-sparkle-text-secondary px-2">
+          <img src={chibangarxLogo} alt="ChibangaRx" className="h-5 w-5" />
+          <span className="text-chibangarx-text text-sm font-medium">ChibangaRx</span>
+          <div className="bg-chibangarx-card border border-chibangarx-border-secondary p-1 rounded-xl text-center text-xs text-chibangarx-text-secondary px-2">
             {t("nav.beta")} v2.28
           </div>
         </div>
@@ -53,7 +53,7 @@ function TitleBar({
           {apps.length > 0 && (
             <Card
               key="install-status"
-              className="p-2 text-xs flex items-center gap-2 animate-in fade-in zoom-in duration-300 fill-mode-both cursor-pointer hover:bg-sparkle-accent transition-colors"
+              className="p-2 text-xs flex items-center gap-2 animate-in fade-in zoom-in duration-300 fill-mode-both cursor-pointer hover:bg-chibangarx-accent transition-colors"
               onClick={() => setConsoleOpen(true)}
               style={{ WebkitAppRegion: "no-drag" } as any}
             >
@@ -63,7 +63,7 @@ function TitleBar({
                  : currentApp
                    ? `${actionText} ${currentApp.name}, ${remainingCount} ${t("titlebar.left")}`
                  : `${actionText} ${apps.length} ${t("titlebar.apps")}`}
-              <Terminal className="w-3 h-3 text-sparkle-primary" />
+              <Terminal className="w-3 h-3 text-chibangarx-primary" />
             </Card>
           )}
         </div>
@@ -72,30 +72,30 @@ function TitleBar({
           <AudioPlayer />
           <UpdateManager />
           <div
-            className="h-12.5 w-12 inline-flex items-center justify-center text-sparkle-text-secondary hover:bg-sparkle-accent transition-colors"
+            className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
              title={adminStatus ? t("titlebar.admin") : t("titlebar.notAdmin")}
           >
             {adminStatus ? (
-              <Shield className="w-5 h-5 text-sparkle-primary" />
+              <Shield className="w-5 h-5 text-chibangarx-primary" />
             ) : (
               <Shield className="w-5 h-5 text-red-600" />
             )}
           </div>
           <button
             onClick={minimize}
-            className="h-12.5 w-12 inline-flex items-center justify-center text-sparkle-text-secondary hover:bg-sparkle-accent transition-colors"
+            className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
           >
             <Minus size={16} />
           </button>
           <button
             onClick={toggleMaximize}
-            className="h-12.5 w-12 inline-flex items-center justify-center text-sparkle-text-secondary hover:bg-sparkle-accent transition-colors"
+            className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
           >
             <Square size={14} />
           </button>
           <button
             onClick={close}
-            className="h-12.5 w-12 inline-flex items-center justify-center text-sparkle-text-secondary hover:bg-red-600 hover:text-white transition-colors"
+            className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-red-600 hover:text-white transition-colors"
           >
             <X size={16} />
           </button>

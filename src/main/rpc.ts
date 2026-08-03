@@ -38,7 +38,7 @@ async function startDiscordRPC(): Promise<boolean> {
           .setType(ActivityType.Playing)
           .setDetails("Optimizing your PC")
           .setState(`Running ChibangaRx v${jsonData.version ?? "2"}`)
-          .setLargeImage("sparklelogo", "ChibangaRx")
+          .setLargeImage("chibangarxlogo", "ChibangaRx")
           .addButton("Download ChibangaRx", "https://github.com/chibangar/chibangarx")
           .addButton("Join Discord", "https://discord.com/invite/En5YJYWj3Z")
           .build()

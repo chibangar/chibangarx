@@ -7,7 +7,7 @@ interface TableProps {
 
 function Table({ children, className }: TableProps) {
   return (
-    <div className={cn("w-full overflow-auto rounded-xl border border-sparkle-border", className)}>
+    <div className={cn("w-full overflow-auto rounded-xl border border-chibangarx-border", className)}>
       <table className="w-full caption-bottom text-sm">{children}</table>
     </div>
   )
@@ -19,7 +19,7 @@ interface TableHeaderProps {
 }
 
 function TableHeader({ children, className }: TableHeaderProps) {
-  return <thead className={cn("[&_tr]:border-b border-sparkle-border", className)}>{children}</thead>
+  return <thead className={cn("[&_tr]:border-b border-chibangarx-border", className)}>{children}</thead>
 }
 
 interface TableBodyProps {
@@ -40,7 +40,7 @@ function TableRow({ children, className }: TableRowProps) {
   return (
     <tr
       className={cn(
-        "border-b border-sparkle-border transition-colors hover:bg-sparkle-accent/50",
+        "border-b border-chibangarx-border transition-colors hover:bg-chibangarx-accent/50",
         className,
       )}
     >
@@ -58,7 +58,7 @@ function TableHead({ children, className }: TableHeadProps) {
   return (
     <th
       className={cn(
-        "h-10 px-4 text-left align-middle font-medium text-sparkle-text-secondary text-xs uppercase tracking-wider",
+        "h-10 px-4 text-left align-middle font-medium text-chibangarx-text-secondary text-xs uppercase tracking-wider",
         className,
       )}
     >
@@ -74,7 +74,7 @@ interface TableCellProps {
 
 function TableCell({ children, className }: TableCellProps) {
   return (
-    <td className={cn("p-4 align-middle text-sparkle-text", className)}>
+    <td className={cn("p-4 align-middle text-chibangarx-text", className)}>
       {children}
     </td>
   )

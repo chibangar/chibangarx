@@ -161,7 +161,7 @@
     "win": {
       "executableName": "chibangarx",
       "requestedExecutionLevel": "requireAdministrator",
-      "icon": "resources/sparkle2.ico",
+      "icon": "resources/chibangarx.ico",
       "target": [
         "nsis",
         "zip"
@@ -173,9 +173,9 @@
       "uninstallDisplayName": "${productName}",
       "createDesktopShortcut": "always",
       "oneClick": false,
-      "installerSidebar": "build/sparkleinstallerleftsidebar.bmp",
-      "uninstallerSidebar": "build/sparkleinstallerleftsidebar.bmp",
-      "installerHeader": "build/sparkleinstallerheader.bmp"
+      "installerSidebar": "build/chibangarxinstallerleftsidebar.bmp",
+      "uninstallerSidebar": "build/chibangarxinstallerleftsidebar.bmp",
+      "installerHeader": "build/chibangarxinstallerheader.bmp"
     },
     "npmRebuild": false
   },

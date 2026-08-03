@@ -510,16 +510,16 @@ function Utilities() {
   return (
     <>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-2xl max-w-lg w-full mx-4 flex flex-col items-center text-center">
-           <h1 className="text-3xl font-bold text-sparkle-text mb-4">
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-2xl max-w-lg w-full mx-4 flex flex-col items-center text-center">
+           <h1 className="text-3xl font-bold text-chibangarx-text mb-4">
              {t("utilities.whatsNew")}
            </h1>
 
-           <p className="text-sparkle-text-secondary mb-6">
+           <p className="text-chibangarx-text-secondary mb-6">
              {t("utilities.redesignDesc")}
            </p>
 
-           <p className="text-sparkle-text-secondary mb-4 text-sm">
+           <p className="text-chibangarx-text-secondary mb-4 text-sm">
              {t("utilities.modalDesc1")}
              <br />
              <br />
@@ -529,7 +529,7 @@ function Utilities() {
              {t("utilities.modalDesc3")}
              <br />
              <br />
-             <p className="text-sparkle-primary">
+             <p className="text-chibangarx-primary">
                {t("utilities.modalDesc4")}
              </p>
              <br /> <br />
@@ -558,7 +558,7 @@ function Utilities() {
             value={search}
           />
           {filteredUtilities.length === 0 && (
-            <p className="text-sparkle-text-secondary flex text-center items-center justify-center gap-2">
+            <p className="text-chibangarx-text-secondary flex text-center items-center justify-center gap-2">
               {t("utilities.noMatch")}
             </p>
           )}
@@ -571,18 +571,18 @@ function Utilities() {
                     <div className="flex gap-3 items-center">
                       <h1>{t(util.key)}</h1>{" "}
                       {util.command && (
-                        <p className="text-xs text-sparkle-primary">
+                        <p className="text-xs text-chibangarx-primary">
                           {t("utilities.cmdLabel")}:{" "}
-                          <code className="bg-sparkle-border p-0.5 rounded-md">{util.command}</code>
+                          <code className="bg-chibangarx-border p-0.5 rounded-md">{util.command}</code>
                         </p>
                       )}
                     </div>
-                    <p className="text-sm  text-sparkle-text-secondary">{t(util.descKey)}</p>
+                    <p className="text-sm  text-chibangarx-text-secondary">{t(util.descKey)}</p>
                   </div>
                   <div className="flex justify-end ml-auto">
                     {util.type === "toggle" &&
                       (loadingStates[util.key] ? (
-                        <div className="w-6 h-6 border-2 border-sparkle-border-secondary border-t-sparkle-primary rounded-full animate-spin" />
+                        <div className="w-6 h-6 border-2 border-chibangarx-border-secondary border-t-chibangarx-primary rounded-full animate-spin" />
                       ) : (
                         <Toggle
                           checked={toggleStates[util.key] || false}
@@ -594,7 +594,7 @@ function Utilities() {
                     )}
                     {util.type === "dropdown" &&
                       (loadingStates[util.key] ? (
-                        <div className="w-6 h-6 border-2 border-sparkle-border-secondary border-t-sparkle-primary rounded-full animate-spin" />
+                        <div className="w-6 h-6 border-2 border-chibangarx-border-secondary border-t-chibangarx-primary rounded-full animate-spin" />
                       ) : (
                          <Dropdown
                           options={util.options || []}

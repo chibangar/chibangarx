@@ -4,7 +4,7 @@ import Button from "./ui/button"
 function NoAdmin({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="bg-sparkle-card p-4 rounded-2xl border border-sparkle-border text-sparkle-text w-[90vw] max-w-md">
+      <div className="bg-chibangarx-card p-4 rounded-2xl border border-chibangarx-border text-chibangarx-text w-[90vw] max-w-md">
         <h1 className="text-lg font-semibold mb-2">ChibangaRx Not Running as Admin</h1>
         <p className="text-sm mb-4">
           ChibangaRx is not running with administrator privileges. Some features may not work

@@ -8,7 +8,7 @@ import { invoke } from "@/lib/electron"
 import { RotateCw, Search, Trash2, TriangleAlert } from "lucide-react"
 import { toast } from "react-toastify"
 import { LargeInput } from "@/components/ui/input"
-import sparkleLogo from "../../../../resources/sparklelogo.png"
+import chibangarxLogo from "../../../../resources/chibangarxlogo.png"
 import { useTranslation } from "react-i18next"
 
 interface InstalledApp {
@@ -141,13 +141,13 @@ function Debloat() {
   return (
     <>
       <Modal open={showWelcome} onOpenChange={() => setShowWelcome(false)}>
-        <div className="bg-sparkle-card p-4 rounded-2xl border border-sparkle-border text-sparkle-text w-[90vw] max-w-md">
+        <div className="bg-chibangarx-card p-4 rounded-2xl border border-chibangarx-border text-chibangarx-text w-[90vw] max-w-md">
           <h2 className="text-lg font-semibold">{t("debloat.welcomeTitle")}</h2>
-          <p className="mt-2 text-sm text-sparkle-text-secondary">
+          <p className="mt-2 text-sm text-chibangarx-text-secondary">
             {t("debloat.welcomeDesc")}
             <br />
             <br />
-            <span className="font-medium text-sparkle-secondary">
+            <span className="font-medium text-chibangarx-secondary">
               {t("debloat.betaWarning")}
             </span>
             , {t("debloat.betaDesc")}
@@ -167,21 +167,21 @@ function Debloat() {
 
       <RootDiv className="flex flex-col w-full h-full overflow-hidden">
         <Modal open={showConfirm} onClose={() => setShowConfirm(false)}>
-          <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-6 shadow-xl max-w-md w-full mx-4">
+          <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-6 shadow-xl max-w-md w-full mx-4">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 rounded-full bg-red-500/20">
                 <TriangleAlert className="w-6 h-6 text-red-500" />
               </div>
-               <h3 className="text-xl font-semibold text-sparkle-text">{t("debloat.confirmUninstall")}</h3>
+               <h3 className="text-xl font-semibold text-chibangarx-text">{t("debloat.confirmUninstall")}</h3>
              </div>
-             <p className="text-sm text-sparkle-text-secondary mb-4">
+             <p className="text-sm text-chibangarx-text-secondary mb-4">
                {t("debloat.uninstallPrompt", { count: selectedNames.length })}
              </p>
             <ul className="max-h-48 overflow-y-auto custom-scrollbar space-y-1 mb-6">
               {selectedNames.map((name) => (
                 <li
                   key={name}
-                  className="text-sm text-sparkle-text bg-sparkle-accent/50 rounded px-3 py-1.5"
+                  className="text-sm text-chibangarx-text bg-chibangarx-accent/50 rounded px-3 py-1.5"
                 >
                   {name}
                 </li>
@@ -199,10 +199,10 @@ function Debloat() {
         </Modal>
 
         <div className="flex items-center justify-end mb-4">
-            <h1 className="text-2xl font-bold text-sparkle-text mr-auto">
+            <h1 className="text-2xl font-bold text-chibangarx-text mr-auto">
               {t("debloat.installedApps")} {!loading && !uninstalling && `(${apps.length})`}
               {uninstalling && (
-                <span className="text-sm font-normal text-sparkle-text-secondary ml-2">
+                <span className="text-sm font-normal text-chibangarx-text-secondary ml-2">
                   {t("debloat.uninstalling")}
                 </span>
               )}
@@ -252,14 +252,14 @@ function Debloat() {
           </TableHeader>
            <TableBody>
             {loading ? (
-              <tr className="border-b border-sparkle-border">
-                <td colSpan={5} className="p-4 text-center text-sparkle-text-secondary">
+              <tr className="border-b border-chibangarx-border">
+                <td colSpan={5} className="p-4 text-center text-chibangarx-text-secondary">
                   {t("debloat.loadingApps")}
                 </td>
               </tr>
             ) : filteredApps.length === 0 ? (
-              <tr className="border-b border-sparkle-border">
-                <td colSpan={5} className="p-4 text-center text-sparkle-text-secondary">
+              <tr className="border-b border-chibangarx-border">
+                <td colSpan={5} className="p-4 text-center text-chibangarx-text-secondary">
                   {t("debloat.noAppsFound")}
                 </td>
               </tr>
@@ -267,33 +267,33 @@ function Debloat() {
               filteredApps.map((app) => (
                 <tr
                   key={app.id}
-                  className={`border-b border-sparkle-border transition-colors hover:bg-sparkle-accent/50 cursor-pointer ${selected.has(app.id) ? "bg-sparkle-accent/30" : ""}`}
+                  className={`border-b border-chibangarx-border transition-colors hover:bg-chibangarx-accent/50 cursor-pointer ${selected.has(app.id) ? "bg-chibangarx-accent/30" : ""}`}
                   onClick={() => !uninstalling && toggleOne(app.id)}
                 >
-                  <td className="p-4 align-middle text-sparkle-text w-10">
+                  <td className="p-4 align-middle text-chibangarx-text w-10">
                     <div onClick={(e) => e.stopPropagation()}>
                       <Checkbox checked={selected.has(app.id)} onChange={() => toggleOne(app.id)} />
                     </div>
                   </td>
-                  <td className="align-middle text-sparkle-text">
+                  <td className="align-middle text-chibangarx-text">
                     <div className="flex items-center gap-2">
                       {app.icon ? (
                         <img src={app.icon} alt={app.name} className="w-5 h-5" />
                       ) : (
-                        <img src={sparkleLogo} alt={app.name} className="w-5 h-5" />
+                        <img src={chibangarxLogo} alt={app.name} className="w-5 h-5" />
                       )}
                       <span>{app.name}</span>
                     </div>
                   </td>
-                  <td className="p-4 align-middle text-sparkle-text">{app.publisher}</td>
-                  <td className="p-4 align-middle text-sparkle-text">{app.version}</td>
-                  <td className="p-4 align-middle text-sparkle-text">{app.installDate}</td>
+                  <td className="p-4 align-middle text-chibangarx-text">{app.publisher}</td>
+                  <td className="p-4 align-middle text-chibangarx-text">{app.version}</td>
+                  <td className="p-4 align-middle text-chibangarx-text">{app.installDate}</td>
                 </tr>
               ))
             )}
           </TableBody>
         </Table>
-        <p className="text-sm text-sparkle-text-secondary">
+        <p className="text-sm text-chibangarx-text-secondary">
           {t("debloat.appsCached")}
         </p>
       </RootDiv>

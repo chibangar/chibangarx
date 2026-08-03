@@ -18,7 +18,7 @@ import Card from "@/components/ui/Card"
 import { LargeInput } from "@/components/ui/input"
 import { Dropdown } from "@/components/ui/dropdown"
 import useAppInstallStore from "@/store/appInstallStore"
-import logo from "../../../../resources/sparklelogo.png"
+import logo from "../../../../resources/chibangarxlogo.png"
 import { useTranslation } from "react-i18next"
 
 interface AppData {
@@ -97,7 +97,7 @@ function Apps() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = "sparkle-apps.json"
+    a.download = "chibangarx-apps.json"
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -221,7 +221,7 @@ function Apps() {
           appsData = data as { apps: AppData[] }
         } else {
           const response = await fetch(
-            "https://raw.githubusercontent.com/parcoil/sparkle/refs/heads/v2/src/renderer/src/assets/apps.json",
+            "https://raw.githubusercontent.com/parcoil/chibangarx/refs/heads/v2/src/renderer/src/assets/apps.json",
           )
           appsData = await response.json()
         }
@@ -316,15 +316,15 @@ function Apps() {
   return (
     <>
       <Modal open={showWelcomeModal} onClose={() => setShowWelcomeModal(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
-          <h3 className="text-xl font-semibold text-sparkle-text mb-3">
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
+          <h3 className="text-xl font-semibold text-chibangarx-text mb-3">
             {t("apps.appsWelcomeTitle")}
           </h3>
 
-          <div className="text-sparkle-text-secondary text-sm leading-6 mb-6">
+          <div className="text-chibangarx-text-secondary text-sm leading-6 mb-6">
             <p className="mb-4">
               {t("apps.appsWelcomeDesc")}{" "}
-              <p className="text-sparkle-secondary">
+              <p className="text-chibangarx-secondary">
                 {t("apps.appsSelectManager")}
               </p>
             </p>
@@ -332,12 +332,12 @@ function Apps() {
             <div className="space-y-3">
               <button
                 onClick={() => handleSourceSelect("Winget")}
-                className={`w-full p-4 rounded-lg border transition-all text-left bg-sparkle-accent border-sparkle-text-muted hover:bg-sparkle-bg cursor-pointer hover:scale-[102%]`}
+                className={`w-full p-4 rounded-lg border transition-all text-left bg-chibangarx-accent border-chibangarx-text-muted hover:bg-chibangarx-bg cursor-pointer hover:scale-[102%]`}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium text-sparkle-text">{t("settings.winget")}</h4>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <h4 className="font-medium text-chibangarx-text">{t("settings.winget")}</h4>
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("apps.appsWingetDescription")}
                     </p>
                   </div>
@@ -352,12 +352,12 @@ function Apps() {
 
               <button
                 onClick={() => handleSourceSelect("Chocolatey")}
-                className={`w-full p-4 rounded-lg border transition-all text-left bg-sparkle-accent border-sparkle-text-muted hover:bg-sparkle-bg cursor-pointer hover:scale-[102%]`}
+                className={`w-full p-4 rounded-lg border transition-all text-left bg-chibangarx-accent border-chibangarx-text-muted hover:bg-chibangarx-bg cursor-pointer hover:scale-[102%]`}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-medium text-sparkle-text">{t("settings.chocolatey")}</h4>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <h4 className="font-medium text-chibangarx-text">{t("settings.chocolatey")}</h4>
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("apps.appsChocolateyDescription")}
                     </p>
                   </div>
@@ -372,7 +372,7 @@ function Apps() {
             </div>
 
             {(wingetChecking || chocolateyChecking) && (
-              <p className="text-sm text-sparkle-text-secondary mt-4 text-center">
+              <p className="text-sm text-chibangarx-text-secondary mt-4 text-center">
                 {t("apps.appsCheckStatus")}
               </p>
             )}
@@ -386,19 +386,19 @@ function Apps() {
         </div>
       </Modal>
       <Modal open={showSelectedAppsModal} onClose={() => setShowSelectedAppsModal(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
-          <h3 className="text-xl font-semibold text-sparkle-text mb-3">
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
+          <h3 className="text-xl font-semibold text-chibangarx-text mb-3">
             {t("apps.appsSelected")} ({selectedApps.length})
           </h3>
 
-          <div className="text-sparkle-text-secondary text-sm leading-6 whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar mb-6">
+          <div className="text-chibangarx-text-secondary text-sm leading-6 whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar mb-6">
             {selectedApps.length > 0 ? (
               <ul className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
                 {selectedApps.map((appId) => {
                   const app = appsList.find((a) => getAppIdForSource(a) === appId)
                   return (
                     <div className="flex  items-center gap-2" key={appId}>
-                      <li key={appId} className="flex items-center gap-2 text-sparkle-text">
+                      <li key={appId} className="flex items-center gap-2 text-chibangarx-text">
                         {app?.name || appId}
                       </li>
                       <p title={t("apps.appsRemoveFromSelection")}>
@@ -409,7 +409,7 @@ function Apps() {
                 })}
               </ul>
             ) : (
-              <p className="text-sparkle-text-secondary italic">{t("apps.appsNoSelection")}</p>
+              <p className="text-chibangarx-text-secondary italic">{t("apps.appsNoSelection")}</p>
             )}
           </div>
 
@@ -421,18 +421,18 @@ function Apps() {
         </div>
       </Modal>
       <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
-          <h3 className="text-xl font-semibold text-sparkle-text mb-3">
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
+          <h3 className="text-xl font-semibold text-chibangarx-text mb-3">
             {t("apps.appsImportTitle")} ({importedApps.length})
           </h3>
 
-          <div className="text-sparkle-text-secondary text-sm leading-6 whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar mb-6">
+          <div className="text-chibangarx-text-secondary text-sm leading-6 whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar mb-6">
             {importedApps.length > 0 ? (
               <ul className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
                 {importedApps.map((id) => {
                   const app = appsList.find((a) => a.id === id)
                   return (
-                    <li key={id} className="flex items-center gap-2 text-sparkle-text">
+                    <li key={id} className="flex items-center gap-2 text-chibangarx-text">
                       <Checkbox
                         checked={selectedImportedApps.includes(id)}
                         onChange={(checked: boolean) => {
@@ -452,7 +452,7 @@ function Apps() {
                 })}
               </ul>
             ) : (
-              <p className="text-sparkle-text-secondary italic">{t("apps.appsNoAppsInFile")}</p>
+              <p className="text-chibangarx-text-secondary italic">{t("apps.appsNoAppsInFile")}</p>
             )}
           </div>
 
@@ -487,8 +487,8 @@ function Apps() {
               <Download className="text-amber-500" size={24} />
             </div>
             <div className="flex-1">
-              <h1 className="font-medium text-sparkle-text">{t("apps.appsWingetNotInstalled")}</h1>
-              <p className="text-sparkle-text-secondary">
+              <h1 className="font-medium text-chibangarx-text">{t("apps.appsWingetNotInstalled")}</h1>
+              <p className="text-chibangarx-text-secondary">
                 {t("apps.appsWingetRequired")}
               </p>
             </div>
@@ -522,8 +522,8 @@ function Apps() {
               <Download className="text-amber-500" size={24} />
             </div>
             <div className="flex-1">
-              <h1 className="font-medium text-sparkle-text">{t("apps.appsChocolateyNotInstalled")}</h1>
-              <p className="text-sparkle-text-secondary">
+              <h1 className="font-medium text-chibangarx-text">{t("apps.appsChocolateyNotInstalled")}</h1>
+              <p className="text-chibangarx-text-secondary">
                 {t("apps.appsChocolateyRequired")}
               </p>
             </div>
@@ -562,7 +562,7 @@ function Apps() {
             </Button>
           )}
           <Button
-            className="text-sparkle-text flex gap-2"
+            className="text-chibangarx-text flex gap-2"
             disabled={selectedApps.length === 0 || installingApps.length > 0}
             onClick={() => handleAppAction("install")}
           >
@@ -587,7 +587,7 @@ function Apps() {
             {t("apps.appsExport")}
           </Button>
 
-          <label className="flex gap-2 cursor-pointer bg-sparkle-border text-sparkle-text rounded-lg font-medium px-3 py-1.5 text-sm text-center items-center active:scale-90 hover:bg-sparkle-secondary transition-all duration-200">
+          <label className="flex gap-2 cursor-pointer bg-chibangarx-border text-chibangarx-text rounded-lg font-medium px-3 py-1.5 text-sm text-center items-center active:scale-90 hover:bg-chibangarx-secondary transition-all duration-200">
             <Upload className="w-5" />
             {t("apps.appsImport")}
             <input
@@ -600,7 +600,7 @@ function Apps() {
 
           {selectedApps.length > 0 && (
             <Button
-              className="flex gap-2 ml-auto bg-sparkle-border text-sparkle-text"
+              className="flex gap-2 ml-auto bg-chibangarx-border text-chibangarx-text"
               variant="secondary"
               onClick={() => setSelectedApps([])}
             >
@@ -608,9 +608,9 @@ function Apps() {
             </Button>
           )}
         </div>
-        <p className="mb-2 mt-2 text-sparkle-text-muted font-medium">
+        <p className="mb-2 mt-2 text-chibangarx-text-muted font-medium">
           {t("apps.appsLookingToDebloat")} {""}
-          <a className="text-sparkle-primary cursor-pointer" onClick={() => router("/tweaks")}>
+          <a className="text-chibangarx-primary cursor-pointer" onClick={() => router("/tweaks")}>
             {t("nav.tweaks")}
           </a>
         </p>
@@ -622,7 +622,7 @@ function Apps() {
             </p>
           )}
           <div className="ml-auto flex gap-2 items-center">
-            <p className="text-sparkle-text-muted">{t("apps.appsSource")}</p>
+            <p className="text-chibangarx-text-muted">{t("apps.appsSource")}</p>
             <Dropdown
               options={[t("settings.winget"), t("settings.chocolatey")]}
               value={source === "Chocolatey" ? t("settings.chocolatey") : t("settings.winget")}
@@ -635,11 +635,11 @@ function Apps() {
         </div>
         <div className="space-y-10 mb-10">
           <Suspense
-            fallback={<div className="text-center text-sparkle-text-secondary">                {t("apps.appsLoading")}</div>}
+            fallback={<div className="text-center text-chibangarx-text-secondary">                {t("apps.appsLoading")}</div>}
           >
             {Object.entries(appsByCategory).map(([category, apps]) => (
               <div key={category} className="space-y-4">
-                <h2 className="text-2xl text-sparkle-primary font-bold capitalize">{category}</h2>
+                <h2 className="text-2xl text-chibangarx-primary font-bold capitalize">{category}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mr-4">
                   {apps.map((app) => {
                     const appId = getAppIdForSource(app)
@@ -654,7 +654,7 @@ function Apps() {
                               />
                             </div>
                             {hideAppIcons !== true && (
-                              <div className="min-w-10 max-w-10 max--h-10 min-h-10 rounded-lg overflow-hidden bg-sparkle-accent flex items-center justify-center">
+                              <div className="min-w-10 max-w-10 max--h-10 min-h-10 rounded-lg overflow-hidden bg-chibangarx-accent flex items-center justify-center">
                                 {app.icon ? (
                                   <img
                                     src={app.icon}
@@ -668,15 +668,15 @@ function Apps() {
                               </div>
                             )}
                             <div>
-                              <h3 className="text-sparkle-text font-medium group-hover:text-sparkle-primary transition">
+                              <h3 className="text-chibangarx-text font-medium group-hover:text-chibangarx-primary transition">
                                 {app.name}
                               </h3>
                               {app.info && (
-                                <p className="text-sm text-sparkle-text-secondary line-clamp-1 font-semibold">
+                                <p className="text-sm text-chibangarx-text-secondary line-clamp-1 font-semibold">
                                   {app.info}
                                 </p>
                               )}
-                              <p className="text-xs text-sparkle-text-secondary">ID: {appId}</p>
+                              <p className="text-xs text-chibangarx-text-secondary">ID: {appId}</p>
                             </div>
                           </div>
                           {app.link && (
@@ -684,7 +684,7 @@ function Apps() {
                               <button
                                 type="button"
                                 aria-label={t("apps.appsOpenWebsite", { name: app.name })}
-                                className="ml-3 text-sparkle-primary hover:text-sparkle-text-secondary transition-opacity"
+                                className="ml-3 text-chibangarx-primary hover:text-chibangarx-text-secondary transition-opacity"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   try {
@@ -706,13 +706,13 @@ function Apps() {
               </div>
             ))}
           </Suspense>
-          <p className="text-center text-sparkle-text-muted">
+          <p className="text-center text-chibangarx-text-muted">
             {t("apps.appsRequestMore")}{" "}
             <a
-              href="https://github.com/parcoil/sparkle"
+              href="https://github.com/parcoil/chibangarx"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sparkle-primary"
+              className="text-chibangarx-primary"
             >
               {t("apps.appsGithub")}
             </a>

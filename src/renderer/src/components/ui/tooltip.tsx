@@ -66,7 +66,7 @@ const Tooltip = ({
     >
       {children}
       <div
-        className={`absolute z-50 pointer-events-none px-2 py-1 text-xs font-medium bg-sparkle-card text-sparkle-text rounded-md shadow-lg border border-sparkle-border whitespace-nowrap transition-all duration-150 ease-out`}
+        className={`absolute z-50 pointer-events-none px-2 py-1 text-xs font-medium bg-chibangarx-card text-chibangarx-text rounded-md shadow-lg border border-chibangarx-border whitespace-nowrap transition-all duration-150 ease-out`}
         style={{
           ...sideToPositionStyle[side],
           transform: transformStyle,

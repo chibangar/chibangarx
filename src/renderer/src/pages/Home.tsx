@@ -18,7 +18,7 @@ function Home() {
   const setSystemInfo = useSystemStore((state) => state.setSystemInfo)
   const [tweakInfo, setTweakInfo] = useState(() => {
     try {
-      const cached = localStorage.getItem("sparkle:tweakInfo")
+      const cached = localStorage.getItem("chibangarx:tweakInfo")
       return cached ? JSON.parse(cached) : null
     } catch (err) {
       console.error("Failed to parse tweakInfo cache", err)
@@ -30,7 +30,7 @@ function Home() {
   const [usingCache, setUsingCache] = useState(false)
   const [activeTweaks, setActiveTweaks] = useState(() => {
     try {
-      const cached = localStorage.getItem("sparkle:activeTweaks")
+      const cached = localStorage.getItem("chibangarx:activeTweaks")
       return cached ? JSON.parse(cached) : []
     } catch {
       return []
@@ -45,7 +45,7 @@ function Home() {
     try {
       const active = await invoke({ channel: "tweak:active" })
       setActiveTweaks(active)
-      localStorage.setItem("sparkle:activeTweaks", JSON.stringify(active))
+      localStorage.setItem("chibangarx:activeTweaks", JSON.stringify(active))
     } catch (err) {
       console.error("Failed to fetch active tweaks:", err)
     }
@@ -53,7 +53,7 @@ function Home() {
 
   useEffect(() => {
     const idleHandle = requestIdleCallback(() => {
-      const cached = localStorage.getItem("sparkle:systemInfo")
+      const cached = localStorage.getItem("chibangarx:systemInfo")
       if (cached) {
         try {
           const parsed = JSON.parse(cached)
@@ -69,7 +69,7 @@ function Home() {
         .then((info) => {
           useSystemStore.setState((state) => {
             const merged = { ...state.systemInfo, ...info }
-            localStorage.setItem("sparkle:systemInfo", JSON.stringify(merged))
+            localStorage.setItem("chibangarx:systemInfo", JSON.stringify(merged))
             return { systemInfo: merged }
           })
           setUsingCache(false)
@@ -87,7 +87,7 @@ function Home() {
 
   useEffect(() => {
     const idleHandle = requestIdleCallback(() => {
-      const cached = localStorage.getItem("sparkle:tweakInfo")
+      const cached = localStorage.getItem("chibangarx:tweakInfo")
       if (cached) {
         try {
           setTweakInfo(JSON.parse(cached))
@@ -99,7 +99,7 @@ function Home() {
       invoke({ channel: "tweaks:fetch" })
         .then((tweaks) => {
           setTweakInfo(tweaks)
-          localStorage.setItem("sparkle:tweakInfo", JSON.stringify(tweaks))
+          localStorage.setItem("chibangarx:tweakInfo", JSON.stringify(tweaks))
         })
         .catch((err) => {
           console.error("Error fetching tweak info:", err)
@@ -121,7 +121,7 @@ function Home() {
     const handleExtraInfo = (_event: any, extra: Record<string, any>) => {
       useSystemStore.setState((state) => {
         const merged = { ...state.systemInfo, ...extra }
-        localStorage.setItem("sparkle:systemInfo", JSON.stringify(merged))
+        localStorage.setItem("chibangarx:systemInfo", JSON.stringify(merged))
         return { systemInfo: merged }
       })
     }
@@ -142,20 +142,20 @@ function Home() {
       <RootDiv>
         <div className="flex items-center justify-center h-64 flex-col gap-4">
           <div className="relative w-10 h-10">
-            <div className="absolute inset-0 border-[3px] border-sparkle-border rounded-full"></div>
+            <div className="absolute inset-0 border-[3px] border-chibangarx-border rounded-full"></div>
             <div
-              className="absolute inset-0 border-[3px] border-transparent border-t-sparkle-primary rounded-full animate-spin"
+              className="absolute inset-0 border-[3px] border-transparent border-t-chibangarx-primary rounded-full animate-spin"
               role="status"
               aria-label="loading"
             ></div>
           </div>
           <div className="flex flex-col items-center gap-1.5 text-center">
-            <p className="text-sparkle-text-dark font-medium">{t("home.loading")}</p>
-            <p className="text-sparkle-text-muted text-sm">
+            <p className="text-chibangarx-text-dark font-medium">{t("home.loading")}</p>
+            <p className="text-chibangarx-text-muted text-sm">
               {t("home.loadingSubtitle")}
             </p>
           </div>
-          <p className="text-xs text-sparkle-secondary bg-sparkle-accent px-3 py-1.5 rounded-full mt-1">
+          <p className="text-xs text-chibangarx-secondary bg-chibangarx-accent px-3 py-1.5 rounded-full mt-1">
             {t("home.canUseWhileLoading")}
           </p>
         </div>
@@ -247,13 +247,13 @@ function Home() {
             ]}
           />
         </div>
-        <Card className="bg-sparkle-card backdrop-blur-xs rounded-xl border border-sparkle-border hover:shadow-xs overflow-hidden p-3 w-full mt-4 flex gap-4 items-center">
+        <Card className="bg-chibangarx-card backdrop-blur-xs rounded-xl border border-chibangarx-border hover:shadow-xs overflow-hidden p-3 w-full mt-4 flex gap-4 items-center">
           <div className="p-3 bg-green-500/10 rounded-lg items-center justify-center text-center">
             <Wrench className="text-green-500" size={24} />
           </div>
           <div>
-            <h1 className="font-medium text-sparkle-text">{t("home.slowPc")}</h1>
-            <p className="text-sparkle-text-secondary">
+            <h1 className="font-medium text-chibangarx-text">{t("home.slowPc")}</h1>
+            <p className="text-chibangarx-text-secondary">
               {t("home.slowPcDesc")}
             </p>
           </div>
@@ -263,7 +263,7 @@ function Home() {
             </Button>
           </div>
         </Card>
-        <p className="text-xs text-sparkle-text-secondary text-center mt-4">
+        <p className="text-xs text-chibangarx-text-secondary text-center mt-4">
           {usingCache ? t("home.loadingLatest") : ""}
         </p>
       </div>

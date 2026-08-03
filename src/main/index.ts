@@ -65,7 +65,7 @@ let mainWindow: BrowserWindow | null = null
 function createWindow(): void {
   console.log("[ChibangaRx]: createWindow called")
   console.log("[ChibangaRx]: __dirname =", __dirname)
-  console.log("[ChibangaRx]: icon path =", path.join(__dirname, "../../resources/sparkle2.ico"))
+  console.log("[ChibangaRx]: icon path =", path.join(__dirname, "../../resources/chibangarx2.ico"))
   console.log("[ChibangaRx]: preload path =", join(__dirname, "../preload/index.js"))
   console.log("[ChibangaRx]: renderer path =", join(__dirname, "../renderer/index.html"))
 
@@ -81,7 +81,7 @@ function createWindow(): void {
       frame: false,
       show: false,
       autoHideMenuBar: true,
-      icon: path.join(__dirname, "../../resources/sparkle2.ico"),
+      icon: path.join(__dirname, "../../resources/chibangarx2.ico"),
       webPreferences: {
         preload: join(__dirname, "../preload/index.js"),
         devTools: app.isPackaged ? false : true,

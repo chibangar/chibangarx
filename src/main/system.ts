@@ -496,7 +496,7 @@ export async function checkWinget(): Promise<{ success: boolean; installed: bool
 export const setupSystemHandlers = (): void => {
   ipcMain.handle("restart", restartSystem)
   ipcMain.handle("open-log-folder", openLogFolder)
-  ipcMain.handle("clear-sparkle-cache", clearChibangaRxCache)
+  ipcMain.handle("clear-chibangarx-cache", clearChibangaRxCache)
   ipcMain.handle("get-system-info", getSystemInfo)
   ipcMain.handle("get-user-name", getUserName)
   ipcMain.handle("restart-explorer", restartExplorer)
@@ -509,7 +509,7 @@ export const setupSystemHandlers = (): void => {
 export const cleanupSystemHandlers = (): void => {
   ipcMain.removeHandler("restart")
   ipcMain.removeHandler("open-log-folder")
-  ipcMain.removeHandler("clear-sparkle-cache")
+  ipcMain.removeHandler("clear-chibangarx-cache")
   ipcMain.removeHandler("get-system-info")
   ipcMain.removeHandler("get-user-name")
   ipcMain.removeHandler("restart-explorer")

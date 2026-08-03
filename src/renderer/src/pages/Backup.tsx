@@ -94,7 +94,7 @@ function RestorePointsTab() {
     toast.dismiss()
     setProcessing(true)
     try {
-      await invoke({ channel: "create-sparkle-restore-point" })
+      await invoke({ channel: "create-chibangarx-restore-point" })
       toast.success(t("backup.restorePointCreated"))
       await fetchRestorePoints()
     } catch (err) {
@@ -209,15 +209,15 @@ function RestorePointsTab() {
 
         {loading ? (
           <div className="flex items-center justify-center h-96">
-            <Loader2 size={32} className="text-sparkle-primary animate-spin" />
+            <Loader2 size={32} className="text-chibangarx-primary animate-spin" />
           </div>
         ) : filteredRestorePoints.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-sparkle-card border border-sparkle-border rounded-lg">
-            <div className="p-4 bg-sparkle-secondary rounded-full mb-4">
-              <Shield size={28} className="text-sparkle-text" />
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-chibangarx-card border border-chibangarx-border rounded-lg">
+            <div className="p-4 bg-chibangarx-secondary rounded-full mb-4">
+              <Shield size={28} className="text-chibangarx-text" />
             </div>
-            <h3 className="text-lg font-medium mb-2 text-sparkle-text">{t("backup.noRestorePoints")}</h3>
-            <p className="text-sparkle-text-secondary max-w-sm mb-4">
+            <h3 className="text-lg font-medium mb-2 text-chibangarx-text">{t("backup.noRestorePoints")}</h3>
+            <p className="text-chibangarx-text-secondary max-w-sm mb-4">
               {searchQuery
                 ? t("backup.noRestorePointsMatch")
                 : t("backup.noRestorePointsDesc")}
@@ -262,7 +262,7 @@ function RestorePointsTab() {
             </TableBody>
           </Table>
         )}
-        <p className="text-center text-sparkle-text-muted mt-4">
+        <p className="text-center text-chibangarx-text-muted mt-4">
           {t("backup.betaFeature")}
         </p>
       </div>
@@ -273,11 +273,11 @@ function RestorePointsTab() {
         }
       >
         {modalState.type === "restore" && modalState.restorePoint && (
-          <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
-            <h3 className="text-lg font-medium text-sparkle-text">{t("backup.restoreSystem")}</h3>
+          <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
+            <h3 className="text-lg font-medium text-chibangarx-text">{t("backup.restoreSystem")}</h3>
 
             <div className="p-4 pr-0">
-              <p className="text-sparkle-text-secondary mb-4">
+              <p className="text-chibangarx-text-secondary mb-4">
                 {t("backup.restoreConfirm", { description: modalState.restorePoint.Description })}{" "}
                 {t("backup.restoreWarning")} <br /> <br />
                 {t("backup.restoreWarning2")} <br /> <br />
@@ -301,8 +301,8 @@ function RestorePointsTab() {
         )}
       </Modal>
       <Modal open={customModalOpen} onClose={() => !processing && setCustomModalOpen(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
-          <h3 className="text-lg font-medium text-sparkle-text">{t("backup.createRestorePoint")}</h3>
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
+          <h3 className="text-lg font-medium text-chibangarx-text">{t("backup.createRestorePoint")}</h3>
 
           <div className="p-4 space-y-4">
             <Input
@@ -328,17 +328,17 @@ function RestorePointsTab() {
                 {processing ? <Loader2 size={16} className="animate-spin" /> : t("common.ok")}
               </Button>
             </div>
-            <p className="text-xs text-center text-sparkle-text-muted">
+            <p className="text-xs text-center text-chibangarx-text-muted">
               {t("backup.createRestorePointTip2")}
             </p>
           </div>
         </div>
       </Modal>
       <Modal open={confirmDeleteAll} onClose={() => !processing && setConfirmDeleteAll(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
-          <h3 className="text-lg font-medium text-sparkle-text">{t("backup.deleteAllConfirm")}</h3>
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
+          <h3 className="text-lg font-medium text-chibangarx-text">{t("backup.deleteAllConfirm")}</h3>
           <div className="p-4 pr-0">
-            <p className="text-sparkle-text-secondary mb-4">
+            <p className="text-chibangarx-text-secondary mb-4">
               {t("backup.deleteAllConfirmDesc", { count: restorePoints.length })}
             </p>
             <div className="flex justify-end gap-3">
@@ -507,7 +507,7 @@ function AppliedTweaksTab() {
       <div className="h-full max-w-full space-y-4">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <p className="text-sparkle-text-secondary text-sm">
+            <p className="text-chibangarx-text-secondary text-sm">
               {t("backup.currentlyApplied", { count: appliedTweaks.length })}
             </p>
           </div>
@@ -533,15 +533,15 @@ function AppliedTweaksTab() {
 
         {loading ? (
           <div className="flex items-center justify-center h-96">
-            <Loader2 size={32} className="text-sparkle-primary animate-spin" />
+            <Loader2 size={32} className="text-chibangarx-primary animate-spin" />
           </div>
         ) : appliedTweaks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-sparkle-card border border-sparkle-border rounded-lg">
-            <div className="p-4 bg-sparkle-secondary rounded-full mb-4">
-              <Wrench size={28} className="text-sparkle-text" />
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-chibangarx-card border border-chibangarx-border rounded-lg">
+            <div className="p-4 bg-chibangarx-secondary rounded-full mb-4">
+              <Wrench size={28} className="text-chibangarx-text" />
             </div>
-            <h3 className="text-lg font-medium mb-2 text-sparkle-text">{t("backup.noAppliedTweaks")}</h3>
-            <p className="text-sparkle-text-secondary max-w-sm mb-4">
+            <h3 className="text-lg font-medium mb-2 text-chibangarx-text">{t("backup.noAppliedTweaks")}</h3>
+            <p className="text-chibangarx-text-secondary max-w-sm mb-4">
               {t("backup.noAppliedTweaksDesc")}
             </p>
           </div>
@@ -559,7 +559,7 @@ function AppliedTweaksTab() {
                   <TableCell>
                     <p className="font-medium">{tweak.title || tweak.name}</p>
                     {tweak.description && (
-                      <p className="text-xs text-sparkle-text-secondary mt-0.5">
+                      <p className="text-xs text-chibangarx-text-secondary mt-0.5">
                         {tweak.description}
                       </p>
                     )}
@@ -581,7 +581,7 @@ function AppliedTweaksTab() {
                         {t("backup.undo")}
                       </Button>
                     ) : (
-                      <span className="text-sparkle-text-secondary text-xs">{t("backup.notReversible")}</span>
+                      <span className="text-chibangarx-text-secondary text-xs">{t("backup.notReversible")}</span>
                     )}
                   </TableCell>
                 </TableRow>
@@ -605,10 +605,10 @@ function AppliedTweaksTab() {
         )}
       </div>
       <Modal open={confirmUndoAll} onClose={() => !processing && setConfirmUndoAll(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
-          <h3 className="text-lg font-medium text-sparkle-text">Undo All Tweaks</h3>
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
+          <h3 className="text-lg font-medium text-chibangarx-text">Undo All Tweaks</h3>
           <div className="p-4 pr-0">
-            <p className="text-sparkle-text-secondary mb-4">
+            <p className="text-chibangarx-text-secondary mb-4">
               Are you sure you want to undo all {appliedTweakFiltered.length} applied tweak
               {appliedTweakFiltered.length !== 1 ? "s" : ""}? This will run the unapply script for
               each tweak and may require a restart.
@@ -633,26 +633,26 @@ function AppliedTweaksTab() {
         </div>
       </Modal>
       <Modal open={showWhyNotReversible} onClose={() => setShowWhyNotReversible(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
-          <h3 className="text-lg font-medium text-sparkle-text mb-4">
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
+          <h3 className="text-lg font-medium text-chibangarx-text mb-4">
             Why are some tweaks not reversible?
           </h3>
-          <div className="text-sparkle-text-secondary text-sm leading-6 space-y-3">
+          <div className="text-chibangarx-text-secondary text-sm leading-6 space-y-3">
             <p>
               Some tweaks make changes that can't be automatically reversed by ChibangaRx. However,
               most of these changes can still be undone manually:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-2">
               <li>
-                <strong className="text-sparkle-text">Debloating Windows:</strong> Removed apps can
+                <strong className="text-chibangarx-text">Debloating Windows:</strong> Removed apps can
                 be reinstalled from the Microsoft Store
               </li>
               <li>
-                <strong className="text-sparkle-text">Optimize NVIDIA Settings:</strong> Settings
+                <strong className="text-chibangarx-text">Optimize NVIDIA Settings:</strong> Settings
                 can be reset through the NVIDIA Control Panel
               </li>
               <li>
-                <strong className="text-sparkle-text">Service modifications:</strong> Services can
+                <strong className="text-chibangarx-text">Service modifications:</strong> Services can
                 be re-enabled through Windows Services Manager
               </li>
             </ul>
@@ -682,13 +682,13 @@ export default function RestorePointManager() {
   return (
     <RootDiv>
       <div className="h-full max-w-full space-y-4 overflow-hidden">
-        <div className="flex gap-1 bg-sparkle-card border border-sparkle-border rounded-lg p-1 w-fit">
+        <div className="flex gap-1 bg-chibangarx-card border border-chibangarx-border rounded-lg p-1 w-fit">
           <button
             onClick={() => setActiveTab("restore")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all active:scale-95 ${
               activeTab === "restore"
-                ? "bg-sparkle-primary text-white shadow"
-                : "text-sparkle-text-secondary hover:text-sparkle-text"
+                ? "bg-chibangarx-primary text-white shadow"
+                : "text-chibangarx-text-secondary hover:text-chibangarx-text"
             }`}
           >
             <span className="flex items-center gap-2">
@@ -700,8 +700,8 @@ export default function RestorePointManager() {
             onClick={() => setActiveTab("history")}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all active:scale-95 ${
               activeTab === "history"
-                ? "bg-sparkle-primary text-white shadow"
-                : "text-sparkle-text-secondary hover:text-sparkle-text"
+                ? "bg-chibangarx-primary text-white shadow"
+                : "text-chibangarx-text-secondary hover:text-chibangarx-text"
             }`}
           >
             <span className="flex items-center gap-2">

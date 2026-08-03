@@ -61,7 +61,7 @@ export default function AudioPlayer(): React.ReactElement {
       )}
       <button
         onClick={handlePlayPause}
-        className="h-8 w-8 inline-flex items-center justify-center rounded-md text-sparkle-text-secondary hover:bg-sparkle-accent hover:text-sparkle-primary transition-colors"
+        className="h-8 w-8 inline-flex items-center justify-center rounded-md text-chibangarx-text-secondary hover:bg-chibangarx-accent hover:text-chibangarx-primary transition-colors"
         title={playing ? "Pause music" : "Play music"}
       >
         {playing ? (
@@ -77,7 +77,7 @@ export default function AudioPlayer(): React.ReactElement {
       </button>
       <button
         onClick={handleMute}
-        className="h-8 w-8 inline-flex items-center justify-center rounded-md text-sparkle-text-secondary hover:bg-sparkle-accent hover:text-sparkle-primary transition-colors"
+        className="h-8 w-8 inline-flex items-center justify-center rounded-md text-chibangarx-text-secondary hover:bg-chibangarx-accent hover:text-chibangarx-primary transition-colors"
         title={muted ? "Unmute" : "Mute"}
       >
         {muted || volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
@@ -88,7 +88,7 @@ export default function AudioPlayer(): React.ReactElement {
         max="100"
         value={muted ? 0 : volume}
         onChange={handleVolumeChange}
-        className="w-20 h-1 accent-sparkle-primary cursor-pointer"
+        className="w-20 h-1 accent-chibangarx-primary cursor-pointer"
         title={`Volume: ${volume}%`}
       />
     </div>

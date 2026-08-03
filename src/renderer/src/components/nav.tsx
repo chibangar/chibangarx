@@ -109,11 +109,11 @@ function Nav({ collapsed }) {
 
   return (
     <nav
-      className={`h-screen text-sparkle-text fixed left-0 top-0 flex flex-col py-6 z-40  transition-all duration-300 ease-in-out ${collapsed ? "w-16" : "w-52"}`}
+      className={`h-screen text-chibangarx-text fixed left-0 top-0 flex flex-col py-6 z-40  transition-all duration-300 ease-in-out ${collapsed ? "w-16" : "w-52"}`}
     >
       <div className="flex-1 flex flex-col gap-2 px-3 mt-10 relative" ref={containerRef}>
         <div
-          className="absolute left-0 w-1 bg-sparkle-primary rounded-sm transition-all duration-300"
+          className="absolute left-0 w-1 bg-chibangarx-primary rounded-sm transition-all duration-300"
           style={{
             top: indicatorStyle.top,
             height: indicatorStyle.height,
@@ -138,10 +138,10 @@ function Nav({ collapsed }) {
               className={clsx(
                 `flex items-center gap-3 py-2 rounded-lg transition-all duration-200 border relative ${collapsed ? "px-2 justify-center" : "px-3"}`,
                 activeTab === id
-                  ? "border-transparent text-sparkle-primary"
+                  ? "border-transparent text-chibangarx-primary"
                   : isDisabled
-                    ? "opacity-50 cursor-not-allowed text-sparkle-text-secondary border-transparent"
-                    : "text-sparkle-text-secondary hover:bg-sparkle-border-secondary hover:text-sparkle-text border-transparent",
+                    ? "opacity-50 cursor-not-allowed text-chibangarx-text-secondary border-transparent"
+                    : "text-chibangarx-text-secondary hover:bg-chibangarx-border-secondary hover:text-chibangarx-text border-transparent",
               )}
             >
               <div>{tabIcons[id]}</div>
@@ -149,7 +149,7 @@ function Nav({ collapsed }) {
                 <div className="flex items-center gap-2">
                   <span className="text-sm">{label}</span>
                   {id === "debloat" && (
-                    <span className="rounded-full bg-sparkle-primary/10 text-sparkle-primary text-[10px] uppercase tracking-[0.08em] px-2 py-0.5">
+                    <span className="rounded-full bg-chibangarx-primary/10 text-chibangarx-primary text-[10px] uppercase tracking-[0.08em] px-2 py-0.5">
                       {t("nav.beta")}
                     </span>
                   )}
@@ -163,7 +163,7 @@ function Nav({ collapsed }) {
         <button
           className={clsx(
             "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 border m-3",
-            "bg-sparkle-card text-sparkle-text border-sparkle-border-secondary hover:bg-sparkle-border-secondary hover:text-sparkle-text",
+            "bg-chibangarx-card text-chibangarx-text border-chibangarx-border-secondary hover:bg-chibangarx-border-secondary hover:text-chibangarx-text",
           )}
           onClick={() => setShowRestartModal(true)}
         >
@@ -176,7 +176,7 @@ function Nav({ collapsed }) {
         </button>
       )}
       <Modal open={showRestartModal} onOpenChange={setShowRestartModal}>
-        <div className="bg-sparkle-card p-4 rounded-2xl border border-sparkle-border text-sparkle-text w-[90vw] max-w-md">
+        <div className="bg-chibangarx-card p-4 rounded-2xl border border-chibangarx-border text-chibangarx-text w-[90vw] max-w-md">
           <h2 className="text-lg font-semibold">{t("nav.confirmRestart")}</h2>
           <p>{t("nav.restartPrompt")}</p>
           <div className="flex gap-2 justify-end">
@@ -196,33 +196,33 @@ function Nav({ collapsed }) {
         </div>
       </Modal>
       <Modal open={showOfflineModal} onOpenChange={setShowOfflineModal}>
-        <div className="bg-sparkle-card p-4 rounded-2xl border border-sparkle-border text-sparkle-text w-[90vw] max-w-md">
+        <div className="bg-chibangarx-card p-4 rounded-2xl border border-chibangarx-border text-chibangarx-text w-[90vw] max-w-md">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-red-500/20 rounded-full">
               <WifiOff className="w-6 h-6 text-red-500" />
             </div>
             <h2 className="text-lg font-semibold">{t("nav.offline")}</h2>
           </div>
-          <p className="text-sparkle-text-secondary mb-4">{t("nav.offlinePrompt")}</p>
-          <ul className="list-disc list-inside text-sparkle-text-secondary mb-4 space-y-1">
+          <p className="text-chibangarx-text-secondary mb-4">{t("nav.offlinePrompt")}</p>
+          <ul className="list-disc list-inside text-chibangarx-text-secondary mb-4 space-y-1">
             <li>
-              <span className="font-medium text-sparkle-text">{t("nav.dns")}</span> -{" "}
+              <span className="font-medium text-chibangarx-text">{t("nav.dns")}</span> -{" "}
               {t("nav.dnsOffline")}
             </li>
             <li>
-              <span className="font-medium text-sparkle-text">{t("nav.apps")}</span> -{" "}
+              <span className="font-medium text-chibangarx-text">{t("nav.apps")}</span> -{" "}
               {t("nav.appsOffline")}
             </li>
             <li>
-              <span className="font-medium text-sparkle-text">{t("nav.tweaks")}</span> -{" "}
+              <span className="font-medium text-chibangarx-text">{t("nav.tweaks")}</span> -{" "}
               {t("nav.tweaksOffline")}
             </li>
             <li>
-              <span className="font-medium text-sparkle-text">{t("nav.updates")}</span> -{" "}
+              <span className="font-medium text-chibangarx-text">{t("nav.updates")}</span> -{" "}
               {t("nav.updatesOffline")}
             </li>
           </ul>
-          <p className="text-sm text-sparkle-text-secondary mb-4">
+          <p className="text-sm text-chibangarx-text-secondary mb-4">
             {t("nav.pleaseReconnect")}
           </p>
           <div className="flex justify-end">
@@ -235,14 +235,14 @@ function Nav({ collapsed }) {
       <div
         className={`flex items-center justify-center gap-2 mt-4 mb-2 ${collapsed ? "flex-col" : ""}`}
       >
-        <a href="https://github.com/parcoil/sparkle" target="_blank">
-          <GithubIcon className="w-5 fill-sparkle-primary" />
+        <a href="https://github.com/parcoil/chibangarx" target="_blank">
+          <GithubIcon className="w-5 fill-chibangarx-primary" />
         </a>
         <a href="https://discord.com/invite/En5YJYWj3Z" target="_blank">
-          <DiscordIcon className="w-5 fill-sparkle-primary" />
+          <DiscordIcon className="w-5 fill-chibangarx-primary" />
         </a>
       </div>
-      <p className="text-sparkle-primary text-center text-sm">v{info.version}</p>
+      <p className="text-chibangarx-primary text-center text-sm">v{info.version}</p>
     </nav>
   )
 }

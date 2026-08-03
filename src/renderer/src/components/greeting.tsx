@@ -5,7 +5,7 @@ function Greeting() {
   const [name, setName] = useState("")
 
   useEffect(() => {
-    const cached = localStorage.getItem("sparkle:user")
+    const cached = localStorage.getItem("chibangarx:user")
     if (cached) {
       setName(cached)
     } else {
@@ -13,7 +13,7 @@ function Greeting() {
         .then((username) => {
           if (username) {
             setName(username)
-            localStorage.setItem("sparkle:user", username)
+            localStorage.setItem("chibangarx:user", username)
           }
         })
         .catch((err) => {
@@ -50,7 +50,7 @@ function Greeting() {
   return (
     <h1 className="text-2xl font-bold mb-4">
       {randomGreeting},{" "}
-      <span className="bg-linear-to-r from-sparkle-primary to-sparkle-secondary bg-clip-text text-transparent">
+      <span className="bg-linear-to-r from-chibangarx-primary to-chibangarx-secondary bg-clip-text text-transparent">
         {name || "friend"}
       </span>
     </h1>

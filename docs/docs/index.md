@@ -3,7 +3,7 @@ hide:
   - navigation
 ---
 
-<img src="https://raw.githubusercontent.com/Parcoil/logos/refs/heads/main/logos/sparklelogo.png" width="120" height="120">
+<img src="https://raw.githubusercontent.com/Parcoil/logos/refs/heads/main/logos/chibangarxlogo.png" width="120" height="120">
 
 # Welcome to the ChibangaRx documentation
 

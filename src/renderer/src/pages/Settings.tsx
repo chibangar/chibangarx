@@ -103,9 +103,9 @@ function Settings() {
   }, [posthogDisabled])
 
   const clearCache = async () => {
-    await invoke({ channel: "clear-sparkle-cache" })
-    localStorage.removeItem("sparkle:systemInfo")
-    localStorage.removeItem("sparkle:tweakInfo")
+    await invoke({ channel: "clear-chibangarx-cache" })
+    localStorage.removeItem("chibangarx:systemInfo")
+    localStorage.removeItem("chibangarx:tweakInfo")
     toast.success(t("settings.cacheCleared"))
   }
 
@@ -138,7 +138,7 @@ function Settings() {
   return (
     <>
       <Modal open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-2xl max-w-md w-full mx-4">
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-2xl max-w-md w-full mx-4">
           <div className="text-center mb-6">
             <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
@@ -168,7 +168,7 @@ function Settings() {
               variant="danger"
               onClick={() => {
                 setDeleteModalOpen(false)
-                invoke({ channel: "delete-old-sparkle-backups" })
+                invoke({ channel: "delete-old-chibangarx-backups" })
               }}
             >
               {t("common.delete")}
@@ -186,13 +186,13 @@ function Settings() {
             <SettingSection title={t("settings.appearance")}>
               <SettingCard>
                 <div className="space-y-4">
-                  <h3 className="text-base font-medium text-sparkle-text">{t("settings.theme")}</h3>
+                  <h3 className="text-base font-medium text-chibangarx-text">{t("settings.theme")}</h3>
                   <div className="grid grid-cols-6 gap-3">
                     {themes.map((t_item) => (
                       <label
                         key={t_item.value}
                         className={`flex items-center justify-center gap-2 cursor-pointer p-3 rounded-lg border transition-all duration-200 active:scale-95 ${
-                          theme === t_item.value ? "border-sparkle-primary" : "border-sparkle-border"
+                          theme === t_item.value ? "border-chibangarx-primary" : "border-chibangarx-border"
                         }`}
                       >
                         <input
@@ -203,7 +203,7 @@ function Settings() {
                           onChange={() => setTheme(t_item.value)}
                           className="sr-only"
                         />
-                        <span className="text-sparkle-text font-medium">{t_item.label}</span>
+                        <span className="text-chibangarx-text font-medium">{t_item.label}</span>
                       </label>
                     ))}
                   </div>
@@ -212,10 +212,10 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.animationDirection")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.animationDesc")}
                     </p>
                   </div>
@@ -238,10 +238,10 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.language")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.languageDesc")}
                     </p>
                   </div>
@@ -260,10 +260,10 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.checkForUpdates")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">{t("settings.checkForUpdates")}</p>
+                    <p className="text-sm text-chibangarx-text-secondary">{t("settings.checkForUpdates")}</p>
                   </div>
                   <Button onClick={checkForUpdates} disabled={checking}>
                     {checking ? t("settings.checking") : t("settings.checkForUpdates")}
@@ -275,10 +275,10 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.defaultPackageManager")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.packageManagerDesc")}
                     </p>
                   </div>
@@ -294,10 +294,10 @@ function Settings() {
                 </div>
                 <div className="flex items-center justify-between mt-4">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.hideAppIcons")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.hideAppIconsDesc")}
                     </p>
                   </div>
@@ -315,10 +315,10 @@ function Settings() {
                 </div>
                 <div className="flex items-center justify-between mt-4">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.forceLocal")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.forceLocalDesc")}
                     </p>
                   </div>
@@ -339,12 +339,12 @@ function Settings() {
             <SettingSection title={t("settings.profile")}>
               <SettingCard>
                 <div className="space-y-4">
-                  <h3 className="text-base font-medium text-sparkle-text">{t("settings.userName")}</h3>
+                  <h3 className="text-base font-medium text-chibangarx-text">{t("settings.userName")}</h3>
                   <input
                     type="text"
-                    defaultValue={localStorage.getItem("sparkle:user") || ""}
-                    onChange={(e) => localStorage.setItem("sparkle:user", e.target.value)}
-                    className="w-full bg-sparkle-card border border-sparkle-border rounded-lg px-3 py-2 text-sparkle-text focus:ring-0 focus:outline-hidden"
+                    defaultValue={localStorage.getItem("chibangarx:user") || ""}
+                    onChange={(e) => localStorage.setItem("chibangarx:user", e.target.value)}
+                    className="w-full bg-chibangarx-card border border-chibangarx-border rounded-lg px-3 py-2 text-chibangarx-text focus:ring-0 focus:outline-hidden"
                     placeholder={t("settings.enterYourName")}
                   />
                   <div className="flex gap-2">
@@ -352,7 +352,7 @@ function Settings() {
                       variant="secondary"
                       onClick={async () => {
                         const username = await invoke({ channel: "get-user-name" })
-                        localStorage.setItem("sparkle:user", username)
+                        localStorage.setItem("chibangarx:user", username)
                         toast.success(t("settings.nameReset"))
                       }}
                     >
@@ -367,10 +367,10 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.disableAnalytics")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.analyticsDesc")}
                       <span className="inline-flex items-center gap-1 ml-2 text-yellow-500">
                         <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
@@ -387,7 +387,7 @@ function Settings() {
                       className={`text-xs font-medium px-2 py-1 rounded-full ${
                         posthogDisabled
                           ? "text-green-400 bg-green-400/10"
-                          : "text-sparkle-text-secondary bg-sparkle-border-secondary/20"
+                          : "text-chibangarx-text-secondary bg-chibangarx-border-secondary/20"
                       }`}
                     >
                       {posthogDisabled ? t("common.disabled") : t("common.enabled")}
@@ -401,8 +401,8 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">{t("settings.legacyBackups")}</h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">{t("settings.legacyBackups")}</h3>
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.legacyBackupsDesc")}
                     </p>
                   </div>
@@ -412,10 +412,10 @@ function Settings() {
                 </div>
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.clearCache")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.clearCacheDesc")}
                     </p>
                   </div>
@@ -439,8 +439,8 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">{t("settings.showTray")}</h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">{t("settings.showTray")}</h3>
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.showTrayDesc")}
                       <span className="inline-flex items-center gap-1 ml-2 text-yellow-500">
                         <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
@@ -458,7 +458,7 @@ function Settings() {
                       className={`text-xs font-medium px-2 py-1 rounded-full ${
                         trayEnabled
                           ? "text-green-400 bg-green-400/10"
-                          : "text-sparkle-text-secondary bg-sparkle-border-secondary/20"
+                          : "text-chibangarx-text-secondary bg-chibangarx-border-secondary/20"
                       }`}
                     >
                       {trayEnabled ? t("common.enabled") : t("common.disabled")}
@@ -467,10 +467,10 @@ function Settings() {
                 </div>
                 <div className="flex items-center justify-between mt-4">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.discordRpc")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.discordRpcDesc")}
                     </p>
                   </div>
@@ -484,7 +484,7 @@ function Settings() {
                       className={`text-xs font-medium px-2 py-1 rounded-full ${
                         rpcEnabled
                           ? "text-green-400 bg-green-400/10"
-                          : "text-sparkle-text-secondary bg-sparkle-border-secondary/20"
+                          : "text-chibangarx-text-secondary bg-chibangarx-border-secondary/20"
                       }`}
                     >
                       {rpcEnabled ? t("common.enabled") : t("common.disabled")}
@@ -498,10 +498,10 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.restartExplorer")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.restartExplorerDesc")}
                     </p>
                   </div>
@@ -516,8 +516,8 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">ChibangaRx</h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">ChibangaRx</h3>
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.version")} {jsonData.version}
                     </p>
                   </div>
@@ -526,7 +526,7 @@ function Settings() {
                       {t("settings.viewChangelog")}
                     </Button>
                     <div className="text-right">
-                      <p className="text-sm text-sparkle-text-secondary">
+                      <p className="text-sm text-chibangarx-text-secondary">
                         © {new Date().getFullYear()} Parcoil
                       </p>
                     </div>
@@ -535,16 +535,16 @@ function Settings() {
               </SettingCard>
             </SettingSection>
             <SettingSection title={t("settings.developerOptions")}>
-              <p className="text-xs mt-0 text-sparkle-text-secondary">
+              <p className="text-xs mt-0 text-chibangarx-text-secondary">
                 {t("settings.devWarning")}
               </p>
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.resetPackageModal")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.resetPackageModalDesc")}
                     </p>
                   </div>
@@ -560,17 +560,17 @@ function Settings() {
                 </div>
                 <div className="flex items-center justify-between mt-4">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.clearSystemInfoCache")}
                     </h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.clearSystemInfoCacheDesc")}
                     </p>
                   </div>
                   <Button
                     variant="secondary"
                     onClick={() => {
-                      localStorage.removeItem("sparkle:systemInfo")
+                      localStorage.removeItem("chibangarx:systemInfo")
                       toast.success(t("settings.cacheClearedSuccess"))
                     }}
                   >
@@ -579,8 +579,8 @@ function Settings() {
                 </div>
                 <div className="flex items-center justify-between mt-4">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-sparkle-text mb-1">{t("settings.openDevtools")}</h3>
-                    <p className="text-sm text-sparkle-text-secondary">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">{t("settings.openDevtools")}</h3>
+                    <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.openDevtoolsDesc")}
                     </p>
                   </div>
@@ -608,7 +608,7 @@ const SettingCard = ({ children, className = "" }) => (
 
 const SettingSection = ({ title, children }) => (
   <div className="space-y-4">
-    <h2 className="text-xl font-semibold text-sparkle-primary">{title}</h2>
+    <h2 className="text-xl font-semibold text-chibangarx-primary">{title}</h2>
     {children}
   </div>
 )

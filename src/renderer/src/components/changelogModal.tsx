@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
 import { useTranslation } from "react-i18next"
 
-const GITHUB_REPO = "Parcoil/Sparkle"
+const GITHUB_REPO = "Parcoil/ChibangaRx"
 
 interface Release {
   tag_name: string
@@ -20,7 +20,7 @@ type CodeProps = ComponentProps<"code"> & { inline?: boolean }
 
 function ChangelogContent({ body }: { body: string }) {
   return (
-    <div className="prose prose-sm prose-green marker:text-sparkle-secondary max-w-none text-sparkle-text prose-headings:text-sparkle-text prose-a:text-blue-400 prose-code:bg-sparkle-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-sm prose-code:font-normal prose-pre:bg-sparkle-card prose-pre:border prose-pre:border-sparkle-border prose-img:rounded-lg prose-img:border prose-img:border-sparkle-border">
+    <div className="prose prose-sm prose-green marker:text-chibangarx-secondary max-w-none text-chibangarx-text prose-headings:text-chibangarx-text prose-a:text-blue-400 prose-code:bg-chibangarx-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-sm prose-code:font-normal prose-pre:bg-chibangarx-card prose-pre:border prose-pre:border-chibangarx-border prose-img:rounded-lg prose-img:border prose-img:border-chibangarx-border">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
@@ -42,7 +42,7 @@ function ChangelogContent({ body }: { body: string }) {
           img: ({ ...props }) => (
             <img
               {...props}
-              className="max-w-full h-auto rounded-lg border border-sparkle-border"
+              className="max-w-full h-auto rounded-lg border border-chibangarx-border"
               loading="lazy"
             />
           ),
@@ -50,7 +50,7 @@ function ChangelogContent({ body }: { body: string }) {
             if (inline) {
               return (
                 <code
-                  className="bg-sparkle-primary px-1.5 py-0.5 rounded-md text-sm font-normal"
+                  className="bg-chibangarx-primary px-1.5 py-0.5 rounded-md text-sm font-normal"
                   {...props}
                 >
                   {children}
@@ -101,15 +101,15 @@ export default function ChangelogModal({ open, onClose }: { open: boolean; onClo
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="bg-sparkle-card border border-sparkle-border rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-sparkle-border shrink-0">
-          <h2 className="text-xl font-semibold text-sparkle-text">{t("settings.viewChangelog")}</h2>
+      <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-chibangarx-border shrink-0">
+          <h2 className="text-xl font-semibold text-chibangarx-text">{t("settings.viewChangelog")}</h2>
           <Button variant="secondary" onClick={onClose}>
             Close
           </Button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          {loading && <p className="text-sparkle-text-secondary">{t("settings.loadingChangelog")}</p>}
+          {loading && <p className="text-chibangarx-text-secondary">{t("settings.loadingChangelog")}</p>}
           {error && (
             <p className="text-red-500">
               {t("settings.changelogError")}
@@ -120,13 +120,13 @@ export default function ChangelogModal({ open, onClose }: { open: boolean; onClo
             releases.map((release) => (
               <div
                 key={release.tag_name}
-                className="border-b border-sparkle-border pb-4 last:border-b-0 last:pb-0"
+                className="border-b border-chibangarx-border pb-4 last:border-b-0 last:pb-0"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-medium text-sparkle-text">
+                  <h3 className="text-lg font-medium text-chibangarx-text">
                     {release.name || release.tag_name}
                   </h3>
-                  <span className="text-sm text-sparkle-text-secondary">
+                  <span className="text-sm text-chibangarx-text-secondary">
                     {new Date(release.published_at).toLocaleDateString()}
                   </span>
                 </div>

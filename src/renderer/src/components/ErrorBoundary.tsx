@@ -4,7 +4,7 @@ import { invoke } from "../lib/electron"
 import Button from "./ui/button"
 import TitleBar from "./titlebar"
 
-const GITHUB_ISSUES = "https://github.com/Parcoil/Sparkle/issues"
+const GITHUB_ISSUES = "https://github.com/Parcoil/ChibangaRx/issues"
 const DISCORD_INVITE = "https://discord.com/invite/En5YJYWj3Z"
 
 type Props = {
@@ -45,16 +45,16 @@ class ErrorBoundary extends Component<Props, State> {
       const errorStack = this.state.error instanceof Error ? this.state.error.stack : undefined
 
       return (
-        <div className="flex flex-col h-screen bg-sparkle-bg text-sparkle-text items-center justify-center p-8">
+        <div className="flex flex-col h-screen bg-chibangarx-bg text-chibangarx-text items-center justify-center p-8">
           {/* @ts-expect-error */}
           <TitleBar />
-          <div className="max-w-xl w-full rounded-2xl border border-sparkle-border bg-sparkle-card p-8">
+          <div className="max-w-xl w-full rounded-2xl border border-chibangarx-border bg-chibangarx-card p-8">
             <h1 className="text-2xl font-semibold text-red-500 mb-2">Something went wrong</h1>
-            <p className="text-sparkle-text-secondary mb-4">
+            <p className="text-chibangarx-text-secondary mb-4">
               ChibangaRx encountered an unexpected error. Please help us fix it by reporting this
               issue.
             </p>
-            <pre className="mb-6 p-4 rounded-lg bg-sparkle-accent text-xs text-sparkle-text overflow-x-auto overflow-y-auto max-h-40 border border-sparkle-border select-all">
+            <pre className="mb-6 p-4 rounded-lg bg-chibangarx-accent text-xs text-chibangarx-text overflow-x-auto overflow-y-auto max-h-40 border border-chibangarx-border select-all">
               {errorMessage}
               {errorStack && `\n\n${errorStack}`}
             </pre>
@@ -66,13 +66,13 @@ class ErrorBoundary extends Component<Props, State> {
                 Try Again
               </Button>
             </div>
-            <p className="text-sm text-sparkle-text-muted">
+            <p className="text-sm text-chibangarx-text-muted">
               Please{" "}
               <a
                 href={GITHUB_ISSUES}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sparkle-primary hover:underline"
+                className="text-chibangarx-primary hover:underline"
               >
                 create a GitHub issue
               </a>{" "}
@@ -81,7 +81,7 @@ class ErrorBoundary extends Component<Props, State> {
                 href={DISCORD_INVITE}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sparkle-primary hover:underline"
+                className="text-chibangarx-primary hover:underline"
               >
                 Discord
               </a>{" "}

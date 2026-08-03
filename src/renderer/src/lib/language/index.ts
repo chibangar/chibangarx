@@ -6,12 +6,12 @@ export const LANGUAGES: Record<Language, string> = {
 }
 
 export const getSavedLanguage = (): Language => {
-  const saved = localStorage.getItem("sparkle:lang") as Language
+  const saved = localStorage.getItem("chibangarx:lang") as Language
   return saved && Object.keys(LANGUAGES).includes(saved) ? saved : "en"
 }
 
 export const saveLanguage = (lang: Language) => {
-  localStorage.setItem("sparkle:lang", lang)
+  localStorage.setItem("chibangarx:lang", lang)
 }
 
 export const getSystemLanguage = (): Language => {

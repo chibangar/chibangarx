@@ -50,7 +50,7 @@ interface BackupResult {
 }
 
 export const setupBackupHandlers = (): void => {
-  ipcMain.handle("create-sparkle-restore-point", async (): Promise<BackupResult> => {
+  ipcMain.handle("create-chibangarx-restore-point", async (): Promise<BackupResult> => {
     const label = `ChibangaRxBackup-${getTimestamp()}`
     try {
       await runPowerShell(`Checkpoint-Computer -Description '${label}'`)
@@ -128,14 +128,14 @@ export const setupBackupHandlers = (): void => {
     },
   )
 
-  ipcMain.handle("delete-old-sparkle-backups", async (): Promise<BackupResult> => {
+  ipcMain.handle("delete-old-chibangarx-backups", async (): Promise<BackupResult> => {
     return new Promise((resolve, reject) => {
-      const sparkleRoot = `C:\\Sparkle`
-      if (!fs.existsSync(sparkleRoot)) {
+      const chibangarxRoot = `C:\\ChibangaRx`
+      if (!fs.existsSync(chibangarxRoot)) {
         return resolve({ success: true, message: "ChibangaRx folder does not exist" })
       }
 
-      fs.rm(sparkleRoot, { recursive: true, force: true }, (err) => {
+      fs.rm(chibangarxRoot, { recursive: true, force: true }, (err) => {
         if (err) return reject(err)
         resolve({ success: true, message: "ChibangaRx folder deleted" })
       })
@@ -145,10 +145,10 @@ export const setupBackupHandlers = (): void => {
 }
 
 export const cleanupBackupHandlers = (): void => {
-  ipcMain.removeHandler("create-sparkle-restore-point")
+  ipcMain.removeHandler("create-chibangarx-restore-point")
   ipcMain.removeHandler("create-restore-point")
   ipcMain.removeHandler("delete-all-restore-points")
   ipcMain.removeHandler("get-restore-points")
   ipcMain.removeHandler("restore-restore-point")
-  ipcMain.removeHandler("delete-old-sparkle-backups")
+  ipcMain.removeHandler("delete-old-chibangarx-backups")
 }

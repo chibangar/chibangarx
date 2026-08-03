@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/chibangar/chibangarx">
-    <img src="./resources/sparklelogo.png" alt="ChibangaRx Logo" width="80" height="80">
+    <img src="./resources/chibangarxlogo.png" alt="ChibangaRx Logo" width="80" height="80">
   </a>
 
   <h3>ChibangaRx</h3>

@@ -319,12 +319,12 @@ function Clean() {
             <Icon iconNode={broom} className="text-teal-500" size={28} />
           </div>
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-sparkle-text mb-1">{t("clean.title")}</h2>
-            <p className="text-sm text-sparkle-text-secondary">
+            <h2 className="text-2xl font-bold text-chibangarx-text mb-1">{t("clean.title")}</h2>
+            <p className="text-sm text-chibangarx-text-secondary">
               {t("clean.lastCleaned")}{" "}<span className="font-medium">{lastClean}</span>
             </p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-              <p className="text-sm text-sparkle-text-secondary">
+              <p className="text-sm text-chibangarx-text-secondary">
                 {loadingSizes ? (
                   t("clean.calculating")
                 ) : (
@@ -376,7 +376,7 @@ function Clean() {
             </Button>
           </div>
         </Card>
-        <Card className="flex flex-col divide-y divide-sparkle-border p-0 mb-10">
+        <Card className="flex flex-col divide-y divide-chibangarx-border p-0 mb-10">
           {cleanups.map((cleanup, idx) => {
             const isSelected = selected.includes(cleanup.id)
             const currentSize = currentSizes[cleanup.id]
@@ -387,15 +387,15 @@ function Clean() {
             return (
               <div
                 key={cleanup.id}
-                className={`relative flex items-center justify-between px-6 py-5 ${idx === 0 ? "rounded-t-xl" : ""} ${idx === cleanups.length - 1 ? "rounded-b-xl" : ""} group hover:bg-sparkle-card/50 transition-colors`}
+                className={`relative flex items-center justify-between px-6 py-5 ${idx === 0 ? "rounded-t-xl" : ""} ${idx === cleanups.length - 1 ? "rounded-b-xl" : ""} group hover:bg-chibangarx-card/50 transition-colors`}
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-sparkle-border/50 text-sparkle-text-secondary">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-chibangarx-border/50 text-chibangarx-text-secondary">
                     {cleanup.icon}
                   </div>
                   <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center gap-3">
-                      <span className="text-base font-semibold text-sparkle-text truncate">
+                      <span className="text-base font-semibold text-chibangarx-text truncate">
                         {translatedLabel}
                       </span>
                       {freedSpace ? (
@@ -404,22 +404,22 @@ function Clean() {
                         </span>
                       ) : null}
                     </div>
-                    <span className="text-sm text-sparkle-text-secondary mt-1">{translatedDescription}</span>
+                    <span className="text-sm text-chibangarx-text-secondary mt-1">{translatedDescription}</span>
                     <div className="flex items-center gap-4 mt-2">
-                      <span className="text-xs text-sparkle-text-muted flex items-center gap-1">
+                      <span className="text-xs text-chibangarx-text-muted flex items-center gap-1">
                         <span className="font-medium">{t("clean.size")}:</span>
                         {loadingSizes ? (
-                          <span className="text-sparkle-text-secondary">{t("clean.calculating")}</span>
+                          <span className="text-chibangarx-text-secondary">{t("clean.calculating")}</span>
                         ) : currentSize !== undefined ? (
                           <span className="text-teal-500 font-medium">
                             {formatBytes(currentSize)}
                           </span>
                         ) : (
-                          <span className="text-sparkle-text-secondary">{t("clean.unknown")}</span>
+                          <span className="text-chibangarx-text-secondary">{t("clean.unknown")}</span>
                         )}
                       </span>
                       {cleanup.path && cleanup.path !== "Recycle Bin" && (
-                        <span className="text-xs text-sparkle-text-muted truncate max-w-xs">
+                        <span className="text-xs text-chibangarx-text-muted truncate max-w-xs">
                           {cleanup.path}
                         </span>
                       )}
@@ -435,7 +435,7 @@ function Clean() {
                 </div>
                 {loadingQueue.includes(cleanup.id) && (
                   <div className="absolute inset-0 flex items-center justify-center z-10 rounded-xl">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sparkle-border border border-sparkle-border-secondary">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-chibangarx-border border border-chibangarx-border-secondary">
                       <LoaderCircle className="animate-spin text-teal-500" size={18} />
                       <span className="text-sm font-medium text-teal-600">{t("clean.cleaning")}</span>
                     </div>

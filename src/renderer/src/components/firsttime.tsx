@@ -29,7 +29,7 @@ export default function FirstTime(): React.ReactElement {
     })
 
     try {
-      await invoke({ channel: "create-sparkle-restore-point" })
+      await invoke({ channel: "create-chibangarx-restore-point" })
 
       toast.update(toastId, {
         render: "Restore point created!",
@@ -55,34 +55,34 @@ export default function FirstTime(): React.ReactElement {
 
   return (
     <Modal open={open} onClose={undefined}>
-      <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-2xl max-w-2xl w-full mx-4 flex flex-col items-center text-center">
-        <h1 className="text-3xl font-bold text-sparkle-text mb-4">Welcome to ChibangaRx</h1>
+      <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-2xl max-w-2xl w-full mx-4 flex flex-col items-center text-center">
+        <h1 className="text-3xl font-bold text-chibangarx-text mb-4">Welcome to ChibangaRx</h1>
 
-        <p className="text-sparkle-text-secondary mb-6">
+        <p className="text-chibangarx-text-secondary mb-6">
           It looks like this is your first time here. <br />
           Would you like to create a restore point before you start?
         </p>
 
-        <p className="text-sparkle-text-secondary mb-4 text-sm">
+        <p className="text-chibangarx-text-secondary mb-4 text-sm">
           <span className="font-medium">
             By clicking <strong>Yes</strong>, ChibangaRx will create a restore point and disable the
             cooldown for future restore points.
           </span>
         </p>
 
-        <p className="text-sparkle-text-secondary mb-4 text-sm">
+        <p className="text-chibangarx-text-secondary mb-4 text-sm">
           Please only download from <strong>GitHub</strong>, <strong>parcoil.com</strong>, or{" "}
-          <strong>getsparkle.net</strong>.
+          <strong>getchibangarx.net</strong>.
         </p>
 
         <p className="text-red-500 mb-8 text-sm">
           If you download from any other source, this may be malware. Please uninstall and reinstall
           from{" "}
-          <a href="https://getsparkle.net" target="_blank" className="text-blue-500">
-            getsparkle.net
+          <a href="https://getchibangarx.net" target="_blank" className="text-blue-500">
+            getchibangarx.net
           </a>
           ,{" "}
-          <a href="https://github.com/Parcoil/Sparkle" target="_blank" className="text-blue-500">
+          <a href="https://github.com/Parcoil/ChibangaRx" target="_blank" className="text-blue-500">
             our GitHub
           </a>
           , or{" "}
@@ -99,7 +99,7 @@ export default function FirstTime(): React.ReactElement {
           </Button>
         </div>
 
-        <p className="text-sparkle-text-secondary mt-4 text-sm">
+        <p className="text-chibangarx-text-secondary mt-4 text-sm">
           <span className="font-semibold">ChibangaRx Version:</span>{" "}
           {data?.version || "Error fetching version"}
         </p>

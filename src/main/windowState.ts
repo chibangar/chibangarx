@@ -1,6 +1,6 @@
 import type { BrowserWindow } from "electron"
 
-export const logo = "[Sparkle]:"
+export const logo = "[ChibangaRx]:"
 
 export let mainWindow: BrowserWindow | null = null
 

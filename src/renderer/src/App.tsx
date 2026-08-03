@@ -117,7 +117,7 @@ function App() {
   const [changelogOpen, setChangelogOpen] = useState(false)
 
   useEffect(() => {
-    const lastSeen = localStorage.getItem("sparkle:changelogSeenVersion")
+    const lastSeen = localStorage.getItem("chibangarx:changelogSeenVersion")
     if (lastSeen !== CURRENT_VERSION) {
       const timer = setTimeout(() => setChangelogOpen(true), 500)
       return () => clearTimeout(timer)
@@ -132,12 +132,12 @@ function App() {
   }, [])
 
   return (
-    <div className="flex flex-col h-screen bg-sparkle-bg text-sparkle-text overflow-hidden">
+    <div className="flex flex-col h-screen bg-chibangarx-bg text-chibangarx-text overflow-hidden">
       <FirstTime />
       <ChangelogModal
         open={changelogOpen}
         onClose={() => {
-          localStorage.setItem("sparkle:changelogSeenVersion", CURRENT_VERSION)
+          localStorage.setItem("chibangarx:changelogSeenVersion", CURRENT_VERSION)
           setChangelogOpen(false)
         }}
       />
@@ -150,7 +150,7 @@ function App() {
       <Nav collapsed={sidebarCollapsed} />
       <div className="flex flex-1 pt-[50px] relative">
         <main
-          className={`flex-1 p-6 rounded-tl-2xl border-t border-l border-sparkle-border transition-all duration-300 ease-in-out ${sidebarCollapsed ? "ml-16" : "ml-52"}`}
+          className={`flex-1 p-6 rounded-tl-2xl border-t border-l border-chibangarx-border transition-all duration-300 ease-in-out ${sidebarCollapsed ? "ml-16" : "ml-52"}`}
         >
           <Routes>
             <Route path="/" element={<Home />} />

@@ -403,7 +403,7 @@ function Tweaks() {
     GPU: <Gpu className="w-4 h-4 text-red-500" />,
     Privacy: <Shield className="w-4 h-4 text-green-500" />,
     Network: <Network className="w-4 h-4 text-orange-500" />,
-    Appearance: <Paintbrush className="w-4 h-4 text-sparkle-primary" />,
+    Appearance: <Paintbrush className="w-4 h-4 text-chibangarx-primary" />,
     Gaming: <Gamepad className="w-4 h-4 text-teal-500" />,
     General: <Wrench className="w-4 h-4 text-blue-500" />,
   }
@@ -441,9 +441,9 @@ function Tweaks() {
   return (
     <>
       <Modal open={isRecommendedModalOpen} onClose={() => setIsRecommendedModalOpen(false)}>
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 max-w-xl w-full mx-4 max-h-2xl">
-          <h3 className="text-xl font-semibold text-sparkle-text mb-3">{t("tweaks.applyRecommended")}</h3>
-          <div className="text-sparkle-text-secondary text-sm leading-6 whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar mb-6">
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 max-w-xl w-full mx-4 max-h-2xl">
+          <h3 className="text-xl font-semibold text-chibangarx-text mb-3">{t("tweaks.applyRecommended")}</h3>
+          <div className="text-chibangarx-text-secondary text-sm leading-6 whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar mb-6">
             {t("tweaks.selectTweaks")}
             <p className="text-xs text-orange-500 ">
               {t("tweaks.debloatNote")}
@@ -452,7 +452,7 @@ function Tweaks() {
               {recommendedTweaksToApply.map((tweak) => (
                 <li
                   key={tweak.name}
-                  className="flex flex-col rounded-lg border border-sparkle-border p-3 mr-2"
+                  className="flex flex-col rounded-lg border border-chibangarx-border p-3 mr-2"
                 >
                   <label className="flex items-center cursor-pointer">
                     <Checkbox
@@ -464,11 +464,11 @@ function Tweaks() {
                         setSelectedRecommendedTweaks(newSelected)
                       }}
                     />
-                    <h2 className="font-medium text-sparkle-text">{getTweakTitle(tweak)}</h2>
+                    <h2 className="font-medium text-chibangarx-text">{getTweakTitle(tweak)}</h2>
                   </label>
 
                   {tweak.description && (
-                    <p className="ml-7 text-sm text-sparkle-text-secondary leading-snug">
+                    <p className="ml-7 text-sm text-chibangarx-text-secondary leading-snug">
                       {getTweakDescription(tweak)}
                     </p>
                   )}
@@ -501,9 +501,9 @@ function Tweaks() {
           setIsModalOpen(false)
         }}
       >
-        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
-          <h3 className="text-xl font-semibold text-sparkle-text mb-3">{selectedTweak ? getTweakTitle(selectedTweak) : ""}</h3>
-          <div className="text-sparkle-text-secondary text-sm leading-6 max-h-64 overflow-y-auto custom-scrollbar mb-6 prose prose-green marker:text-sparkle-secondary">
+        <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
+          <h3 className="text-xl font-semibold text-chibangarx-text mb-3">{selectedTweak ? getTweakTitle(selectedTweak) : ""}</h3>
+          <div className="text-chibangarx-text-secondary text-sm leading-6 max-h-64 overflow-y-auto custom-scrollbar mb-6 prose prose-green marker:text-chibangarx-secondary">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{String(modalContent)}</ReactMarkdown>
           </div>
           <div className="flex justify-end gap-3">
@@ -579,15 +579,15 @@ function Tweaks() {
                     key={category}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 active:scale-95  ${
                       activeCategory === category
-                        ? "bg-sparkle-primary text-white shadow-lg border border-sparkle-border"
-                        : "bg-sparkle-card/50 text-sparkle-text-secondary  hover:bg-sparkle-border border border-sparkle-border-secondary"
+                        ? "bg-chibangarx-primary text-white shadow-lg border border-chibangarx-border"
+                        : "bg-chibangarx-card/50 text-chibangarx-text-secondary  hover:bg-chibangarx-border border border-chibangarx-border-secondary"
                     }`}
                     onClick={() => setActiveCategory(category)}
                   >
                     {category}
                   </button>
                 ))}
-                <p className="text-sm text-sparkle-text-secondary ml-auto mr-2">
+                <p className="text-sm text-chibangarx-text-secondary ml-auto mr-2">
                   {t("tweaks.showing")} {sortedTweaks.length} {t("tweaks.of")} {tweaks.length} {t("tweaks.tweaksCount")}
                 </p>
               </div>
@@ -601,9 +601,9 @@ function Tweaks() {
                     {t("tweaks.applyRecommended")}
                   </Button>
                 )}
-                <p className="text-sm text-sparkle-text-muted">
+                <p className="text-sm text-chibangarx-text-muted">
                   {t("tweaks.tipHold")}{" "}
-                  <kbd className="p-1 pt-0.5 pb-0.5 rounded-lg bg-sparkle-border">Alt</kbd> {t("tweaks.tipClick")} <kbd className="p-1 pt-0.5 pb-0.5 rounded-lg bg-sparkle-border">{t("tweaks.reapply")}</kbd> {t("tweaks.tipForce")}
+                  <kbd className="p-1 pt-0.5 pb-0.5 rounded-lg bg-chibangarx-border">Alt</kbd> {t("tweaks.tipClick")} <kbd className="p-1 pt-0.5 pb-0.5 rounded-lg bg-chibangarx-border">{t("tweaks.reapply")}</kbd> {t("tweaks.tipForce")}
                 </p>
               </div>
             </div>
@@ -667,7 +667,7 @@ function Tweaks() {
                                   delay={0.3}
                                   side="right"
                               >
-                                <div className="p-1.5 bg-sparkle-accent rounded-lg hover:bg-sparkle-bg transition-colors text-sparkle-text">
+                                <div className="p-1.5 bg-chibangarx-accent rounded-lg hover:bg-chibangarx-bg transition-colors text-chibangarx-text">
                                   {categoryIcons[cat] || categoryIcons["General"]}
                                 </div>
                               </Tooltip>
@@ -678,7 +678,7 @@ function Tweaks() {
                                  delay={0.3}
                                  side="right"
                               >
-                                <div className="p-1.5 bg-sparkle-accent rounded-lg hover:bg-sparkle-bg transition-colors text-sparkle-text">
+                                <div className="p-1.5 bg-chibangarx-accent rounded-lg hover:bg-chibangarx-bg transition-colors text-chibangarx-text">
                                    {tweak.risk === "safe" && (
                                     <div className="flex gap-2">
                                       <ShieldCheck className="w-4 h-4 text-green-500" />{" "}
@@ -713,7 +713,7 @@ function Tweaks() {
                             e.preventDefault()
                             e.stopPropagation()
 
-                            const url = `https://docs.getsparkle.net/tweaks/${tweak.name}`
+                            const url = `https://docs.getchibangarx.net/tweaks/${tweak.name}`
                             window.open(url, "_blank")
                           }}
                         >
@@ -759,10 +759,10 @@ function Tweaks() {
                       </div>
                     </div>
                     <div className="flex items-start mb-3">
-                      <h2 className="font-semibold text-sparkle-text text-base">{getTweakTitle(tweak)}</h2>
+                      <h2 className="font-semibold text-chibangarx-text text-base">{getTweakTitle(tweak)}</h2>
                     </div>
                     <div className="flex flex-col flex-1 overflow-hidden">
-                      <p className="text-sparkle-text-secondary text-sm flex-1 overflow-y-auto custom-scrollbar pr-1">
+                      <p className="text-chibangarx-text-secondary text-sm flex-1 overflow-y-auto custom-scrollbar pr-1">
                         {getTweakDescription(tweak)}
                         {toggleStates[tweak.name] && isAltHeld && tweak.reversible !== false && (
                           <Button
@@ -801,14 +801,14 @@ function Tweaks() {
               })
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
-                <div className="bg-sparkle-card p-6 rounded-2xl mb-4">
-                  <Search className="w-10 h-10 text-sparkle-text-secondary" />
+                <div className="bg-chibangarx-card p-6 rounded-2xl mb-4">
+                  <Search className="w-10 h-10 text-chibangarx-text-secondary" />
                 </div>
-                <h3 className="text-xl font-medium mb-2 text-sparkle-text"> {t("tweaks.loading")}</h3>
-                <h3 className="text-sm font-medium mb-2 text-sparkle-text-muted">
+                <h3 className="text-xl font-medium mb-2 text-chibangarx-text"> {t("tweaks.loading")}</h3>
+                <h3 className="text-sm font-medium mb-2 text-chibangarx-text-muted">
                   {t("tweaks.noResults")}
                 </h3>
-                <p className="text-sparkle-text-secondary">{t("tweaks.noResultsDesc")}</p>
+                <p className="text-chibangarx-text-secondary">{t("tweaks.noResultsDesc")}</p>
               </div>
             )}
           </div>

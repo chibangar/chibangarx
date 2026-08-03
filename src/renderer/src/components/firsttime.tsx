@@ -3,9 +3,11 @@ import Modal from "@/components/ui/modal"
 import Button from "./ui/button"
 import { toast } from "react-toastify"
 import { invoke } from "@/lib/electron"
+import { useTranslation } from "react-i18next"
 import data from "../../../../package.json"
 
 export default function FirstTime(): React.ReactElement {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function FirstTime(): React.ReactElement {
     localStorage.setItem("firstTime", "false")
     setOpen(false)
 
-    const toastId = toast.info("Creating restore point... Please wait before applying tweaks.", {
+    const toastId = toast.info(t("firstTime.creatingRestorePoint"), {
       autoClose: false,
       isLoading: true,
       closeOnClick: false,
@@ -32,14 +34,14 @@ export default function FirstTime(): React.ReactElement {
       await invoke({ channel: "create-chibangarx-restore-point" })
 
       toast.update(toastId, {
-        render: "Restore point created!",
+        render: t("firstTime.restorePointCreated"),
         type: "success",
         isLoading: false,
         autoClose: 3000,
       })
     } catch (err) {
       toast.update(toastId, {
-        render: "Failed to create restore point.",
+        render: t("firstTime.restorePointFailed"),
         type: "error",
         isLoading: false,
         autoClose: 3000,

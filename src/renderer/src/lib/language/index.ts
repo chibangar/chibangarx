@@ -5,9 +5,10 @@ export const LANGUAGES: Record<Language, string> = {
   pt: "Português (Portugal)",
 }
 
-export const getSavedLanguage = (): Language => {
+export const getSavedLanguage = (): Language | null => {
   const saved = localStorage.getItem("chibangarx:lang") as Language
-  return saved && Object.keys(LANGUAGES).includes(saved) ? saved : "en"
+  if (saved && Object.keys(LANGUAGES).includes(saved)) return saved
+  return null
 }
 
 export const saveLanguage = (lang: Language) => {

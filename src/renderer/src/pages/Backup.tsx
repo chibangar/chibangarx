@@ -138,7 +138,7 @@ function RestorePointsTab() {
       setCustomName("")
       await fetchRestorePoints()
     } catch (err) {
-      toast.error("Failed to create restore point.")
+      toast.error(t("backup.createFailed"))
       log.error("Failed to create restore point:", err)
     }
     setProcessing(false)

@@ -55,11 +55,11 @@ export default function UpdateManager(): React.ReactElement {
       setIsDownloading(false)
       setDownloadPercent(100)
       setIsDownloaded(true)
-      toast.success("Update downloaded successfully!")
+      toast.success(t("updater.downloaded"))
     }
     const onDownloadError = (_e: any, payload: UpdatePayload) => {
       console.error("[UpdateManager] Download error:", payload?.error)
-      toast.error(payload?.error ?? "Download failed")
+      toast.error(payload?.error ?? t("updater.downloadError"))
       setIsDownloading(false)
     }
 

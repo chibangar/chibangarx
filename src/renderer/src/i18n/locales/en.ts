@@ -273,6 +273,7 @@ export const en = {
     download: "Download update",
     downloading: "Downloading...",
     downloaded: "Update downloaded successfully!",
+    downloadError: "Download failed",
     restartInfo: "The app will restart to apply the update.",
     restartInstall: "Restart and install",
     restarting: "Restarting...",
@@ -550,6 +551,11 @@ export const en = {
     refresh: "Refresh",
     operationSuccess: "Operation completed successfully!",
     operationError: "There was an error during the operation. Please try again.",
+  },
+  firstTime: {
+    creatingRestorePoint: "Creating restore point... Please wait before applying tweaks.",
+    restorePointCreated: "Restore point created!",
+    restorePointFailed: "Failed to create restore point.",
   },
   tweakData: {
     "24-hour-clock": { title: "Set 24-Hour Clock", description: "Changes clock to display 24-hour format." },

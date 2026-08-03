@@ -280,6 +280,7 @@ export const pt = {
     download: "Descarregar atualização",
     downloading: "A descarregar...",
     downloaded: "Atualização descarregada com sucesso!",
+    downloadError: "A descarga falhou",
     restartInfo: "A aplicação vai reiniciar para aplicar a atualização.",
     restartInstall: "Reiniciar e instalar",
     restarting: "A reiniciar...",
@@ -558,6 +559,11 @@ export const pt = {
     refresh: "Actualizar",
     operationSuccess: "Operação concluída com sucesso!",
     operationError: "Ocorreu um erro durante a operação. Por favor, tente novamente.",
+  },
+  firstTime: {
+    creatingRestorePoint: "A criar ponto de restauração... Por espere antes de aplicar ajustes.",
+    restorePointCreated: "Ponto de restauração criado!",
+    restorePointFailed: "Falha ao criar ponto de restauração.",
   },
   tweakData: {
     "24-hour-clock": { title: "Definir Relógio 24 Horas", description: "Altera o relógio para mostrar o formato de 24 horas." },

@@ -1,0 +1,821 @@
+import { useState, useEffect, useMemo } from "react"
+import {
+  Wrench,
+  Search,
+  AlertTriangle,
+  Monitor,
+  Shield,
+  Gamepad,
+  Network,
+  Zap,
+  Paintbrush,
+  ExternalLink,
+  ShieldCheck,
+} from "lucide-react"
+import { toast } from "react-toastify"
+import RootDiv from "@/components/rootdiv"
+import Tooltip from "@/components/ui/tooltip"
+import Modal from "@/components/ui/modal"
+import { invoke } from "@/lib/electron"
+import useRestartStore from "@/store/restartState"
+import useSystemStore from "@/store/systemInfo"
+import Button from "@/components/ui/button"
+import Toggle from "@/components/ui/Toggle"
+import Checkbox from "@/components/ui/Checkbox"
+import log from "electron-log/renderer"
+import Card from "@/components/ui/Card"
+import { Gpu, Plus, RotateCw } from "lucide-react"
+import { LargeInput } from "@/components/ui/input"
+import { useTranslation } from "react-i18next"
+import { isNewInCurrentVersion, isUpdatedInCurrentVersion, CURRENT_VERSION } from "@/lib/version"
+import { Star } from "lucide-react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import { Tweak } from "@/types/index"
+
+function Tweaks() {
+  const { t } = useTranslation()
+  const [tweaks, setTweaks] = useState<Tweak[]>([])
+  const [toggleStates, setToggleStates] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [activeCategory, setActiveCategory] = useState("All")
+  const [modalContent, setModalContent] = useState<string | boolean | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedTweak, setSelectedTweak] = useState<Tweak | null>(null)
+  const [isRecommendedModalOpen, setIsRecommendedModalOpen] = useState(false)
+  const [recommendedTweaksToApply, setRecommendedTweaksToApply] = useState<Tweak[]>([])
+  const [selectedRecommendedTweaks, setSelectedRecommendedTweaks] = useState<Set<string>>(new Set())
+  const [isApplyingRecommended, setIsApplyingRecommended] = useState(false)
+  const [isAltHeld, setIsAltHeld] = useState(false)
+
+  const { setNeedsRestart } = useRestartStore()
+  const systemInfo = useSystemStore((state) => state.systemInfo)
+
+  const getTweakTitle = (tweak: Tweak): string => {
+    const key = `tweakData.${tweak.name}.title`
+    const translated = t(key)
+    return translated !== key ? translated : tweak.title || tweak.name
+  }
+
+  const getTweakDescription = (tweak: Tweak): string => {
+    const key = `tweakData.${tweak.name}.description`
+    const translated = t(key)
+    return translated !== key ? translated : tweak.description || ""
+  }
+
+  const isTweakCompatible = (tweak) => {
+    if (!systemInfo || Object.keys(systemInfo).length === 0) {
+      return { compatible: true }
+    }
+
+    if (tweak.category && tweak.category.includes("GPU")) {
+      if (!systemInfo.hasGPU) {
+        return { compatible: false, reason: t("tweaks.compatibility.gpu") }
+      }
+    }
+
+    if (tweak.name === "optimize-nvidia-settings") {
+      if (!systemInfo.isNvidia) {
+        return { compatible: false, reason: t("tweaks.compatibility.nvidia") }
+      }
+    }
+
+    return { compatible: true }
+  }
+
+  useEffect(() => {
+    loadTweaks()
+    loadToggleStates()
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey) setIsAltHeld(true)
+    }
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!e.altKey) setIsAltHeld(false)
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("keyup", handleKeyUp)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+      window.removeEventListener("keyup", handleKeyUp)
+    }
+  }, [])
+
+  const loadTweaks = async () => {
+    try {
+      const fetchedTweaks = await invoke({
+        channel: "tweaks:fetch",
+      })
+      setTweaks(fetchedTweaks)
+    } catch (error) {
+      console.error("Error fetching tweaks:", error)
+      log.error("Error fetching tweaks:", error)
+    }
+  }
+
+  const loadToggleStates = async () => {
+    try {
+      const savedStates = await invoke({
+        channel: "tweak-states:load",
+      })
+
+      if (savedStates) {
+        setToggleStates(JSON.parse(savedStates))
+      }
+    } catch (error) {
+      console.error("Error loading toggle states:", error)
+      log.error("Error loading toggle states:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const saveToggleStates = async (newStates) => {
+    try {
+      await invoke({
+        channel: "tweak-states:save",
+        payload: JSON.stringify(newStates),
+      })
+    } catch (error) {
+      console.error("Error saving toggle states:", error)
+      log.error("Error saving toggle states:", error)
+    }
+  }
+
+  const applyTweak = async (tweak, _) => {
+    toast.dismiss()
+    const newState = !toggleStates[tweak.name]
+    const newStates = {
+      ...toggleStates,
+      [tweak.name]: newState,
+    }
+
+    setToggleStates(newStates)
+
+    const loadingToastId = toast.loading(
+      `${newState ? t("tweaks.applying") : t("tweaks.disabling")} ${t("tweaks.apply")} ${getTweakTitle(tweak)}`,
+    )
+
+    try {
+      await saveToggleStates(newStates)
+
+      if (newState) {
+        await invoke({
+          channel: "tweak:apply",
+          payload: tweak.name,
+        })
+        if (tweak.restart) {
+          setNeedsRestart(true)
+        }
+        toast.update(loadingToastId, {
+          render: `Aplicado: ${getTweakTitle(tweak)}`,
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        })
+      } else {
+        await invoke({
+          channel: "tweak:unapply",
+          payload: tweak.name,
+        })
+        if (tweak.restart) {
+          setNeedsRestart(true)
+        }
+        toast.update(loadingToastId, {
+          render: `Desativado: ${getTweakTitle(tweak)}`,
+          type: "info",
+          isLoading: false,
+          autoClose: 3000,
+        })
+      }
+    } catch (error) {
+      console.error(`Error toggling tweak ${getTweakTitle(tweak)}:`, error)
+      log.error(`Error toggling tweak ${getTweakTitle(tweak)}:`, error)
+
+      toast.update(loadingToastId, {
+          render: `${t("tweaks.apply")} ${newState ? t("tweaks.applyFailed") : t("tweaks.applyAlsoFailed")}: ${getTweakTitle(tweak)}`,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      })
+
+      const revertedStates = {
+        ...newStates,
+        [tweak.name]: !newState,
+      }
+
+      setToggleStates(revertedStates)
+
+      try {
+        await saveToggleStates(revertedStates)
+      } catch (err) {
+        console.error("Error reverting toggle state:", err)
+        log.error("Error reverting toggle state:", err)
+      }
+    }
+  }
+
+  const applyNonReversibleTweak = async (tweak, _) => {
+    toast.dismiss()
+    const newStates = {
+      ...toggleStates,
+      [tweak.name]: true,
+    }
+
+    setToggleStates(newStates)
+
+    const loadingToastId = toast.loading(`${t("tweaks.applyingTweak")} ${getTweakTitle(tweak)}`)
+
+    try {
+      await saveToggleStates(newStates)
+      await invoke({
+        channel: "tweak:apply",
+        payload: tweak.name,
+      })
+      if (tweak.restart) {
+        setNeedsRestart(true)
+      }
+      toast.update(loadingToastId, {
+        render: `${t("tweaks.applying")}: ${getTweakTitle(tweak)}`,
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      })
+    } catch (error) {
+      console.error(`Error applying tweak ${getTweakTitle(tweak)}:`, error)
+      log.error(`Error applying tweak ${getTweakTitle(tweak)}:`, error)
+      toast.update(loadingToastId, {
+        render: `${t("tweaks.applyFailedTweak")} ${getTweakTitle(tweak)}`,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      })
+    }
+  }
+
+  const handleToggle = async (index) => {
+    const tweak: any = tweaks[index]
+
+    if (tweak.modal && !toggleStates[tweak.name]) {
+      setSelectedTweak(tweak)
+      setModalContent(tweak.modal)
+      setIsModalOpen(true)
+      return
+    }
+
+    await applyTweak(tweak, index)
+  }
+
+  const handleButtonClick = async (index) => {
+    const tweak: Tweak = tweaks[index]
+
+    if (tweak.modal) {
+      setSelectedTweak(tweak)
+      setModalContent(tweak.modal)
+      setIsModalOpen(true)
+      return
+    }
+
+    await applyNonReversibleTweak(tweak, index)
+  }
+
+  const forceReapplyTweak = async (tweak: Tweak) => {
+    toast.dismiss()
+    const loadingToastId = toast.loading(`${t("tweaks.reapplyingTweak")} ${getTweakTitle(tweak)}`)
+
+    try {
+      await invoke({
+        channel: "tweak:apply",
+        payload: tweak.name,
+      })
+      if (tweak.restart) {
+        setNeedsRestart(true)
+      }
+      toast.update(loadingToastId, {
+        render: `${t("tweaks.reappliedTweak")} ${getTweakTitle(tweak)}`,
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      })
+    } catch (error) {
+      console.error(`Error reapplying tweak ${getTweakTitle(tweak)}:`, error)
+      log.error(`Error reapplying tweak ${getTweakTitle(tweak)}:`, error)
+      toast.update(loadingToastId, {
+        render: `${t("tweaks.reapplyFailedTweak")} ${getTweakTitle(tweak)}`,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      })
+    }
+  }
+
+  const handleApplyRecommended = async () => {
+    const preset = presets[0]
+    const presetTweaks = tweaks.filter((t) => preset.tweaks.includes(t.name))
+    setRecommendedTweaksToApply(presetTweaks)
+    setSelectedRecommendedTweaks(new Set(presetTweaks.map((t) => t.name)))
+    setIsRecommendedModalOpen(true)
+  }
+
+  const applyRecommendedTweaks = async () => {
+    toast.dismiss()
+    setIsApplyingRecommended(true)
+    setIsRecommendedModalOpen(false)
+
+    const newStates = { ...toggleStates }
+    const tweaksToApply = recommendedTweaksToApply.filter((t) =>
+      selectedRecommendedTweaks.has(t.name),
+    )
+
+    for (const tweak of tweaksToApply) {
+    const loadingToastId = toast.loading(`${t("tweaks.applyingTweak")} ${getTweakTitle(tweak)}`)
+
+      try {
+        newStates[tweak.name] = true
+        setToggleStates({ ...newStates })
+        await saveToggleStates(newStates)
+
+        await invoke({
+          channel: "tweak:apply",
+          payload: tweak.name,
+        })
+
+        if (tweak.restart) {
+          setNeedsRestart(true)
+        }
+
+        toast.update(loadingToastId, {
+          render: `${t("tweaks.appliedTweak")} ${getTweakTitle(tweak)}`,
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        })
+      } catch (error) {
+        console.error(`Error applying tweak ${getTweakTitle(tweak)}:`, error)
+        log.error(`Error applying tweak ${getTweakTitle(tweak)}:`, error)
+
+        toast.update(loadingToastId, {
+          render: `${t("tweaks.applyFailedTweak")} ${getTweakTitle(tweak)}`,
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        })
+      }
+    }
+
+    setIsApplyingRecommended(false)
+  }
+
+  const categories = useMemo(
+    () => [t("tweaks.all"), ...new Set(tweaks.flatMap((t: any) => t.category || []).filter(Boolean))],
+    [tweaks],
+  )
+
+  const filteredTweaks: any = useMemo(() => {
+    return tweaks.filter((tweak) => {
+      const matchesSearch =
+        getTweakTitle(tweak).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getTweakDescription(tweak).toLowerCase().includes(searchTerm.toLowerCase())
+
+      const matchesCategory =
+        activeCategory === t("tweaks.all") ||
+        (Array.isArray(tweak.category) && tweak.category.includes(activeCategory)) ||
+        tweak.category === activeCategory
+
+      return matchesSearch && matchesCategory
+    })
+  }, [tweaks, searchTerm, activeCategory])
+
+  // sort this so recommended tweaks are at the top
+  const sortedTweaks = useMemo(() => {
+    return [...filteredTweaks].sort((a, b) => {
+      const aRec: any = !!a.top
+      const bRec: any = !!b.top
+      return bRec - aRec
+    })
+  }, [filteredTweaks])
+
+  const categoryIcons = {
+    Performance: <Zap className="w-4 h-4  text-yellow-500" />,
+    GPU: <Gpu className="w-4 h-4 text-red-500" />,
+    Privacy: <Shield className="w-4 h-4 text-green-500" />,
+    Network: <Network className="w-4 h-4 text-orange-500" />,
+    Appearance: <Paintbrush className="w-4 h-4 text-sparkle-primary" />,
+    Gaming: <Gamepad className="w-4 h-4 text-teal-500" />,
+    General: <Wrench className="w-4 h-4 text-blue-500" />,
+  }
+
+  const presets = [
+    {
+      name: t("tweaks.applyRecommended"),
+      description: t("tweaks.applyRecommendedDesc"),
+      tweaks: [
+        "disable-telemetry",
+        "revert-context-menu",
+        "hide-taskview-and-widgets",
+        "set-win32-priority-separation",
+        "disable-copilot",
+        "enable-end-task-right-click",
+        "disable-location-tracking",
+        "disable-lockscreen-tips",
+        "optimize-network-settings",
+        "set-services-to-manual",
+        "wpbt",
+      ],
+    },
+  ]
+
+  if (isLoading) {
+    return (
+      <RootDiv>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-slate-400">{t("tweaks.loading")}</div>
+        </div>
+      </RootDiv>
+    )
+  }
+
+  return (
+    <>
+      <Modal open={isRecommendedModalOpen} onClose={() => setIsRecommendedModalOpen(false)}>
+        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 max-w-xl w-full mx-4 max-h-2xl">
+          <h3 className="text-xl font-semibold text-sparkle-text mb-3">{t("tweaks.applyRecommended")}</h3>
+          <div className="text-sparkle-text-secondary text-sm leading-6 whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar mb-6">
+            {t("tweaks.selectTweaks")}
+            <p className="text-xs text-orange-500 ">
+              {t("tweaks.debloatNote")}
+            </p>
+            <ul className="mt-3 space-y-3">
+              {recommendedTweaksToApply.map((tweak) => (
+                <li
+                  key={tweak.name}
+                  className="flex flex-col rounded-lg border border-sparkle-border p-3 mr-2"
+                >
+                  <label className="flex items-center cursor-pointer">
+                    <Checkbox
+                      checked={selectedRecommendedTweaks.has(tweak.name)}
+                      onChange={(checked) => {
+                        const newSelected = new Set(selectedRecommendedTweaks)
+                        if (checked) newSelected.add(tweak.name)
+                        else newSelected.delete(tweak.name)
+                        setSelectedRecommendedTweaks(newSelected)
+                      }}
+                    />
+                    <h2 className="font-medium text-sparkle-text">{getTweakTitle(tweak)}</h2>
+                  </label>
+
+                  {tweak.description && (
+                    <p className="ml-7 text-sm text-sparkle-text-secondary leading-snug">
+                      {getTweakDescription(tweak)}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="secondary"
+               onClick={() => setIsRecommendedModalOpen(false)}
+               disabled={isApplyingRecommended}
+             >
+              {t("common.cancel")}
+            </Button>
+            <Button
+              onClick={applyRecommendedTweaks}
+              disabled={isApplyingRecommended || selectedRecommendedTweaks.size === 0}
+            >
+              {isApplyingRecommended
+                ? t("tweaks.applying")
+                : `${t("tweaks.applySelected")} (${selectedRecommendedTweaks.size})`}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        open={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+        }}
+      >
+        <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
+          <h3 className="text-xl font-semibold text-sparkle-text mb-3">{selectedTweak ? getTweakTitle(selectedTweak) : ""}</h3>
+          <div className="text-sparkle-text-secondary text-sm leading-6 max-h-64 overflow-y-auto custom-scrollbar mb-6 prose prose-green marker:text-sparkle-secondary">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{String(modalContent)}</ReactMarkdown>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="secondary"
+               onClick={() => {
+                setIsModalOpen(false)
+              }}
+            >
+              {t("common.cancel")}
+            </Button>
+            {selectedTweak && (
+              <Button
+                onClick={async () => {
+                  const newState = true
+                  const newStates = {
+                    ...toggleStates,
+                    [selectedTweak.name]: newState,
+                  }
+
+                  setToggleStates(newStates)
+                  setIsModalOpen(false)
+
+                  const loadingToastId = toast.loading(`${t("tweaks.applying")}: ${getTweakTitle(selectedTweak)}`)
+
+                  try {
+                    await saveToggleStates(newStates)
+                    await invoke({
+                      channel: "tweak:apply",
+                      payload: selectedTweak.name,
+                    })
+                    if (selectedTweak.restart) {
+                      setNeedsRestart(true)
+                    }
+                    toast.update(loadingToastId, {
+                      render: `${t("tweaks.applying")}: ${getTweakTitle(selectedTweak)}`,
+                      type: "success",
+                      isLoading: false,
+                      autoClose: 3000,
+                    })
+                  } catch (error) {
+                    console.error(`Error applying tweak ${getTweakTitle(selectedTweak)}:`, error)
+                    log.error(`Error applying tweak ${getTweakTitle(selectedTweak)}:`, error)
+
+                    const revertedStates = {
+                      ...toggleStates,
+                      [selectedTweak.name]: false,
+                    }
+                    setToggleStates(revertedStates)
+                    await saveToggleStates(revertedStates)
+                  }
+                }}
+              >
+                {t("tweaks.apply")}
+              </Button>
+            )}
+          </div>
+        </div>
+      </Modal>
+      <RootDiv>
+        <div className="max-w-450 mx-auto ">
+          <div className="mb-4">
+            <div className="space-y-4">
+              <LargeInput
+                icon={Search}
+                 placeholder={t("tweaks.searchPlaceholder")}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 active:scale-95  ${
+                      activeCategory === category
+                        ? "bg-sparkle-primary text-white shadow-lg border border-sparkle-border"
+                        : "bg-sparkle-card/50 text-sparkle-text-secondary  hover:bg-sparkle-border border border-sparkle-border-secondary"
+                    }`}
+                    onClick={() => setActiveCategory(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+                <p className="text-sm text-sparkle-text-secondary ml-auto mr-2">
+                  {t("tweaks.showing")} {sortedTweaks.length} {t("tweaks.of")} {tweaks.length} {t("tweaks.tweaksCount")}
+                </p>
+              </div>
+              <div className="flex gap-5 items-center">
+                {presets.length > 0 && tweaks.some((t) => presets[0].tweaks.includes(t.name)) && (
+                  <Button
+                    variant="secondary"
+                    onClick={handleApplyRecommended}
+                    disabled={isApplyingRecommended}
+                  >
+                    {t("tweaks.applyRecommended")}
+                  </Button>
+                )}
+                <p className="text-sm text-sparkle-text-muted">
+                  {t("tweaks.tipHold")}{" "}
+                  <kbd className="p-1 pt-0.5 pb-0.5 rounded-lg bg-sparkle-border">Alt</kbd> {t("tweaks.tipClick")} <kbd className="p-1 pt-0.5 pb-0.5 rounded-lg bg-sparkle-border">{t("tweaks.reapply")}</kbd> {t("tweaks.tipForce")}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+            {sortedTweaks.length > 0 ? (
+              sortedTweaks.map((tweak, _) => {
+                const originalIndex = tweaks.indexOf(tweak)
+                const cardBody = (
+                  <div className="p-5 flex flex-col h-65">
+                    <div className="flex items-center justify-between mb-3">
+                      {tweak.category && (
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <>
+                            {tweak.warning && (
+                              <Tooltip content={tweak.warning} delay={0.3} side="right">
+                                <div className="p-1.5 dark:bg-red-900/50 bg-red-300 rounded-lg hover:bg-red-800 dark:hover:bg-red-900/80 transition-colors">
+                                  <AlertTriangle className="w-4 h-4 dark:text-red-400 text-red-600 hover:text-white" />
+                                </div>
+                              </Tooltip>
+                            )}
+                              {tweak.recommended && (
+                              <Tooltip content={t("tweaks.recommended")} delay={0.3} side="right">
+                                <div className="p-1.5 bg-green-500/50 rounded-lg hover:bg-green-500/80 transition-colors">
+                                  <Star className="w-4 h-4 text-white fill-white" />
+                                </div>
+                              </Tooltip>
+                            )}
+                            {tweak.addedversion &&
+                              isNewInCurrentVersion(tweak.addedversion, CURRENT_VERSION) && (
+                                <Tooltip
+                                  content={`${t("tweaks.newInVersion")} ${tweak.addedversion}`}
+                                  delay={0.3}
+                                  side="right"
+                                >
+                                  <div className="p-1.5 bg-pink-500/50 rounded-lg hover:bg-pink-500/80 transition-colors">
+                                    <Plus className="w-4 h-4 text-white" />
+                                  </div>
+                                </Tooltip>
+                              )}
+                            {tweak.updatedversion &&
+                              isUpdatedInCurrentVersion(tweak.updatedversion, CURRENT_VERSION) && (
+                                <Tooltip
+                                  content={`${t("tweaks.updatedInVersion")} ${tweak.updatedversion}`}
+                                  delay={0.3}
+                                  side="right"
+                                >
+                                  <div className="p-1.5 bg-blue-500/50 rounded-lg hover:bg-blue-500/80 transition-colors">
+                                    <RotateCw className="w-4 h-4 text-white" />
+                                  </div>
+                                </Tooltip>
+                              )}
+                            {(Array.isArray(tweak.category)
+                              ? tweak.category
+                              : [tweak.category]
+                            ).map((cat) => (
+                                <Tooltip
+                                  key={cat}
+                                  content={t("tweaks.categoryOptimization")}
+                                  delay={0.3}
+                                  side="right"
+                              >
+                                <div className="p-1.5 bg-sparkle-accent rounded-lg hover:bg-sparkle-bg transition-colors text-sparkle-text">
+                                  {categoryIcons[cat] || categoryIcons["General"]}
+                                </div>
+                              </Tooltip>
+                            ))}
+                            {tweak.risk && (
+                               <Tooltip
+                                 content={tweak.risk === "safe" ? t("tweaks.risk.safe") : t("tweaks.risk.risky")}
+                                 delay={0.3}
+                                 side="right"
+                              >
+                                <div className="p-1.5 bg-sparkle-accent rounded-lg hover:bg-sparkle-bg transition-colors text-sparkle-text">
+                                   {tweak.risk === "safe" && (
+                                    <div className="flex gap-2">
+                                      <ShieldCheck className="w-4 h-4 text-green-500" />{" "}
+                                      <p className="text-xs">{t("tweaks.riskLabel.safe")}</p>
+                                    </div>
+                                  )}
+                                  {tweak.risk === "risky" && (
+                                    <div className="flex gap-2">
+                                      <AlertTriangle className="w-4 h-4 text-red-500" />{" "}
+                                      <p className="text-xs">{t("tweaks.riskLabel.risky")}</p>
+                                    </div>
+                                  )}
+                                  {tweak.risk === "caution" && (
+                                    <div className="flex gap-2">
+                                      <AlertTriangle className="w-4 h-4 text-yellow-500" />{" "}
+                                      <p className="text-xs">{t("tweaks.riskLabel.caution")}</p>
+                                    </div>
+                                  )}
+                                </div>
+                              </Tooltip>
+                            )}
+                          </>
+                        </div>
+                      )}
+
+                      <div className="flex items-center m-0 gap-2">
+                        <Button
+                          variant="secondary"
+                          className="px-2! py-1! text-xs flex items-center gap-1"
+                          title={t("tweaks.openDocs")}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+
+                            const url = `https://docs.getsparkle.net/tweaks/${tweak.name}`
+                            window.open(url, "_blank")
+                          }}
+                        >
+                          <ExternalLink className="w-3 h-3" /> {t("tweaks.docs")}
+                        </Button>
+
+                        {(() => {
+                          const compatibility = isTweakCompatible(tweak)
+                          return (
+                            <>
+                              {!compatibility.compatible && (
+                                <Tooltip content={compatibility.reason} delay={0.3} side="right">
+                                  <div className="p-1.5 bg-orange-500/50 rounded-lg hover:bg-orange-500/80 transition-colors">
+                                    <Monitor className="w-4 h-4 text-orange-300" />
+                                  </div>
+                                </Tooltip>
+                              )}
+                              {tweak.reversible == null || tweak.reversible == true ? (
+                                <Tooltip
+                                  content={!compatibility.compatible ? compatibility.reason : null}
+                                >
+                                  <Toggle
+                                    checked={toggleStates[tweak.name] || false}
+                                    onChange={() => handleToggle(originalIndex)}
+                                    disabled={!compatibility.compatible}
+                                  />
+                                </Tooltip>
+                              ) : (
+                                <Tooltip
+                                  content={!compatibility.compatible ? compatibility.reason : null}
+                                >
+                                  <Button
+                                    onClick={() => handleButtonClick(originalIndex)}
+                                    disabled={!compatibility.compatible}
+                                  >
+                                    {t("tweaks.apply")}
+                                  </Button>
+                                </Tooltip>
+                              )}
+                            </>
+                          )
+                        })()}
+                      </div>
+                    </div>
+                    <div className="flex items-start mb-3">
+                      <h2 className="font-semibold text-sparkle-text text-base">{getTweakTitle(tweak)}</h2>
+                    </div>
+                    <div className="flex flex-col flex-1 overflow-hidden">
+                      <p className="text-sparkle-text-secondary text-sm flex-1 overflow-y-auto custom-scrollbar pr-1">
+                        {getTweakDescription(tweak)}
+                        {toggleStates[tweak.name] && isAltHeld && tweak.reversible !== false && (
+                          <Button
+                            variant="primary"
+                            className="px-2! py-1! text-xs flex items-center gap-1 fixed mt-2"
+                            title={t("tweaks.forceReapply")}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              forceReapplyTweak(tweak)
+                            }}
+                          >
+                            <RotateCw className="w-3 h-3" /> {t("tweaks.reapply")}
+                          </Button>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )
+                return tweak.name === "debloat-windows" ? (
+                  <div
+                    key={originalIndex}
+                    className="animate-border-spin rounded-xl p-[1px]"
+                    style={{
+                      background:
+                        "conic-gradient(from var(--angle), #3b82f6, #22c55e, #eab308, #f97316, #ec4899, #8b5cf6, #3b82f6)",
+                    }}
+                  >
+                    <Card className="border-0 p-0 h-52">{cardBody}</Card>
+                  </div>
+                ) : (
+                  <Card key={originalIndex} className=" p-0 h-52">
+                    {cardBody}
+                  </Card>
+                )
+              })
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                <div className="bg-sparkle-card p-6 rounded-2xl mb-4">
+                  <Search className="w-10 h-10 text-sparkle-text-secondary" />
+                </div>
+                <h3 className="text-xl font-medium mb-2 text-sparkle-text"> {t("tweaks.loading")}</h3>
+                <h3 className="text-sm font-medium mb-2 text-sparkle-text-muted">
+                  {t("tweaks.noResults")}
+                </h3>
+                <p className="text-sparkle-text-secondary">{t("tweaks.noResultsDesc")}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </RootDiv>
+    </>
+  )
+}
+
+export default Tweaks

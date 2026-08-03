@@ -6,7 +6,6 @@ import Card from "./ui/Card"
 import useAppInstallStore from "@/store/appInstallStore"
 import InstallConsoleModal from "./installConsoleModal"
 import { useTranslation } from "react-i18next"
-import AudioPlayer from "./AudioPlayer"
 import UpdateManager from "./updatemanager"
 
 interface TitleBarProps {
@@ -69,7 +68,6 @@ function TitleBar({
         </div>
 
         <div className="flex" style={{ WebkitAppRegion: "no-drag" } as any}>
-          <AudioPlayer />
           <UpdateManager />
           <div
             className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"

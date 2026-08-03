@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import Modal from "@/components/ui/modal"
 import Button from "@/components/ui/button"
-import { Bell } from "lucide-react"
+import { Bell, Download, X } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import { useTranslation } from "react-i18next"
 import { toast } from "react-toastify"
@@ -25,6 +25,7 @@ export default function UpdateManager(): React.ReactElement {
   const [downloadPercent, setDownloadPercent] = useState(0)
   const [isDownloaded, setIsDownloaded] = useState(false)
   const [isInstalling, setIsInstalling] = useState(false)
+  const [showUpdateNotice, setShowUpdateNotice] = useState(false)
 
   useEffect(() => {
     window.electron.ipcRenderer.invoke("updater:get-version").then((v: string) => {
@@ -38,7 +39,7 @@ export default function UpdateManager(): React.ReactElement {
       setIsDownloading(false)
       setDownloadPercent(0)
       setIsDownloaded(false)
-      setModalOpen(true)
+      setShowUpdateNotice(true)
     }
     const onNotAvailable = () => {
       setHasUpdate(false)
@@ -70,6 +71,9 @@ export default function UpdateManager(): React.ReactElement {
     window.electron.ipcRenderer.on("updater:downloaded", onDownloaded)
     window.electron.ipcRenderer.on("updater:download-error", onDownloadError)
 
+    // Check again after listeners are attached so a fast response is not missed.
+    void window.electron.ipcRenderer.invoke("updater:check")
+
     return () => {
       window.electron.ipcRenderer.removeListener("updater:available", onAvailable)
       window.electron.ipcRenderer.removeListener("updater:not-available", onNotAvailable)
@@ -84,6 +88,7 @@ export default function UpdateManager(): React.ReactElement {
     setIsDownloading(true)
     setDownloadPercent(0)
     setIsDownloaded(false)
+    setShowUpdateNotice(false)
     window.electron.ipcRenderer.send("updater:download")
   }
 
@@ -101,6 +106,46 @@ export default function UpdateManager(): React.ReactElement {
 
   return (
     <>
+      {showUpdateNotice && hasUpdate && !isDownloaded && (
+        <div className="fixed right-4 top-14 z-[9998] w-[min(22rem,calc(100vw-2rem))] animate-in slide-in-from-right-4 fade-in duration-300">
+          <div className="rounded-xl border border-chibangarx-primary/40 bg-chibangarx-card p-4 shadow-2xl shadow-black/30">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-chibangarx-text">
+                  {t("updater.newVersion")}
+                </p>
+                <p className="mt-1 text-xs text-chibangarx-text-secondary">
+                  {t("updater.versionAvailable", { version: updateVersion ?? "" })}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowUpdateNotice(false)}
+                className="text-chibangarx-text-secondary hover:text-chibangarx-text"
+                aria-label={t("common.close")}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="mt-3 flex items-center justify-end gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowUpdateNotice(false)
+                  setModalOpen(true)
+                }}
+              >
+                {t("updater.details")}
+              </Button>
+              <Button onClick={handleDownload}>
+                <Download size={14} className="mr-1.5" />
+                {t("updater.download")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <button
         onClick={() => setModalOpen(true)}
         className="relative h-8 w-8 inline-flex items-center justify-center rounded-md text-chibangarx-text-secondary hover:bg-chibangarx-accent hover:text-chibangarx-primary transition-colors"

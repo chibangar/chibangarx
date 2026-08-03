@@ -271,6 +271,8 @@ export const en = {
     noUpdate: "No updates available. You're up to date.",
     checkNow: "Check now",
     newVersion: "New version available",
+    versionAvailable: "Version {{version}} is ready to install.",
+    details: "Details",
     download: "Download update",
     downloading: "Downloading...",
     downloaded: "Update downloaded successfully!",

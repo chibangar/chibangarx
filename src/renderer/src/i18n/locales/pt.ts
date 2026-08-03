@@ -278,6 +278,8 @@ export const pt = {
     noUpdate: "Sem atualizações disponíveis. Está na versão mais recente.",
     checkNow: "Verificar agora",
     newVersion: "Nova versão disponível",
+    versionAvailable: "A versão {{version}} está pronta para instalar.",
+    details: "Detalhes",
     download: "Descarregar atualização",
     downloading: "A descarregar...",
     downloaded: "Atualização descarregada com sucesso!",

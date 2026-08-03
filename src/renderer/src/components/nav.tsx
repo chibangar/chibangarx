@@ -241,7 +241,7 @@ function Nav({ collapsed }) {
         <a href="https://github.com/chibangar/chibangarx" target="_blank">
           <GithubIcon className="w-5 fill-chibangarx-primary" />
         </a>
-        <a href="https://discord.com/invite/En5YJYWj3Z" target="_blank">
+        <a href="https://discord.gg/4hbRUfXxR" target="_blank">
           <DiscordIcon className="w-5 fill-chibangarx-primary" />
         </a>
       </div>

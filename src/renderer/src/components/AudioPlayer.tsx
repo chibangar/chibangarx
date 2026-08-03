@@ -16,6 +16,7 @@ export default function AudioPlayer(): React.ReactElement {
       try {
         const resourcesPath = await window.electron.ipcRenderer.invoke("get-resources-path")
         setAudioSrc(`file:///${resourcesPath.replace(/\\/g, "/")}/bgmusic.mp3`)
+        setPlaying(true)
       } catch (err) {
         console.error("[AudioPlayer] Failed to get resources path:", err)
       }

@@ -40,7 +40,7 @@ async function startDiscordRPC(): Promise<boolean> {
           .setState(`Running ChibangaRx v${jsonData.version ?? "2"}`)
           .setLargeImage("chibangarxlogo", "ChibangaRx")
           .addButton("Download ChibangaRx", "https://github.com/chibangar/chibangarx")
-          .addButton("Join Discord", "https://discord.com/invite/En5YJYWj3Z")
+          .addButton("Join Discord", "https://discord.gg/4hbRUfXxR")
           .build()
 
         if (!rpcClient || !activity) return

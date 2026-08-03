@@ -123,6 +123,7 @@ function createWindow(): void {
   )
 }
 app.commandLine.appendSwitch("no-sandbox")
+app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required")
 app
   .whenReady()
   .then(() => {

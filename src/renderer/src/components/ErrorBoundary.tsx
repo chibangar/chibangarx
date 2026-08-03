@@ -4,8 +4,8 @@ import { invoke } from "../lib/electron"
 import Button from "./ui/button"
 import TitleBar from "./titlebar"
 
-const GITHUB_ISSUES = "https://github.com/Parcoil/ChibangaRx/issues"
-const DISCORD_INVITE = "https://discord.com/invite/En5YJYWj3Z"
+const GITHUB_ISSUES = "https://github.com/chibangar/chibangarx/issues"
+const DISCORD_INVITE = "https://discord.gg/4hbRUfXxR"
 
 type Props = {
   children: ReactNode

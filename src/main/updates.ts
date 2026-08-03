@@ -7,13 +7,13 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   autoUpdater.autoDownload = false
   autoUpdater.disableWebInstaller = false
   autoUpdater.autoInstallOnAppQuit = true
-  autoUpdater.logger = null
 
   if (!app.isPackaged) {
     autoUpdater.forceDevUpdateConfig = true
   }
 
   autoUpdater.on("update-available", (info: UpdateInfo) => {
+    console.log("[ChibangaRx] Update available:", info.version)
     const win = getMainWindow()
     win?.webContents.send("updater:available", {
       version: info.version,
@@ -22,12 +22,15 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   })
 
   autoUpdater.on("update-not-available", () => {
+    console.log("[ChibangaRx] No update available")
     const win = getMainWindow()
     win?.webContents.send("updater:not-available", { currentVersion: app.getVersion() })
   })
 
   autoUpdater.on("error", (err: Error) => {
     console.error("[ChibangaRx] Auto-updater error:", err.message)
+    const win = getMainWindow()
+    win?.webContents.send("updater:error", { message: err.message })
   })
 
   autoUpdater.on("download-progress", (progress: any) => {
@@ -41,6 +44,7 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   })
 
   autoUpdater.on("update-downloaded", (info: UpdateInfo) => {
+    console.log("[ChibangaRx] Update downloaded:", info.version)
     const win = getMainWindow()
     win?.webContents.send("updater:downloaded", { version: info.version })
   })
@@ -48,10 +52,13 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   ipcMain.handle("updater:get-version", () => app.getVersion())
 
   ipcMain.handle("updater:check", async () => {
+    console.log("[ChibangaRx] Checking for updates...")
     try {
       const result = await autoUpdater.checkForUpdates()
+      console.log("[ChibangaRx] Check result:", result?.updateInfo?.version ?? "none")
       return { ok: true, updateInfo: result?.updateInfo ?? null }
     } catch (error: any) {
+      console.error("[ChibangaRx] Check failed:", error.message)
       return { ok: false, error: String(error) }
     }
   })

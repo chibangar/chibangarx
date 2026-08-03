@@ -70,8 +70,6 @@ export default function Clips(): React.ReactElement {
       await invoke({ channel: "clips:set-source", payload: selectedSource })
       let stream: MediaStream
       try {
-        stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false })
-      } catch {
         stream = await navigator.mediaDevices.getUserMedia({
           audio: false,
           video: {
@@ -81,12 +79,19 @@ export default function Clips(): React.ReactElement {
             },
           } as MediaTrackConstraints,
         })
+      } catch {
+        stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false })
       }
       const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
         ? "video/webm;codecs=vp9"
         : "video/webm"
       const recorder = new MediaRecorder(stream, { mimeType })
       chunksRef.current = []
+      recorder.onerror = () => {
+        console.error("[Clips] MediaRecorder error")
+        setMessage(t("clips.captureError"))
+        stopRecording()
+      }
       recorder.ondataavailable = (event) => {
         if (event.data.size === 0) return
         const now = Date.now()

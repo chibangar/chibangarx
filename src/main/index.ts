@@ -178,6 +178,10 @@ app
       }
     })
 
+    ipcMain.handle("get-resources-path", () => {
+      return join(app.getAppPath(), "../resources")
+    })
+
     ipcMain.handle("open-devtools", () => {
       if (mainWindow) {
         mainWindow.webContents.openDevTools()

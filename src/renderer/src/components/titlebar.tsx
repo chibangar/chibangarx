@@ -6,6 +6,7 @@ import Card from "./ui/Card"
 import useAppInstallStore from "@/store/appInstallStore"
 import InstallConsoleModal from "./installConsoleModal"
 import { useTranslation } from "react-i18next"
+import AudioPlayer from "./AudioPlayer"
 
 interface TitleBarProps {
   onToggleSidebar: () => void
@@ -67,6 +68,7 @@ function TitleBar({
         </div>
 
         <div className="flex" style={{ WebkitAppRegion: "no-drag" } as any}>
+          <AudioPlayer />
           <div
             className="h-12.5 w-12 inline-flex items-center justify-center text-sparkle-text-secondary hover:bg-sparkle-accent transition-colors"
              title={adminStatus ? t("titlebar.admin") : t("titlebar.notAdmin")}

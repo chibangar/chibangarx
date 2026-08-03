@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, Tray, desktopCapturer, globalShortcut } from "electron"
+import { app, shell, BrowserWindow, ipcMain, Tray, desktopCapturer, globalShortcut, session } from "electron"
 import { promises as fs } from "fs"
 import path, { join } from "path"
 import log from "electron-log"
@@ -25,6 +25,7 @@ const store = new Store()
 
 let trayInstance: Tray | null = null
 let isQuitting = false
+let selectedCaptureSourceId: string | null = null
 if (store.get("backgroundModeConfigured") !== true) {
   store.set("showTray", true)
   store.set("backgroundModeConfigured", true)
@@ -66,6 +67,10 @@ ipcMain.handle("clips:get-sources", async () => {
     name: source.name,
     thumbnail: source.thumbnail.toDataURL(),
   }))
+})
+
+ipcMain.handle("clips:set-source", (_event: Electron.IpcMainInvokeEvent, sourceId: string) => {
+  selectedCaptureSourceId = sourceId
 })
 
 ipcMain.handle(
@@ -165,6 +170,11 @@ app.commandLine.appendSwitch("no-sandbox")
 app
   .whenReady()
   .then(() => {
+    session.defaultSession.setDisplayMediaRequestHandler(async (_request, callback) => {
+      const sources = await desktopCapturer.getSources({ types: ["window", "screen"] })
+      const selected = sources.find((source) => source.id === selectedCaptureSourceId)
+      callback({ video: selected ?? sources[0] })
+    })
     console.log("[ChibangaRx]: App ready, creating window...")
     try {
       createWindow()

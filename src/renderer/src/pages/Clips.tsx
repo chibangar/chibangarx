@@ -67,15 +67,21 @@ export default function Clips(): React.ReactElement {
     if (!selectedSource) return
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          mandatory: {
-            chromeMediaSource: "desktop",
-            chromeMediaSourceId: selectedSource,
-          },
-        } as MediaTrackConstraints,
-      })
+      await invoke({ channel: "clips:set-source", payload: selectedSource })
+      let stream: MediaStream
+      try {
+        stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false })
+      } catch {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            mandatory: {
+              chromeMediaSource: "desktop",
+              chromeMediaSourceId: selectedSource,
+            },
+          } as MediaTrackConstraints,
+        })
+      }
       const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
         ? "video/webm;codecs=vp9"
         : "video/webm"
@@ -93,7 +99,8 @@ export default function Clips(): React.ReactElement {
       streamRef.current = stream
       setRecording(true)
       setMessage(t("clips.recordingStarted"))
-    } catch {
+    } catch (error) {
+      console.error("[Clips] Capture failed:", error)
       setMessage(t("clips.captureError"))
     }
   }

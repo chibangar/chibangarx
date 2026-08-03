@@ -4,9 +4,10 @@ import { autoUpdater, UpdateInfo } from "electron-updater"
 const CHECK_INTERVAL = 5 * 60 * 1000
 
 export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void {
-  autoUpdater.autoDownload = true
+  autoUpdater.autoDownload = false
   autoUpdater.disableWebInstaller = false
   autoUpdater.autoInstallOnAppQuit = true
+  autoUpdater.logger = null
 
   if (!app.isPackaged) {
     autoUpdater.forceDevUpdateConfig = true
@@ -25,8 +26,8 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
     win?.webContents.send("updater:not-available", { currentVersion: app.getVersion() })
   })
 
-  autoUpdater.on("error", () => {
-    // silently ignore update errors (e.g. no internet, no release)
+  autoUpdater.on("error", (err: Error) => {
+    console.error("[ChibangaRx] Auto-updater error:", err.message)
   })
 
   autoUpdater.on("download-progress", (progress: any) => {
@@ -73,7 +74,7 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
     }
   })
 
-  setTimeout(() => triggerAutoUpdateCheck(), 3000)
+  setTimeout(() => triggerAutoUpdateCheck(), 5000)
   setInterval(() => triggerAutoUpdateCheck(), CHECK_INTERVAL)
 }
 

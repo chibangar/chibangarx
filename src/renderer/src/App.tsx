@@ -13,7 +13,6 @@ import DNS from "./pages/DNS"
 import Settings from "./pages/Settings"
 import Backup from "./pages/Backup"
 import FirstTime from "./components/firsttime"
-import UpdateManager from "./components/updatemanager"
 import ChangelogModal from "./components/changelogModal"
 import useAppInstallStore from "./store/appInstallStore"
 import useOnlineStore from "./store/online"
@@ -167,7 +166,6 @@ function App() {
           </Routes>
         </main>
       </div>
-      <UpdateManager />
       <ToastContainer
         stacked
         limit={5}

@@ -7,10 +7,15 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   autoUpdater.autoDownload = false
   autoUpdater.disableWebInstaller = false
   autoUpdater.autoInstallOnAppQuit = true
+  autoUpdater.channel = "latest"
 
   if (!app.isPackaged) {
     autoUpdater.forceDevUpdateConfig = true
   }
+
+  console.log("[ChibangaRx] Auto-updater initialized, current version:", app.getVersion())
+  console.log("[ChibangaRx] App is packaged:", app.isPackaged)
+  console.log("[ChibangaRx] App path:", app.getAppPath())
 
   autoUpdater.on("update-available", (info: UpdateInfo) => {
     console.log("[ChibangaRx] Update available:", info.version)
@@ -52,7 +57,7 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   ipcMain.handle("updater:get-version", () => app.getVersion())
 
   ipcMain.handle("updater:check", async () => {
-    console.log("[ChibangaRx] Checking for updates...")
+    console.log("[ChibangaRx] Manual update check triggered")
     try {
       const result = await autoUpdater.checkForUpdates()
       console.log("[ChibangaRx] Check result:", result?.updateInfo?.version ?? "none")
@@ -81,12 +86,18 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
     }
   })
 
-  setTimeout(() => triggerAutoUpdateCheck(), 5000)
+  setTimeout(() => {
+    console.log("[ChibangaRx] Running initial update check...")
+    triggerAutoUpdateCheck()
+  }, 3000)
   setInterval(() => triggerAutoUpdateCheck(), CHECK_INTERVAL)
 }
 
 export async function triggerAutoUpdateCheck(): Promise<void> {
   try {
+    console.log("[ChibangaRx] Checking for updates...")
     await autoUpdater.checkForUpdates()
-  } catch {}
+  } catch (err) {
+    console.error("[ChibangaRx] Auto check failed:", err)
+  }
 }

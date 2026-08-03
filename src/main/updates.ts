@@ -3,6 +3,13 @@ import { autoUpdater, UpdateInfo } from "electron-updater"
 
 const CHECK_INTERVAL = 5 * 60 * 1000
 
+type AvailableUpdate = {
+  version: string
+  releaseNotes: string
+}
+
+let availableUpdate: AvailableUpdate | null = null
+
 async function fetchReleaseBody(version: string): Promise<string> {
   return new Promise((resolve) => {
     const url = `https://api.github.com/repos/chibangar/chibangarx/releases/tags/v${version}`
@@ -40,6 +47,7 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   autoUpdater.on("update-available", async (info: UpdateInfo) => {
     console.log("[ChibangaRx] Update available:", info.version)
     const releaseNotes = await fetchReleaseBody(info.version)
+    availableUpdate = { version: info.version, releaseNotes }
     const win = getMainWindow()
     win?.webContents.send("updater:available", {
       version: info.version,
@@ -49,6 +57,7 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
 
   autoUpdater.on("update-not-available", () => {
     console.log("[ChibangaRx] No update available")
+    availableUpdate = null
     const win = getMainWindow()
     win?.webContents.send("updater:not-available", { currentVersion: app.getVersion() })
   })
@@ -76,6 +85,7 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   })
 
   ipcMain.handle("updater:get-version", () => app.getVersion())
+  ipcMain.handle("updater:get-available", () => availableUpdate)
 
   ipcMain.handle("updater:check", async () => {
     console.log("[ChibangaRx] Manual update check triggered")

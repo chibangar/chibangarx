@@ -72,6 +72,12 @@ export default function UpdateManager(): React.ReactElement {
     window.electron.ipcRenderer.on("updater:download-error", onDownloadError)
 
     // Check again after listeners are attached so a fast response is not missed.
+    void window.electron.ipcRenderer
+      .invoke("updater:get-available")
+      .then((payload: UpdatePayload | null) => {
+        if (payload) onAvailable(null, payload)
+      })
+      .catch(() => undefined)
     void window.electron.ipcRenderer.invoke("updater:check")
 
     return () => {

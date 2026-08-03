@@ -3,6 +3,7 @@ import Modal from "@/components/ui/modal"
 import Button from "@/components/ui/button"
 import { Bell } from "lucide-react"
 import ReactMarkdown from "react-markdown"
+import { useTranslation } from "react-i18next"
 
 interface UpdatePayload {
   version?: string
@@ -12,6 +13,7 @@ interface UpdatePayload {
 }
 
 export default function UpdateManager(): React.ReactElement {
+  const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const [hasUpdate, setHasUpdate] = useState(false)
   const [updateVersion, setUpdateVersion] = useState<string | null>(null)
@@ -91,7 +93,7 @@ export default function UpdateManager(): React.ReactElement {
       <button
         onClick={() => setModalOpen(true)}
         className="relative h-8 w-8 inline-flex items-center justify-center rounded-md text-sparkle-text-secondary hover:bg-sparkle-accent hover:text-sparkle-primary transition-colors"
-        title="Updates"
+        title={t("updater.title")}
         style={{ WebkitAppRegion: "no-drag" } as any}
       >
         <Bell size={14} />
@@ -102,15 +104,15 @@ export default function UpdateManager(): React.ReactElement {
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="bg-sparkle-card border border-sparkle-border rounded-2xl p-5 shadow-xl max-w-lg w-full mx-4">
-          <h2 className="text-xl font-semibold mb-1 text-sparkle-primary">Updates</h2>
+          <h2 className="text-xl font-semibold mb-1 text-sparkle-primary">{t("updater.title")}</h2>
           <p className="text-xs text-sparkle-text-secondary mb-4">
-            Current version: {currentVersion}
+            {t("updater.currentVersion")}: {currentVersion}
           </p>
 
           {!hasUpdate && !isDownloaded && (
             <div className="text-center py-6">
-              <p className="text-sparkle-text mb-4">No updates available. You're up to date.</p>
-              <Button onClick={handleCheckNow}>Check now</Button>
+              <p className="text-sparkle-text mb-4">{t("updater.noUpdate")}</p>
+              <Button onClick={handleCheckNow}>{t("updater.checkNow")}</Button>
             </div>
           )}
 
@@ -118,10 +120,11 @@ export default function UpdateManager(): React.ReactElement {
             <div>
               <div className="bg-sparkle-bg rounded-xl p-3 mb-4 border border-sparkle-border-secondary">
                 <p className="text-sm text-sparkle-text mb-2">
-                  New version available: <span className="font-bold text-sparkle-primary">{updateVersion}</span>
+                  {t("updater.newVersion")}:{" "}
+                  <span className="font-bold text-sparkle-primary">{updateVersion}</span>
                 </p>
                 {releaseNotes && (
-                  <div className="text-xs text-sparkle-text-secondary max-h-48 overflow-y-auto prose prose-invert prose-xs prose-headings:text-sparkle-primary prose-headings:text-sm prose-li:text-sparkle-text prose-p:text-sparkle-text">
+                  <div className="text-xs text-sparkle-text-secondary max-h-48 overflow-y-auto prose prose-invert prose-headings:text-sparkle-primary prose-li:text-sparkle-text">
                     <ReactMarkdown>{releaseNotes}</ReactMarkdown>
                   </div>
                 )}
@@ -129,7 +132,7 @@ export default function UpdateManager(): React.ReactElement {
               {isDownloading ? (
                 <div>
                   <div className="flex justify-between text-xs text-sparkle-text-secondary mb-1">
-                    <span>Downloading...</span>
+                    <span>{t("updater.downloading")}</span>
                     <span>{Math.floor(downloadPercent)}%</span>
                   </div>
                   <div className="w-full h-2 bg-sparkle-border-secondary rounded-full overflow-hidden">
@@ -141,12 +144,13 @@ export default function UpdateManager(): React.ReactElement {
                 </div>
               ) : (
                 <div className="flex justify-end gap-3">
-                  <Button onClick={handleCheckNow} className="bg-sparkle-border-secondary hover:bg-sparkle-border text-sparkle-text">
-                    Check again
+                  <Button
+                    onClick={handleCheckNow}
+                    className="bg-sparkle-border-secondary hover:bg-sparkle-border text-sparkle-text"
+                  >
+                    {t("updater.checkAgain")}
                   </Button>
-                  <Button onClick={handleDownload}>
-                    Download update
-                  </Button>
+                  <Button onClick={handleDownload}>{t("updater.download")}</Button>
                 </div>
               )}
             </div>
@@ -155,15 +159,17 @@ export default function UpdateManager(): React.ReactElement {
           {isDownloaded && (
             <div className="text-center py-4">
               <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-3 mb-4">
-                <p className="text-sm text-green-400">
-                  Update downloaded successfully!
-                </p>
+                <p className="text-sm text-green-400">{t("updater.downloaded")}</p>
               </div>
               <p className="text-xs text-sparkle-text-secondary mb-4">
-                The app will restart to apply the update.
+                {t("updater.restartInfo")}
               </p>
-              <Button onClick={handleInstall} disabled={isInstalling} className="bg-green-600 hover:bg-green-700">
-                {isInstalling ? "Restarting..." : "Restart and install"}
+              <Button
+                onClick={handleInstall}
+                disabled={isInstalling}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {isInstalling ? t("updater.restarting") : t("updater.restartInstall")}
               </Button>
             </div>
           )}

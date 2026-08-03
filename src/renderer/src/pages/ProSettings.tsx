@@ -29,7 +29,7 @@ export default function ProSettings() {
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const html = await response.text()
         const players = extractPlayers(html)
-        const categories = extractCategories(html)
+        const categories = extractCategories()
         setData({ players, categories })
       } catch (err) {
         console.error("Failed to fetch pro settings:", err)

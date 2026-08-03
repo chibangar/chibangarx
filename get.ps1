@@ -1,4 +1,4 @@
-# ChibangaRx Installer Script
+# ChibangaRx Portable Launcher
 # Usage: irm https://raw.githubusercontent.com/chibangar/chibangarx/main/get.ps1 | iex
 
 $repo = "chibangar/chibangarx"
@@ -10,7 +10,7 @@ $headers = @{
 
 Write-Host ""
 Write-Host "=================================" -ForegroundColor Cyan
-Write-Host "       ChibangaRx Installer" -ForegroundColor Cyan
+Write-Host "       ChibangaRx Portable" -ForegroundColor Cyan
 Write-Host "=================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -21,7 +21,6 @@ try {
 }
 catch {
     Write-Host "[X] Failed to contact GitHub API." -ForegroundColor Red
-    Write-Host "[X] Check your internet connection and try again." -ForegroundColor Red
     return
 }
 
@@ -29,25 +28,28 @@ $tag = $release.tag_name
 $versionLabel = $tag -replace "^v", ""
 Write-Host "[OK] Latest version: v$versionLabel" -ForegroundColor Green
 
-# Find installer
-$asset = $release.assets | Where-Object { $_.name -match "^chibangarx-.*-setup\.exe$" -or $_.name -match "^sparkle-.*-setup\.exe$" }
+# Find zip
+$asset = $release.assets | Where-Object { $_.name -match "\.zip$" }
 
 if (-not $asset) {
-    Write-Host "[X] No installer found in release $tag" -ForegroundColor Red
-    Write-Host "[X] Available files:" -ForegroundColor Yellow
-    $release.assets | ForEach-Object { Write-Host "    - $($_.name)" }
+    Write-Host "[X] No portable zip found in release $tag" -ForegroundColor Red
     return
 }
 
 Write-Host "[OK] Found: $($asset.name)" -ForegroundColor Green
 
-# Download
-$downloadPath = Join-Path $env:TEMP $asset.name
-Write-Host "[..] Downloading..." -ForegroundColor Yellow
+# Create temp folder
+$appDir = Join-Path $env:TEMP "ChibangaRx-$versionLabel"
+if (Test-Path $appDir) { Remove-Item -Recurse -Force $appDir }
+New-Item -ItemType Directory -Path $appDir -Force | Out-Null
+
+# Download zip
+$zipPath = Join-Path $env:TEMP $asset.name
+Write-Host "[..] Downloading portable version..." -ForegroundColor Yellow
 
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $downloadPath -UseBasicParsing
+    Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zipPath -UseBasicParsing
     Write-Host "[OK] Download complete!" -ForegroundColor Green
 }
 catch {
@@ -55,17 +57,29 @@ catch {
     return
 }
 
-# Run installer
-Write-Host "[..] Launching installer..." -ForegroundColor Yellow
+# Extract
+Write-Host "[..] Extracting..." -ForegroundColor Yellow
 try {
-    Start-Process -FilePath $downloadPath -Verb RunAs
-    Start-Sleep -Seconds 3
-    Remove-Item -Path $downloadPath -Force -ErrorAction SilentlyContinue
-    Write-Host "[OK] Installer launched!" -ForegroundColor Green
+    Expand-Archive -Path $zipPath -DestinationPath $appDir -Force
+    Remove-Item -Path $zipPath -Force -ErrorAction SilentlyContinue
+    Write-Host "[OK] Extracted!" -ForegroundColor Green
 }
 catch {
-    Write-Host "[X] Failed to launch installer." -ForegroundColor Red
+    Write-Host "[X] Extraction failed." -ForegroundColor Red
+    return
 }
 
+# Find exe
+$exe = Get-ChildItem -Path $appDir -Recurse -Filter "chibangarx.exe" | Select-Object -First 1
+
+if (-not $exe) {
+    Write-Host "[X] Could not find chibangarx.exe" -ForegroundColor Red
+    return
+}
+
+# Launch
+Write-Host "[..] Launching ChibangaRx..." -ForegroundColor Yellow
+Start-Process -FilePath $exe.FullName
+Write-Host "[OK] ChibangaRx is running!" -ForegroundColor Green
 Write-Host ""
-Write-Host "Thanks for using ChibangaRx!" -ForegroundColor Cyan
+Write-Host "Files are in: $appDir" -ForegroundColor DarkGray

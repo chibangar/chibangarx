@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import Modal from "@/components/ui/modal"
 import Button from "@/components/ui/button"
 import { Bell } from "lucide-react"
+import ReactMarkdown from "react-markdown"
 
 interface UpdatePayload {
   version?: string
@@ -33,11 +34,13 @@ export default function UpdateManager(): React.ReactElement {
       setIsDownloading(false)
       setDownloadPercent(0)
       setIsDownloaded(false)
+      setModalOpen(true)
     }
     const onNotAvailable = () => {
       setHasUpdate(false)
     }
-    const onError = () => {
+    const onError = (_e: any, payload: UpdatePayload) => {
+      console.error("[UpdateManager] Error:", payload?.message)
       setIsDownloading(false)
     }
     const onProgress = (_e: any, payload: UpdatePayload) => {
@@ -114,12 +117,12 @@ export default function UpdateManager(): React.ReactElement {
           {hasUpdate && !isDownloaded && (
             <div>
               <div className="bg-sparkle-bg rounded-xl p-3 mb-4 border border-sparkle-border-secondary">
-                <p className="text-sm text-sparkle-text">
+                <p className="text-sm text-sparkle-text mb-2">
                   New version available: <span className="font-bold text-sparkle-primary">{updateVersion}</span>
                 </p>
                 {releaseNotes && (
-                  <div className="mt-2 text-xs text-sparkle-text-secondary max-h-32 overflow-y-auto whitespace-pre-wrap">
-                    {releaseNotes}
+                  <div className="text-xs text-sparkle-text-secondary max-h-48 overflow-y-auto prose prose-invert prose-xs prose-headings:text-sparkle-primary prose-headings:text-sm prose-li:text-sparkle-text prose-p:text-sparkle-text">
+                    <ReactMarkdown>{releaseNotes}</ReactMarkdown>
                   </div>
                 )}
               </div>

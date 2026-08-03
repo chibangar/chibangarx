@@ -1,7 +1,29 @@
-import { app, ipcMain, BrowserWindow } from "electron"
+import { app, ipcMain, BrowserWindow, net } from "electron"
 import { autoUpdater, UpdateInfo } from "electron-updater"
 
 const CHECK_INTERVAL = 5 * 60 * 1000
+
+async function fetchReleaseBody(version: string): Promise<string> {
+  return new Promise((resolve) => {
+    const url = `https://api.github.com/repos/chibangar/chibangarx/releases/tags/v${version}`
+    const request = net.request(url)
+    request.setHeader("User-Agent", "ChibangaRx")
+    let data = ""
+    request.on("response", (response) => {
+      response.on("data", (chunk) => { data += chunk.toString() })
+      response.on("end", () => {
+        try {
+          const release = JSON.parse(data)
+          resolve(release.body ?? "")
+        } catch {
+          resolve("")
+        }
+      })
+    })
+    request.on("error", () => resolve(""))
+    request.end()
+  })
+}
 
 export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void {
   autoUpdater.autoDownload = false
@@ -14,15 +36,14 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   }
 
   console.log("[ChibangaRx] Auto-updater initialized, current version:", app.getVersion())
-  console.log("[ChibangaRx] App is packaged:", app.isPackaged)
-  console.log("[ChibangaRx] App path:", app.getAppPath())
 
-  autoUpdater.on("update-available", (info: UpdateInfo) => {
+  autoUpdater.on("update-available", async (info: UpdateInfo) => {
     console.log("[ChibangaRx] Update available:", info.version)
+    const releaseNotes = await fetchReleaseBody(info.version)
     const win = getMainWindow()
     win?.webContents.send("updater:available", {
       version: info.version,
-      releaseNotes: info.releaseNotes ?? undefined,
+      releaseNotes,
     })
   })
 

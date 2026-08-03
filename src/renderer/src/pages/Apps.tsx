@@ -221,7 +221,7 @@ function Apps() {
           appsData = data as { apps: AppData[] }
         } else {
           const response = await fetch(
-            "https://raw.githubusercontent.com/parcoil/chibangarx/refs/heads/v2/src/renderer/src/assets/apps.json",
+            "https://raw.githubusercontent.com/chibangar/chibangarx/main/src/renderer/src/assets/apps.json",
           )
           appsData = await response.json()
         }

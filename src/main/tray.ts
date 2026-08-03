@@ -5,8 +5,8 @@ export function createTray(mainWindow: BrowserWindow): Tray {
   const tray = new Tray(path.join(__dirname, "../../resources/chibangarx2.ico"))
 
   const contextMenu = Menu.buildFromTemplate([
-    { label: "Open Window", click: (): void => mainWindow.show() },
-    { label: "Quit", click: (): void => app.quit() },
+    { label: "Abrir ChibangaRx", click: (): void => mainWindow.show() },
+    { label: "Encerrar", click: (): void => app.quit() },
   ])
 
   tray.setToolTip("ChibangaRx")

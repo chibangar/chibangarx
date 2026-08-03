@@ -23,9 +23,16 @@ log.initialize()
 const store = new Store()
 
 let trayInstance: Tray | null = null
-if (store.get("showTray") === undefined) {
-  store.set("showTray", false)
+let isQuitting = false
+if (store.get("backgroundModeConfigured") !== true) {
+  store.set("showTray", true)
+  store.set("backgroundModeConfigured", true)
 }
+
+app.on("before-quit", () => {
+  isQuitting = true
+  trayInstance?.destroy()
+})
 
 ipcMain.handle("tray:get", () => {
   return store.get("showTray")
@@ -176,6 +183,13 @@ app
         } else {
           app.quit()
         }
+      }
+    })
+
+    mainWindow?.on("close", (event) => {
+      if (!isQuitting && store.get("showTray")) {
+        event.preventDefault()
+        mainWindow?.hide()
       }
     })
 

@@ -1,136 +1,150 @@
-import { useState, useEffect } from "react"
+import { createElement, useEffect, useRef, useState } from "react"
 import RootDiv from "@/components/rootdiv"
 import { useTranslation } from "react-i18next"
-import { ExternalLink } from "lucide-react"
-import Button from "@/components/ui/button"
-import Card from "@/components/ui/Card"
+import { ArrowLeft, ArrowRight, ExternalLink, RefreshCw } from "lucide-react"
 
-interface ProSettingsData {
-  players: Array<{
-    name: string
-    team: string
-    settings: Record<string, string>
-  }>
-  categories: string[]
+const PRO_SETTINGS_URL = "https://prosettings.net/games/cs2/"
+
+type EmbeddedWebview = HTMLElement & {
+  canGoBack: () => boolean
+  canGoForward: () => boolean
+  goBack: () => void
+  goForward: () => void
+  reload: () => void
 }
+
+const controlClass =
+  "inline-flex h-8 w-8 items-center justify-center rounded-md text-chibangarx-text-secondary transition-colors hover:bg-chibangarx-border-secondary hover:text-chibangarx-text disabled:cursor-not-allowed disabled:opacity-40"
 
 export default function ProSettings() {
   const { t } = useTranslation()
+  const webviewRef = useRef<EmbeddedWebview | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [data, setData] = useState<ProSettingsData | null>(null)
+  const [failed, setFailed] = useState(false)
+  const [canGoBack, setCanGoBack] = useState(false)
+  const [canGoForward, setCanGoForward] = useState(false)
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await fetch(
-          "https://prosettings.net/games/cs2/",
-        )
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        const html = await response.text()
-        const players = extractPlayers(html)
-        const categories = extractCategories()
-        setData({ players, categories })
-      } catch (err) {
-        console.error("Failed to fetch pro settings:", err)
-        setError(t("proSettings.fetchError"))
-      } finally {
-        setLoading(false)
-      }
+    const webview = webviewRef.current
+    if (!webview) return undefined
+
+    const updateNavigation = () => {
+      setCanGoBack(webview.canGoBack())
+      setCanGoForward(webview.canGoForward())
     }
-    fetchSettings()
-  }, [t])
-
-  const extractPlayers = (html: string): ProSettingsData["players"] => {
-    const players: ProSettingsData["players"] = []
-    const playerRegex = /<h3[^>]*>(.*?)<\/h3>/g
-    let match
-    while ((match = playerRegex.exec(html)) !== null) {
-      const name = match[1].trim()
-      if (name && name.length < 50) {
-        players.push({
-          name,
-          team: "",
-          settings: {},
-        })
-      }
+    const handleStartLoading = () => {
+      setLoading(true)
+      setFailed(false)
     }
-    return players.slice(0, 20)
-  }
+    const handleStopLoading = () => {
+      setLoading(false)
+      updateNavigation()
+    }
+    const handleLoadFailure = () => {
+      setLoading(false)
+      setFailed(true)
+    }
 
-  const extractCategories = (): string[] => {
-    return ["Crosshair", "Video", "Gameplay", "Audio", "Mouse", "Keyboard"]
-  }
+    webview.addEventListener("did-start-loading", handleStartLoading)
+    webview.addEventListener("did-stop-loading", handleStopLoading)
+    webview.addEventListener("did-navigate", updateNavigation)
+    webview.addEventListener("did-navigate-in-page", updateNavigation)
+    webview.addEventListener("did-fail-load", handleLoadFailure)
 
-  if (loading) {
-    return (
-      <RootDiv>
-        <div className="flex items-center justify-center h-64">
-          <p className="text-chibangarx-text-secondary">
-            {t("proSettings.loading")}
-          </p>
-        </div>
-      </RootDiv>
-    )
-  }
+    return () => {
+      webview.removeEventListener("did-start-loading", handleStartLoading)
+      webview.removeEventListener("did-stop-loading", handleStopLoading)
+      webview.removeEventListener("did-navigate", updateNavigation)
+      webview.removeEventListener("did-navigate-in-page", updateNavigation)
+      webview.removeEventListener("did-fail-load", handleLoadFailure)
+    }
+  }, [])
 
-  if (error) {
-    return (
-      <RootDiv>
-        <div className="flex flex-col items-center justify-center h-64 gap-4">
-          <p className="text-red-500">{error}</p>
-          <Button onClick={() => window.location.reload()}>
-            {t("common.retry")}
-          </Button>
-        </div>
-      </RootDiv>
-    )
-  }
+  const webview = createElement("webview", {
+    ref: (element: EmbeddedWebview | null) => {
+      webviewRef.current = element
+    },
+    src: PRO_SETTINGS_URL,
+    partition: "persist:prosettings",
+    allowpopups: "false",
+    className: "h-full w-full border-0",
+  })
 
   return (
     <RootDiv>
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-chibangarx-text">
-            {t("proSettings.title")}
-          </h1>
-          <a
-            href="https://prosettings.net/games/cs2/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-blue-500 hover:text-blue-400 transition-colors"
-          >
-            {t("proSettings.visitWebsite")}
-            <ExternalLink size={16} />
-          </a>
+      <div className="flex h-full min-h-0 flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-chibangarx-text">
+              {t("proSettings.title")}
+            </h1>
+            <p className="text-sm text-chibangarx-text-secondary">
+              {t("proSettings.description")}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-chibangarx-border bg-chibangarx-card p-1">
+            <button
+              type="button"
+              className={controlClass}
+              disabled={!canGoBack}
+              onClick={() => webviewRef.current?.goBack()}
+              title={t("proSettings.back")}
+            >
+              <ArrowLeft size={16} />
+            </button>
+            <button
+              type="button"
+              className={controlClass}
+              disabled={!canGoForward}
+              onClick={() => webviewRef.current?.goForward()}
+              title={t("proSettings.forward")}
+            >
+              <ArrowRight size={16} />
+            </button>
+            <button
+              type="button"
+              className={controlClass}
+              onClick={() => webviewRef.current?.reload()}
+              title={t("proSettings.reload")}
+            >
+              <RefreshCw size={16} />
+            </button>
+            <a
+              href={PRO_SETTINGS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={controlClass}
+              title={t("proSettings.openExternal")}
+            >
+              <ExternalLink size={16} />
+            </a>
+          </div>
         </div>
 
-            {data && data.players.length > 0 ? (
-              <div className="space-y-4">
-                {data.players.map((player, index) => (
-                  <Card key={index} className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold text-chibangarx-text">
-                          {player.name}
-                        </h3>
-                        {player.team && (
-                          <p className="text-sm text-chibangarx-text-secondary">
-                            {player.team}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="p-4">
-                <p className="text-chibangarx-text-secondary">
-                  {t("proSettings.noData")}
-                </p>
-              </Card>
-            )}
+        <div className="relative min-h-0 flex-1 overflow-hidden rounded-xl border border-chibangarx-border bg-white">
+          {webview}
+          {loading && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-chibangarx-bg/80">
+              <p className="text-sm text-chibangarx-text-secondary">
+                {t("proSettings.loading")}
+              </p>
+            </div>
+          )}
+          {failed && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-chibangarx-bg p-6 text-center">
+              <p className="text-chibangarx-text-secondary">
+                {t("proSettings.fetchError")}
+              </p>
+              <button
+                type="button"
+                className="rounded-lg bg-chibangarx-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+                onClick={() => webviewRef.current?.reload()}
+              >
+                {t("common.retry")}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </RootDiv>
   )

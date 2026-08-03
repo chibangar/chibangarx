@@ -568,10 +568,15 @@ export const pt = {
   },
   proSettings: {
     title: "Configurações de Pros CS2",
+    description: "Consulte as configurações profissionais de CS2 dentro do ChibangaRx.",
     loading: "A carregar configurações de pros...",
     fetchError: "Falha ao carregar configurações de pros. Verifique a sua ligação à internet.",
     visitWebsite: "Visitar prosettings.net",
     noData: "Sem dados de jogadores disponíveis para já.",
+    back: "Voltar",
+    forward: "Avançar",
+    reload: "Recarregar",
+    openExternal: "Abrir no navegador",
   },
   tweakData: {
     "24-hour-clock": { title: "Definir Relógio 24 Horas", description: "Altera o relógio para mostrar o formato de 24 horas." },

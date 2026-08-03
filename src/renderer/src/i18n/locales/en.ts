@@ -560,10 +560,15 @@ export const en = {
   },
   proSettings: {
     title: "CS2 Pro Settings",
+    description: "Browse professional CS2 settings inside ChibangaRx.",
     loading: "Loading pro settings...",
     fetchError: "Failed to load pro settings. Check your internet connection.",
     visitWebsite: "Visit prosettings.net",
     noData: "No player data available at the moment.",
+    back: "Go back",
+    forward: "Go forward",
+    reload: "Reload",
+    openExternal: "Open in browser",
   },
   tweakData: {
     "24-hour-clock": { title: "Set 24-Hour Clock", description: "Changes clock to display 24-hour format." },

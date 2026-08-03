@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   RotateCw,
   Settings,
+  Trophy,
   Wrench,
   WifiOff,
   Bubbles,
@@ -34,6 +35,7 @@ const tabIcons = {
   utilities: <Box size={20} />,
   dns: <EthernetPort size={20} />,
   apps: <LayoutGrid size={20} />,
+  proSettings: <Trophy size={20} />,
   settings: <Settings size={20} />,
 }
 
@@ -60,6 +62,7 @@ function Nav({ collapsed }) {
     backup: { label: t("nav.restore"), path: "/backup" },
     dns: { label: t("nav.dns"), path: "/dns" },
     apps: { label: t("nav.apps"), path: "/apps" },
+    proSettings: { label: t("nav.proSettings"), path: "/pro-settings" },
     settings: { label: t("nav.settings"), path: "/settings" },
   }
 

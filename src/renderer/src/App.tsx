@@ -20,6 +20,7 @@ import { CURRENT_VERSION } from "./lib/version"
 import { useTranslation } from "react-i18next"
 import Debloat from "./pages/Debloat"
 import NoAdmin from "./components/noAdmin"
+import ProSettings from "./pages/ProSettings"
 
 function App() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
@@ -162,6 +163,7 @@ function App() {
             <Route path="/dns" element={<DNS />} />
             <Route path="/apps" element={<Apps />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/pro-settings" element={<ProSettings />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

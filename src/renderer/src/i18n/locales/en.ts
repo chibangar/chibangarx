@@ -8,6 +8,7 @@ export const en = {
     restore: "Restore",
     dns: "DNS Manager",
     apps: "Apps",
+    proSettings: "Pro Settings",
     settings: "Settings",
     restart: "Restart Required",
     beta: "Beta",
@@ -556,6 +557,13 @@ export const en = {
     creatingRestorePoint: "Creating restore point... Please wait before applying tweaks.",
     restorePointCreated: "Restore point created!",
     restorePointFailed: "Failed to create restore point.",
+  },
+  proSettings: {
+    title: "CS2 Pro Settings",
+    loading: "Loading pro settings...",
+    fetchError: "Failed to load pro settings. Check your internet connection.",
+    visitWebsite: "Visit prosettings.net",
+    noData: "No player data available at the moment.",
   },
   tweakData: {
     "24-hour-clock": { title: "Set 24-Hour Clock", description: "Changes clock to display 24-hour format." },

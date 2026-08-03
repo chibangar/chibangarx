@@ -8,6 +8,7 @@ export const pt = {
     restore: "Restauração",
     dns: "Gestor DNS",
     apps: "Aplicações",
+    proSettings: "Configurações de Pros",
     settings: "Definições",
     restart: "Reinicialização Necessária",
     beta: "Beta",
@@ -564,6 +565,13 @@ export const pt = {
     creatingRestorePoint: "A criar ponto de restauração... Por espere antes de aplicar ajustes.",
     restorePointCreated: "Ponto de restauração criado!",
     restorePointFailed: "Falha ao criar ponto de restauração.",
+  },
+  proSettings: {
+    title: "Configurações de Pros CS2",
+    loading: "A carregar configurações de pros...",
+    fetchError: "Falha ao carregar configurações de pros. Verifique a sua ligação à internet.",
+    visitWebsite: "Visitar prosettings.net",
+    noData: "Sem dados de jogadores disponíveis para já.",
   },
   tweakData: {
     "24-hour-clock": { title: "Definir Relógio 24 Horas", description: "Altera o relógio para mostrar o formato de 24 horas." },

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Routes, Route, Navigate } from "react-router-dom"
 import TitleBar from "./components/titlebar"
 import Nav from "./components/nav"
+import StarField from "./components/StarField"
 import "./app.css"
 import { ToastContainer, Slide, toast } from "react-toastify"
 import Home from "./pages/Home"
@@ -61,7 +62,7 @@ function App() {
 
   useEffect(() => {
     const applyTheme = (theme) => {
-      document.body.classList.remove("light", "purple", "dark", "gray", "classic")
+      document.body.classList.remove("light", "purple", "dark", "gray", "classic", "space")
       if (theme === "system" || !theme) {
         const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
           ? "dark"
@@ -135,6 +136,7 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen bg-chibangarx-bg text-chibangarx-text overflow-hidden">
+      {theme === "space" && <StarField />}
       <FirstTime />
       <ChangelogModal
         open={changelogOpen}

@@ -159,6 +159,21 @@ layer(base);
     --color-chibangarx-secondary: #2dac7d;
     --color-chibangarx-accent: #2e394b;
   }
+
+  .space {
+    --color-chibangarx-bg: #050a18;
+    --color-chibangarx-text: #e8ecf4;
+    --color-chibangarx-text-dark: #c5d0e0;
+    --color-chibangarx-text-darker: #9bacc4;
+    --color-chibangarx-text-secondary: #7a8da8;
+    --color-chibangarx-text-muted: #3a4a66;
+    --color-chibangarx-card: #0a1428;
+    --color-chibangarx-border: #1a2744;
+    --color-chibangarx-border-secondary: #15203a;
+    --color-chibangarx-primary: #6c9cff;
+    --color-chibangarx-secondary: #a87bff;
+    --color-chibangarx-accent: #111e38;
+  }
   .Toastify__toast {
     background-color: var(--color-chibangarx-card) !important;
     border: 1px solid var(--color-chibangarx-border) !important;

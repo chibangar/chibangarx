@@ -77,6 +77,7 @@ export const en = {
     purple: "Purple",
     gray: "Gray",
     classic: "Classic",
+    space: "Space",
     animationDirection: "Animation Direction",
     animationDesc: "Choose the page transition animation direction",
     up: "up",

@@ -21,6 +21,7 @@ function Settings() {
     { label: t("settings.purple"), value: "purple" },
     { label: t("settings.gray"), value: "gray" },
     { label: t("settings.classic"), value: "classic" },
+    { label: t("settings.space"), value: "space" },
   ]
 
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
@@ -64,7 +65,7 @@ function Settings() {
   }
 
   useEffect(() => {
-    document.body.classList.remove("light", "purple", "dark", "gray", "classic")
+    document.body.classList.remove("light", "purple", "dark", "gray", "classic", "space")
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"

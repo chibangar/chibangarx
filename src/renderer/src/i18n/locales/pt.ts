@@ -80,6 +80,7 @@ export const pt = {
     purple: "Roxo",
     gray: "Cinza",
     classic: "Clássico",
+    space: "Espaço",
     animationDirection: "Direção da Animação",
     animationDesc: "Escolha a direção da animação de transição de página",
     up: "cima",

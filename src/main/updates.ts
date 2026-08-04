@@ -33,8 +33,7 @@ async function fetchReleaseBody(version: string): Promise<string> {
 }
 
 export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void {
-  autoUpdater.autoDownload = false
-  autoUpdater.disableWebInstaller = false
+  autoUpdater.autoDownload = true
   autoUpdater.autoInstallOnAppQuit = true
   autoUpdater.channel = "latest"
 
@@ -79,9 +78,12 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   })
 
   autoUpdater.on("update-downloaded", (info: UpdateInfo) => {
-    console.log("[ChibangaRx] Update downloaded:", info.version)
+    console.log("[ChibangaRx] Update downloaded:", info.version, "- installing...")
     const win = getMainWindow()
     win?.webContents.send("updater:downloaded", { version: info.version })
+    setTimeout(() => {
+      autoUpdater.quitAndInstall(false, true)
+    }, 2000)
   })
 
   ipcMain.handle("updater:get-version", () => app.getVersion())

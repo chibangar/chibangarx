@@ -1,7 +1,7 @@
 import { app, ipcMain, BrowserWindow, net } from "electron"
 import { autoUpdater, UpdateInfo } from "electron-updater"
 
-const CHECK_INTERVAL = 5 * 60 * 1000
+const CHECK_INTERVAL = 30 * 1000
 
 type AvailableUpdate = {
   version: string
@@ -123,7 +123,7 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   setTimeout(() => {
     console.log("[ChibangaRx] Running initial update check...")
     triggerAutoUpdateCheck()
-  }, 3000)
+  }, 1000)
   setInterval(() => triggerAutoUpdateCheck(), CHECK_INTERVAL)
 }
 

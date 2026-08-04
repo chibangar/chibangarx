@@ -12,6 +12,7 @@ import { MonitorCog } from "lucide-react"
 import { Wrench } from "lucide-react"
 import Card from "@/components/ui/Card"
 import { useTranslation } from "react-i18next"
+import Planet from "@/components/Planet"
 function Home() {
   const { t } = useTranslation()
   const systemInfo = useSystemStore((state) => state.systemInfo)
@@ -163,9 +164,24 @@ function Home() {
     )
   }
 
+  const isSpaceTheme = document.body.classList.contains("space")
+
   return (
     <RootDiv>
-      <div className="max-w-[1800px] mx-auto ">
+      <div className="max-w-[1800px] mx-auto relative">
+        {isSpaceTheme && (
+          <>
+            <div className="absolute -top-2 right-8 opacity-60 pointer-events-none">
+              <Planet size={90} variant="saturn" />
+            </div>
+            <div className="absolute top-40 -right-4 opacity-40 pointer-events-none">
+              <Planet size={50} variant="neptune" />
+            </div>
+            <div className="absolute bottom-20 left-4 opacity-30 pointer-events-none">
+              <Planet size={35} variant="mars" />
+            </div>
+          </>
+        )}
         <Greeting />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <InfoCard

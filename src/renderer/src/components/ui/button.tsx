@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import { playClick } from "@/lib/sound"
 
 type ButtonSize = "sm" | "md" | "lg"
 type ButtonVariant = "primary" | "outline" | "secondary" | "danger" | ""
@@ -45,6 +46,13 @@ const Button: React.FC<ButtonProps> = ({
 
   const disabledClasses = "opacity-50 cursor-not-allowed pointer-events-none"
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!disabled) {
+      playClick()
+    }
+    props.onClick?.(e)
+  }
+
   return (
     <button
       className={clsx(
@@ -55,6 +63,7 @@ const Button: React.FC<ButtonProps> = ({
         className,
       )}
       disabled={disabled}
+      onClick={handleClick}
       {...props}
     >
       {children}

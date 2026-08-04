@@ -5,6 +5,8 @@ export const pt = {
     mute: "Silenciar",
     unmute: "Ativar som",
     volume: "Volume: {{volume}}%",
+    soundsEnabled: "Sons de Interação",
+    soundsDesc: "Reproduzir sons ao clicar botões, alternar opções e outras interações",
   },
   nav: {
     dashboard: "Painel",

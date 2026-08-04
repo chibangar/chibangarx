@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
+import { playDropdown } from "@/lib/sound"
 
 interface DropdownProps {
   options: string[]
@@ -24,7 +25,10 @@ export function Dropdown({ options, value, onChange }: DropdownProps) {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          playDropdown()
+          setIsOpen(!isOpen)
+        }}
         className="px-4 py-2 rounded-lg border border-chibangarx-border bg-chibangarx-bg text-chibangarx-text hover:border-chibangarx-primary transition-all duration-200 flex items-center gap-2 min-w-[180px] justify-between shadow-sm hover:shadow"
       >
         <span>{value}</span>

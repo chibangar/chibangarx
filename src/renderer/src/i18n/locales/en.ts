@@ -5,6 +5,8 @@ export const en = {
     mute: "Mute",
     unmute: "Unmute",
     volume: "Volume: {{volume}}%",
+    soundsEnabled: "Interaction Sounds",
+    soundsDesc: "Play sounds on button clicks, toggles, and other interactions",
   },
   nav: {
     dashboard: "Dashboard",

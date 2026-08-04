@@ -23,6 +23,7 @@ import Debloat from "./pages/Debloat"
 import NoAdmin from "./components/noAdmin"
 import ProSettings from "./pages/ProSettings"
 import Clips from "./pages/Clips"
+import { playSuccess, playError } from "./lib/sound"
 
 function App() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
@@ -41,10 +42,12 @@ function App() {
       },
       "install-complete": () => {
         clearApps()
+        playSuccess()
         toast.success(t("common.operationSuccess"))
       },
       "install-error": () => {
         clearApps()
+        playError()
         toast.error(t("common.operationError"))
       },
     }

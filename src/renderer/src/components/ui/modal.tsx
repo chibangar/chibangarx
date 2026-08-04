@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 import ReactDOM from "react-dom"
+import { playModalOpen, playModalClose } from "@/lib/sound"
 
 interface ModalProps {
   open: boolean
@@ -10,6 +11,7 @@ interface ModalProps {
 
 export default function Modal({ open, onClose, onOpenChange, children }: ModalProps) {
   const handleClose = () => {
+    playModalClose()
     onClose?.()
     onOpenChange?.(false)
   }
@@ -18,7 +20,10 @@ export default function Modal({ open, onClose, onOpenChange, children }: ModalPr
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose()
     }
-    if (open) window.addEventListener("keydown", handleKey)
+    if (open) {
+      window.addEventListener("keydown", handleKey)
+      playModalOpen()
+    }
     return () => window.removeEventListener("keydown", handleKey)
   }, [open, onClose, onOpenChange])
 

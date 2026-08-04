@@ -7,6 +7,7 @@ import Modal from "@/components/ui/modal"
 import ChangelogModal from "@/components/changelogModal"
 import Toggle from "@/components/ui/Toggle"
 import { toast } from "react-toastify"
+import { playToggle } from "@/lib/sound"
 import Card from "@/components/ui/Card"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useTranslation } from "react-i18next"
@@ -47,6 +48,9 @@ function Settings() {
   )
   const [rpcEnabled, setRpcEnabled] = useState(true)
   const [rpcLoading, setRpcLoading] = useState(false)
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    return localStorage.getItem("chibangarx:soundEnabled") !== "false"
+  })
 
   const checkForUpdates = async () => {
     try {
@@ -227,11 +231,32 @@ function Settings() {
                        localStorage.setItem("pageAnimation", newValue)
                      }}
                    />
-                </div>
-              </SettingCard>
-            </SettingSection>
+                 </div>
+               </SettingCard>
+               <SettingCard>
+                 <div className="flex items-center justify-between">
+                   <div className="flex-1">
+                     <h3 className="text-base font-medium text-chibangarx-text mb-1">
+                       {t("audio.soundsEnabled")}
+                     </h3>
+                     <p className="text-sm text-chibangarx-text-secondary">
+                       {t("audio.soundsDesc")}
+                     </p>
+                   </div>
+                   <Toggle
+                     checked={soundEnabled}
+                     onChange={() => {
+                       const newValue = !soundEnabled
+                       setSoundEnabled(newValue)
+                       localStorage.setItem("chibangarx:soundEnabled", newValue.toString())
+                       if (newValue) playToggle(true)
+                     }}
+                   />
+                 </div>
+               </SettingCard>
+             </SettingSection>
 
-            <SettingSection title={t("settings.updates")}>
+             <SettingSection title={t("settings.updates")}>
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">

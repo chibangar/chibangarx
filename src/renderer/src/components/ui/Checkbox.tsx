@@ -1,5 +1,6 @@
 import { useId } from "react"
 import { Check } from "lucide-react"
+import { playCheckbox } from "@/lib/sound"
 
 interface CheckboxProps {
   label?: string
@@ -26,7 +27,10 @@ export default function Checkbox({
         id={id}
         type="checkbox"
         checked={checked}
-        onChange={(e) => onChange?.(e.target.checked)}
+        onChange={(e) => {
+          playCheckbox()
+          onChange?.(e.target.checked)
+        }}
         className="peer hidden"
         aria-checked={checked}
       />

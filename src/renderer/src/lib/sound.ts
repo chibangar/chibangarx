@@ -1,0 +1,110 @@
+let audioContext: AudioContext | null = null
+
+function getAudioContext(): AudioContext {
+  if (!audioContext) {
+    audioContext = new AudioContext()
+  }
+  return audioContext
+}
+
+function isSoundEnabled(): boolean {
+  return localStorage.getItem("chibangarx:soundEnabled") !== "false"
+}
+
+function playTone(frequency: number, duration: number, type: OscillatorType = "sine", volume: number = 0.15): void {
+  if (!isSoundEnabled()) return
+
+  const ctx = getAudioContext()
+  const oscillator = ctx.createOscillator()
+  const gainNode = ctx.createGain()
+
+  oscillator.connect(gainNode)
+  gainNode.connect(ctx.destination)
+
+  oscillator.type = type
+  oscillator.frequency.setValueAtTime(frequency, ctx.currentTime)
+
+  gainNode.gain.setValueAtTime(volume, ctx.currentTime)
+  gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
+
+  oscillator.start(ctx.currentTime)
+  oscillator.stop(ctx.currentTime + duration)
+}
+
+function playFrequencySweep(startFreq: number, endFreq: number, duration: number, volume: number = 0.15): void {
+  if (!isSoundEnabled()) return
+
+  const ctx = getAudioContext()
+  const oscillator = ctx.createOscillator()
+  const gainNode = ctx.createGain()
+
+  oscillator.connect(gainNode)
+  gainNode.connect(ctx.destination)
+
+  oscillator.type = "sine"
+  oscillator.frequency.setValueAtTime(startFreq, ctx.currentTime)
+  oscillator.frequency.linearRampToValueAtTime(endFreq, ctx.currentTime + duration)
+
+  gainNode.gain.setValueAtTime(volume, ctx.currentTime)
+  gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
+
+  oscillator.start(ctx.currentTime)
+  oscillator.stop(ctx.currentTime + duration)
+}
+
+export function playClick(): void {
+  playTone(800, 0.05, "sine", 0.1)
+}
+
+export function playToggle(on: boolean): void {
+  if (on) {
+    playFrequencySweep(600, 800, 0.1, 0.12)
+  } else {
+    playFrequencySweep(800, 600, 0.1, 0.12)
+  }
+}
+
+export function playModalOpen(): void {
+  playTone(400, 0.12, "sine", 0.08)
+}
+
+export function playModalClose(): void {
+  playTone(350, 0.08, "sine", 0.06)
+}
+
+export function playSuccess(): void {
+  if (!isSoundEnabled()) return
+
+  const ctx = getAudioContext()
+  const now = ctx.currentTime
+
+  const notes = [523.25, 659.25, 783.99]
+  notes.forEach((freq, i) => {
+    const oscillator = ctx.createOscillator()
+    const gainNode = ctx.createGain()
+
+    oscillator.connect(gainNode)
+    gainNode.connect(ctx.destination)
+
+    oscillator.type = "sine"
+    oscillator.frequency.setValueAtTime(freq, now + i * 0.08)
+
+    gainNode.gain.setValueAtTime(0.1, now + i * 0.08)
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.15)
+
+    oscillator.start(now + i * 0.08)
+    oscillator.stop(now + i * 0.08 + 0.15)
+  })
+}
+
+export function playError(): void {
+  playFrequencySweep(500, 300, 0.15, 0.1)
+}
+
+export function playDropdown(): void {
+  playTone(600, 0.03, "sine", 0.08)
+}
+
+export function playCheckbox(): void {
+  playTone(700, 0.04, "sine", 0.1)
+}

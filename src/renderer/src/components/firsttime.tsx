@@ -58,46 +58,44 @@ export default function FirstTime(): React.ReactElement {
   return (
     <Modal open={open} onClose={undefined}>
       <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-2xl max-w-2xl w-full mx-4 flex flex-col items-center text-center">
-        <h1 className="text-3xl font-bold text-chibangarx-text mb-4">Bem-vindo ao ChibangaRx</h1>
+        <h1 className="text-3xl font-bold text-chibangarx-text mb-4">{t("firstTime.welcome")}</h1>
 
         <p className="text-chibangarx-text-secondary mb-6">
-          Parece ser a sua primeira utilização. <br />
-          Deseja criar um ponto de restauro antes de começar?
+          {t("firstTime.firstUseMessage")}
         </p>
 
         <p className="text-chibangarx-text-secondary mb-4 text-sm">
           <span className="font-medium">
-            Ao clicar em <strong>Sim</strong>, o ChibangaRx criará um ponto de restauro e desativará o
-            intervalo entre futuros pontos de restauro.
+            {t("firstTime.yesDescription")}
           </span>
         </p>
 
         <p className="text-chibangarx-text-secondary mb-4 text-sm">
-Descarregue apenas a partir do <strong>GitHub</strong> ou de <strong>getchibangarx.net</strong>.
+          {t("firstTime.downloadOnlyFrom")}
         </p>
 
         <p className="text-red-500 mb-8 text-sm">
-          Se descarregar de outra fonte, poderá tratar-se de malware. Desinstale e reinstale a partir de{" "}
+          {t("firstTime.malwareWarning")}{" "}
           <a href="https://getchibangarx.net" target="_blank" className="text-blue-500">
             getchibangarx.net
           </a>
-, or{" "}
+          {t("firstTime.orText")}
            <a href="https://github.com/chibangar/chibangarx" target="_blank" className="text-blue-500">
-             nosso GitHub
+             {t("firstTime.ourGithub")}
            </a>
            .
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-          <Button onClick={handleGetStarted}>Sim (Recomendado)</Button>
+          <Button onClick={handleGetStarted}>{t("firstTime.yesRecommended")}</Button>
           <Button onClick={handleSkipRestorePoint} variant="danger">
-            Não (Não recomendado)
+            {t("firstTime.noNotRecommended")}
           </Button>
         </div>
 
         <p className="text-chibangarx-text-secondary mt-4 text-sm">
-          <span className="font-semibold">Versão do ChibangaRx:</span>{" "}
-          {data?.version || "Erro ao obter a versão"}
+          <span className="font-semibold">{t("firstTime.versionLabel")}</span>{" "}
+          {data?.version || t("firstTime.versionError")}
         </p>
       </div>
     </Modal>

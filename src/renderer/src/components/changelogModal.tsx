@@ -105,7 +105,7 @@ export default function ChangelogModal({ open, onClose }: { open: boolean; onClo
         <div className="flex items-center justify-between p-4 border-b border-chibangarx-border shrink-0">
           <h2 className="text-xl font-semibold text-chibangarx-text">{t("settings.viewChangelog")}</h2>
           <Button variant="secondary" onClick={onClose}>
-            Close
+            {t("common.close")}
           </Button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-6">

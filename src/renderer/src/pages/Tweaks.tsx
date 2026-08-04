@@ -171,7 +171,7 @@ function Tweaks() {
           setNeedsRestart(true)
         }
         toast.update(loadingToastId, {
-          render: `Aplicado: ${getTweakTitle(tweak)}`,
+          render: `${t("tweaks.appliedTweak")}${getTweakTitle(tweak)}`,
           type: "success",
           isLoading: false,
           autoClose: 3000,
@@ -185,7 +185,7 @@ function Tweaks() {
           setNeedsRestart(true)
         }
         toast.update(loadingToastId, {
-          render: `Desativado: ${getTweakTitle(tweak)}`,
+          render: `${t("tweaks.disabledTweak")}${getTweakTitle(tweak)}`,
           type: "info",
           isLoading: false,
           autoClose: 3000,

@@ -270,7 +270,9 @@ function Clean() {
     for (const cleanup of cleanups) {
       if (!selected.includes(cleanup.id)) continue
       setLoadingQueue((q) => [...q, cleanup.id])
-      const toastId = toast.loading(`${t("clean.running")} ${cleanup.label}...`)
+      const keys = cleanupKeys[cleanup.id]
+      const translatedLabel = keys ? t(`clean.cleanupLabels.${keys.labelKey}`) : cleanup.label
+      const toastId = toast.loading(`${t("clean.running")} ${translatedLabel}...`)
         try {
         const result = await invoke({
           channel: "run-powershell",
@@ -282,7 +284,7 @@ function Clean() {
         newResults[cleanup.id] = freedSpace
 
         toast.update(toastId, {
-          render: `${cleanup.label} ${t("clean.completed")}! ${formatBytes(freedSpace)} ${t("clean.cleared")}.`,
+          render: `${translatedLabel} ${t("clean.completed")}! ${formatBytes(freedSpace)} ${t("clean.cleared")}.`,
           type: "success",
           isLoading: false,
           autoClose: 3000,

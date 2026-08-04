@@ -30,7 +30,7 @@ function InstallConsoleModal({ open, onClose }: InstallConsoleModalProps) {
     }
   }, [apps, onClose])
 
-  const actionText = action === "uninstall" ? "A desinstalar" : "A instalar"
+  const actionText = action === "uninstall" ? t("installConsole.uninstalling") : t("installConsole.installing")
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -38,7 +38,7 @@ function InstallConsoleModal({ open, onClose }: InstallConsoleModalProps) {
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xl font-semibold text-chibangarx-text flex items-center gap-2">
             <Loader2 className="animate-spin text-chibangarx-primary w-5 h-5" />
-            {actionText} {apps.length === 1 ? apps[0]?.name : `${apps.length} aplicações`}
+            {actionText} {apps.length === 1 ? apps[0]?.name : t("installConsole.appsCount", { count: apps.length })}
           </h3>
           <button
             onClick={onClose}
@@ -74,7 +74,7 @@ function InstallConsoleModal({ open, onClose }: InstallConsoleModalProps) {
                     </div>
                   ))
                 ) : (
-                   <div className="text-chibangarx-text-muted italic">A aguardar resultados...</div>
+                   <div className="text-chibangarx-text-muted italic">{t("installConsole.waitingResults")}</div>
                 )}
               </div>
             </div>

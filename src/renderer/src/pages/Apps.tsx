@@ -676,7 +676,7 @@ function Apps() {
                                   {app.info}
                                 </p>
                               )}
-                              <p className="text-xs text-chibangarx-text-secondary">ID: {appId}</p>
+                              <p className="text-xs text-chibangarx-text-secondary">{t("apps.appIdLabel")} {appId}</p>
                             </div>
                           </div>
                           {app.link && (

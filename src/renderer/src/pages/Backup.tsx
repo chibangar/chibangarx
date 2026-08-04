@@ -595,22 +595,21 @@ function AppliedTweaksTab() {
             onClick={() => setShowWhyNotReversible(true)}
             className="flex items-center gap-2"
           >
-            <HelpCircle size={16} /> Porque é que alguns ajustes não são reversíveis?
+            <HelpCircle size={16} /> {t("backup.whyNotReversible")}
           </Button>
         </div>
         {appliedTweaks.length > 0 && (
           <p className="text-center text-amber-600 text-sm">
-            Nota: Alguns scripts de reversão reinstalam aplicações, por isso este processo pode demorar.
+            {t("backup.mayTakeAwhile")}
           </p>
         )}
       </div>
       <Modal open={confirmUndoAll} onClose={() => !processing && setConfirmUndoAll(false)}>
         <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4 pb-0">
-          <h3 className="text-lg font-medium text-chibangarx-text">Reverter todos os ajustes</h3>
+          <h3 className="text-lg font-medium text-chibangarx-text">{t("backup.undoAllTweaks")}</h3>
           <div className="p-4 pr-0">
             <p className="text-chibangarx-text-secondary mb-4">
-              Tem a certeza de que deseja reverter os {appliedTweakFiltered.length} ajustes aplicados?
-              Isto executará o script de reversão de cada ajuste e poderá exigir um reinício.
+              {t("backup.undoAllTweaks")}?
             </p>
             <div className="flex justify-end gap-3">
               <Button
@@ -618,13 +617,13 @@ function AppliedTweaksTab() {
                 onClick={() => !processing && setConfirmUndoAll(false)}
                 disabled={processing}
               >
-                Cancelar
+                {t("common.cancel")}
               </Button>
               <Button variant="danger" onClick={handleUndoAll} disabled={processing}>
                 {processing ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : (
-                  `Reverter todos (${appliedTweakFiltered.length})`
+                  `${t("backup.undoAllTweaks")} (${appliedTweakFiltered.length})`
                 )}
               </Button>
             </div>
@@ -634,36 +633,33 @@ function AppliedTweaksTab() {
       <Modal open={showWhyNotReversible} onClose={() => setShowWhyNotReversible(false)}>
         <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-4 shadow-xl max-w-lg w-full mx-4">
           <h3 className="text-lg font-medium text-chibangarx-text mb-4">
-            Porque é que alguns ajustes não são reversíveis?
+            {t("backup.whyNotReversible")}
           </h3>
           <div className="text-chibangarx-text-secondary text-sm leading-6 space-y-3">
             <p>
-              Alguns ajustes fazem alterações que não podem ser revertidas automaticamente pelo
-              ChibangaRx. No entanto, a maioria destas alterações pode ser revertida manualmente:
+              {t("backup.whyNotReversibleDesc")}
             </p>
             <ul className="list-disc list-inside space-y-2 ml-2">
               <li>
-                <strong className="text-chibangarx-text">Remover aplicações do Windows:</strong> As aplicações removidas podem ser reinstaladas a partir da Microsoft Store
+                <strong className="text-chibangarx-text">{t("backup.debloatingWindows")}</strong>
               </li>
               <li>
-                <strong className="text-chibangarx-text">Otimizar definições NVIDIA:</strong> As definições podem ser repostas através do Painel de Controlo NVIDIA
+                <strong className="text-chibangarx-text">{t("backup.nvidiaSettings")}</strong>
               </li>
               <li>
-                <strong className="text-chibangarx-text">Alterações de serviços:</strong> Os serviços podem ser reativados através do Gestor de Serviços do Windows
+                <strong className="text-chibangarx-text">{t("backup.serviceModifications")}</strong>
               </li>
             </ul>
             <p>
-              Embora estes ajustes não tenham um botão de reversão automática, pode criar sempre um
-              ponto de restauro antes de os aplicar.
+              {t("backup.createRestorePointTip")}
             </p>
             <p className="text-orange-400 text-xs">
-              Dica: Crie um ponto de restauro antes de aplicar ajustes irreversíveis para ter uma
-              opção de recuperação fácil.
+              {t("backup.createRestorePointTip2")}
             </p>
           </div>
           <div className="flex justify-end mt-6">
             <Button variant="primary" onClick={() => setShowWhyNotReversible(false)}>
-              Entendi
+              {t("common.understood")}
             </Button>
           </div>
         </div>
@@ -673,6 +669,7 @@ function AppliedTweaksTab() {
 }
 
 export default function RestorePointManager() {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<"restore" | "history">("restore")
 
   return (
@@ -689,7 +686,7 @@ export default function RestorePointManager() {
           >
             <span className="flex items-center gap-2">
               <Shield size={16} />
-              Restore Points
+              {t("backup.restorePoints")}
             </span>
           </button>
           <button
@@ -702,7 +699,7 @@ export default function RestorePointManager() {
           >
             <span className="flex items-center gap-2">
               <Wrench size={16} />
-              Revert Applied Tweaks (NEW)
+              {t("backup.history")}
             </span>
           </button>
         </div>

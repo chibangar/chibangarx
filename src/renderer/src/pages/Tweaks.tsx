@@ -32,6 +32,7 @@ import { Star } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Tweak } from "@/types/index"
+import { playClick } from "@/lib/sound"
 
 function Tweaks() {
   const { t } = useTranslation()
@@ -582,7 +583,7 @@ function Tweaks() {
                         ? "bg-chibangarx-primary text-white shadow-lg border border-chibangarx-border"
                         : "bg-chibangarx-card/50 text-chibangarx-text-secondary  hover:bg-chibangarx-border border border-chibangarx-border-secondary"
                     }`}
-                    onClick={() => setActiveCategory(category)}
+                    onClick={() => { playClick(); setActiveCategory(category) }}
                   >
                     {category}
                   </button>

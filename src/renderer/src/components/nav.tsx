@@ -26,6 +26,7 @@ import GithubIcon from "./githubicon"
 import Button from "./ui/button"
 import Modal from "./ui/modal"
 import useOnlineStore from "../store/online"
+import { playNavigate } from "@/lib/sound"
 
 const tabIcons = {
   home: <Home size={20} />,
@@ -137,6 +138,7 @@ function Nav({ collapsed }) {
                 if (isDisabled) {
                   setShowOfflineModal(true)
                 } else {
+                  playNavigate()
                   navigate(path)
                 }
               }}

@@ -7,6 +7,7 @@ import useAppInstallStore from "@/store/appInstallStore"
 import InstallConsoleModal from "./installConsoleModal"
 import { useTranslation } from "react-i18next"
 import UpdateManager from "./updatemanager"
+import { playClick, playMinimize, playMaximize, playClose } from "@/lib/sound"
 
 interface TitleBarProps {
   onToggleSidebar: () => void
@@ -36,7 +37,7 @@ function TitleBar({
       >
         <div className="flex items-center gap-3 h-full pr-4">
           <button
-            onClick={onToggleSidebar}
+            onClick={() => { playClick(); onToggleSidebar() }}
             className="h-7 w-7 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors rounded"
             style={{ WebkitAppRegion: "no-drag" } as any}
           >
@@ -80,19 +81,19 @@ function TitleBar({
             )}
           </div>
           <button
-            onClick={minimize}
+            onClick={() => { playMinimize(); minimize() }}
             className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
           >
             <Minus size={16} />
           </button>
           <button
-            onClick={toggleMaximize}
+            onClick={() => { playMaximize(); toggleMaximize() }}
             className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
           >
             <Square size={14} />
           </button>
           <button
-            onClick={close}
+            onClick={() => { playClose(); close() }}
             className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-red-600 hover:text-white transition-colors"
           >
             <X size={16} />

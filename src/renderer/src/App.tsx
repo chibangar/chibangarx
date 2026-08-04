@@ -23,7 +23,7 @@ import Debloat from "./pages/Debloat"
 import NoAdmin from "./components/noAdmin"
 import ProSettings from "./pages/ProSettings"
 import Clips from "./pages/Clips"
-import { playSuccess, playError } from "./lib/sound"
+import { playSuccess, playError, playBoot } from "./lib/sound"
 
 function App() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
@@ -135,6 +135,7 @@ function App() {
     window.electron.ipcRenderer.invoke("get-admin-status").then((isAdmin: boolean) => {
       setAdminStatus(isAdmin)
     })
+    playBoot()
   }, [])
 
   return (

@@ -108,3 +108,52 @@ export function playDropdown(): void {
 export function playCheckbox(): void {
   playTone(700, 0.04, "sine", 0.1)
 }
+
+export function playBoot(): void {
+  if (!isSoundEnabled()) return
+
+  const ctx = getAudioContext()
+  const now = ctx.currentTime
+
+  const notes = [523.25, 659.25, 783.99, 1046.5]
+  notes.forEach((freq, i) => {
+    const oscillator = ctx.createOscillator()
+    const gainNode = ctx.createGain()
+
+    oscillator.connect(gainNode)
+    gainNode.connect(ctx.destination)
+
+    oscillator.type = "sine"
+    oscillator.frequency.setValueAtTime(freq, now + i * 0.12)
+
+    gainNode.gain.setValueAtTime(0.08, now + i * 0.12)
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.25)
+
+    oscillator.start(now + i * 0.12)
+    oscillator.stop(now + i * 0.12 + 0.25)
+  })
+}
+
+export function playNavigate(): void {
+  playTone(660, 0.06, "sine", 0.08)
+}
+
+export function playHover(): void {
+  playTone(1200, 0.02, "sine", 0.04)
+}
+
+export function playMinimize(): void {
+  playFrequencySweep(800, 400, 0.08, 0.06)
+}
+
+export function playMaximize(): void {
+  playFrequencySweep(400, 800, 0.08, 0.06)
+}
+
+export function playClose(): void {
+  playFrequencySweep(600, 200, 0.1, 0.07)
+}
+
+export function playCardClick(): void {
+  playTone(900, 0.03, "sine", 0.06)
+}

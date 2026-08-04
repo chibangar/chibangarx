@@ -161,18 +161,23 @@ layer(base);
   }
 
   .space {
-    --color-chibangarx-bg: #050a18;
-    --color-chibangarx-text: #e8ecf4;
-    --color-chibangarx-text-dark: #c5d0e0;
-    --color-chibangarx-text-darker: #9bacc4;
-    --color-chibangarx-text-secondary: #7a8da8;
-    --color-chibangarx-text-muted: #3a4a66;
-    --color-chibangarx-card: #0a1428;
-    --color-chibangarx-border: #1a2744;
-    --color-chibangarx-border-secondary: #15203a;
-    --color-chibangarx-primary: #6c9cff;
-    --color-chibangarx-secondary: #a87bff;
-    --color-chibangarx-accent: #111e38;
+    --color-chibangarx-bg: #030810;
+    --color-chibangarx-text: #e4eaf6;
+    --color-chibangarx-text-dark: #bcc8e0;
+    --color-chibangarx-text-darker: #8e9fbd;
+    --color-chibangarx-text-secondary: #6a7ea0;
+    --color-chibangarx-text-muted: #2e3f5c;
+    --color-chibangarx-card: #080f22;
+    --color-chibangarx-border: #142040;
+    --color-chibangarx-border-secondary: #101a34;
+    --color-chibangarx-primary: #5d8eff;
+    --color-chibangarx-secondary: #9b6dff;
+    --color-chibangarx-accent: #0d1830;
+  }
+
+  .space .bg-chibangarx-card,
+  .space [class*="bg-chibangarx-card"] {
+    box-shadow: 0 0 20px rgba(93, 142, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
   .Toastify__toast {
     background-color: var(--color-chibangarx-card) !important;
@@ -208,4 +213,28 @@ button:focus {
 
 body {
   scrollbar-color: var(--color-chibangarx-primary) var(--color-chibangarx-bg);
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: var(--twinkle-start, 0.3); }
+  50% { opacity: var(--twinkle-end, 1); }
+}
+
+@keyframes shootingStar {
+  0% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(35deg);
+  }
+  70% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(300px) translateY(200px) rotate(35deg);
+  }
+}
+
+@keyframes planetFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }

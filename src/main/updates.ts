@@ -99,7 +99,8 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
   })
 
   ipcMain.handle("updater:install", () => {
-    // No-op: update is applied silently on quit
+    console.log("[ChibangaRx] Restarting app to apply update")
+    autoUpdater.quitAndInstall(false, true)
     return { ok: true }
   })
 

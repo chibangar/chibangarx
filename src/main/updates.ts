@@ -1,18 +1,20 @@
-import { app, ipcMain, BrowserWindow, net } from "electron"
-import { autoUpdater, UpdateInfo } from "electron-updater"
+import { app, ipcMain, BrowserWindow, net, shell } from "electron"
+import path from "path"
+import { promises as fs } from "fs"
 
 const CHECK_INTERVAL = 30 * 1000
 
 type AvailableUpdate = {
   version: string
   releaseNotes: string
+  downloadUrl: string
 }
 
 let availableUpdate: AvailableUpdate | null = null
+let isDownloading = false
 
-async function fetchReleaseBody(version: string): Promise<string> {
-  return new Promise((resolve) => {
-    const url = `https://api.github.com/repos/chibangar/chibangarx/releases/tags/v${version}`
+function githubApiRequest(url: string): Promise<any> {
+  return new Promise((resolve, reject) => {
     const request = net.request(url)
     request.setHeader("User-Agent", "ChibangaRx")
     let data = ""
@@ -20,211 +22,181 @@ async function fetchReleaseBody(version: string): Promise<string> {
       response.on("data", (chunk) => { data += chunk.toString() })
       response.on("end", () => {
         try {
-          const release = JSON.parse(data)
-          resolve(release.body ?? "")
+          resolve(JSON.parse(data))
         } catch {
-          resolve("")
+          reject(new Error("Failed to parse GitHub API response"))
         }
       })
     })
-    request.on("error", () => resolve(""))
-    request.end()
-  })
-}
-
-async function checkForUpdatesViaAPI(): Promise<{ version: string; notes: string } | null> {
-  return new Promise((resolve) => {
-    const url = "https://api.github.com/repos/chibangar/chibangarx/releases/latest"
-    const request = net.request(url)
-    request.setHeader("User-Agent", "ChibangaRx")
-    let data = ""
-    request.on("response", (response) => {
-      response.on("data", (chunk) => { data += chunk.toString() })
-      response.on("end", () => {
-        try {
-          const release = JSON.parse(data)
-          if (release.tag_name) {
-            const latestVersion = release.tag_name.replace(/^v/, "")
-            resolve({
-              version: latestVersion,
-              notes: release.body ?? "",
-            })
-          } else {
-            resolve(null)
-          }
-        } catch {
-          resolve(null)
-        }
-      })
-    })
-    request.on("error", () => resolve(null))
+    request.on("error", (err) => reject(err))
     request.end()
   })
 }
 
 function isNewerVersion(current: string, latest: string): boolean {
-  const currentParts = current.split(".").map(Number)
-  const latestParts = latest.split(".").map(Number)
-
-  for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
-    const c = currentParts[i] || 0
-    const l = latestParts[i] || 0
-    if (l > c) return true
-    if (l < c) return false
+  const c = current.split(".").map(Number)
+  const l = latest.split(".").map(Number)
+  for (let i = 0; i < Math.max(c.length, l.length); i++) {
+    if ((l[i] || 0) > (c[i] || 0)) return true
+    if ((l[i] || 0) < (c[i] || 0)) return false
   }
   return false
 }
 
-export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void {
-  autoUpdater.autoDownload = false
-  autoUpdater.autoInstallOnAppQuit = true
-  autoUpdater.channel = "latest"
-  autoUpdater.disableDifferentialDownload = false
-
-  if (!app.isPackaged) {
-    autoUpdater.forceDevUpdateConfig = true
+async function fetchLatestRelease(): Promise<{ version: string; releaseNotes: string; downloadUrl: string } | null> {
+  try {
+    const release = await githubApiRequest("https://api.github.com/repos/chibangar/chibangarx/releases/latest")
+    if (!release.tag_name) return null
+    const version = release.tag_name.replace(/^v/, "")
+    const exeAsset = release.assets?.find((a: any) => a.name.endsWith("-setup.exe"))
+    if (!exeAsset) return null
+    return {
+      version,
+      releaseNotes: release.body ?? "",
+      downloadUrl: exeAsset.browser_download_url,
+    }
+  } catch {
+    return null
   }
+}
 
-  console.log("[ChibangaRx] Auto-updater initialized, current version:", app.getVersion())
-  console.log("[ChibangaRx] Differential download:", !autoUpdater.disableDifferentialDownload)
+async function checkAndNotify(getMainWindow: () => BrowserWindow | null): Promise<void> {
+  const currentVersion = app.getVersion()
+  const latest = await fetchLatestRelease()
+  if (!latest) return
 
-  autoUpdater.on("update-available", async (info: UpdateInfo) => {
-    console.log("[ChibangaRx] Update available:", info.version)
-    const releaseNotes = await fetchReleaseBody(info.version)
-    availableUpdate = { version: info.version, releaseNotes }
-    const win = getMainWindow()
-    win?.webContents.send("updater:available", {
-      version: info.version,
-      releaseNotes,
-    })
-  })
+  console.log("[ChibangaRx] Current:", currentVersion, "| Latest:", latest.version)
 
-  autoUpdater.on("update-not-available", () => {
-    console.log("[ChibangaRx] No update available")
+  if (!isNewerVersion(currentVersion, latest.version)) {
+    console.log("[ChibangaRx] Up to date")
     availableUpdate = null
     const win = getMainWindow()
-    win?.webContents.send("updater:not-available", { currentVersion: app.getVersion() })
-  })
+    win?.webContents.send("updater:not-available", { currentVersion })
+    return
+  }
 
-  autoUpdater.on("error", (err: Error) => {
-    console.error("[ChibangaRx] Auto-updater error:", err.message)
-    const win = getMainWindow()
-    win?.webContents.send("updater:error", { message: err.message })
+  console.log("[ChibangaRx] Update available:", latest.version)
+  availableUpdate = latest
+  const win = getMainWindow()
+  win?.webContents.send("updater:available", {
+    version: latest.version,
+    releaseNotes: latest.releaseNotes,
   })
+}
 
-  autoUpdater.on("download-progress", (progress: any) => {
-    const win = getMainWindow()
-    win?.webContents.send("updater:download-progress", {
-      percent: progress.percent,
-      transferred: progress.transferred,
-      total: progress.total,
-      bytesPerSecond: progress.bytesPerSecond,
-    })
-  })
-
-  autoUpdater.on("update-downloaded", (info: UpdateInfo) => {
-    console.log("[ChibangaRx] Update downloaded:", info.version, "- installing...")
-    const win = getMainWindow()
-    win?.webContents.send("updater:downloaded", { version: info.version })
-    setTimeout(() => {
-      autoUpdater.quitAndInstall(false, true)
-    }, 2000)
-  })
+export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void {
+  console.log("[ChibangaRx] Auto-updater initialized (GitHub API mode), version:", app.getVersion())
 
   ipcMain.handle("updater:get-version", () => app.getVersion())
   ipcMain.handle("updater:get-available", () => availableUpdate)
 
   ipcMain.handle("updater:check", async () => {
-    console.log("[ChibangaRx] Manual update check triggered")
-    console.log("[ChibangaRx] Current version:", app.getVersion())
-    console.log("[ChibangaRx] isPackaged:", app.isPackaged)
+    console.log("[ChibangaRx] Manual update check")
+    await checkAndNotify(getMainWindow)
+    return { ok: true }
+  })
 
-    try {
-      const result = await autoUpdater.checkForUpdates()
-      console.log("[ChibangaRx] Check result:", result?.updateInfo?.version ?? "none")
-      return { ok: true, updateInfo: result?.updateInfo ?? null }
-    } catch (error: any) {
-      console.error("[ChibangaRx] electron-updater check failed:", error.message)
-      console.log("[ChibangaRx] Falling back to GitHub API check...")
-
-      try {
-        const latestRelease = await checkForUpdatesViaAPI()
-        if (latestRelease) {
-          const currentVersion = app.getVersion()
-          console.log("[ChibangaRx] Latest release:", latestRelease.version)
-          console.log("[ChibangaRx] Current:", currentVersion)
-
-          if (isNewerVersion(currentVersion, latestRelease.version)) {
-            console.log("[ChibangaRx] Update available via API:", latestRelease.version)
-            availableUpdate = {
-              version: latestRelease.version,
-              releaseNotes: latestRelease.notes,
-            }
-            const win = getMainWindow()
-            win?.webContents.send("updater:available", {
-              version: latestRelease.version,
-              releaseNotes: latestRelease.notes,
-            })
-            return { ok: true, updateInfo: { version: latestRelease.version } }
-          } else {
-            console.log("[ChibangaRx] App is up to date")
-            return { ok: true, updateInfo: null }
-          }
-        }
-        return { ok: false, error: "Could not check for updates" }
-      } catch (apiError: any) {
-        console.error("[ChibangaRx] API check also failed:", apiError.message)
-        return { ok: false, error: String(apiError) }
-      }
-    }
+  ipcMain.handle("updater:check-silent", async () => {
+    await checkAndNotify(getMainWindow)
+    return { ok: true }
   })
 
   ipcMain.on("updater:download", async () => {
-    console.log("[ChibangaRx] Downloading update...")
+    if (isDownloading || !availableUpdate) return
+    isDownloading = true
     const win = getMainWindow()
-    win?.webContents.send("updater:downloading", {})
+    const update = availableUpdate
+
+    console.log("[ChibangaRx] Downloading update:", update.version)
+    win?.webContents.send("updater:downloading", { version: update.version })
+
     try {
-      await autoUpdater.downloadUpdate()
-      console.log("[ChibangaRx] Download complete")
+      const installDir = app.getPath("userData")
+      const filePath = path.join(installDir, `chibangarx-${update.version}-setup.exe`)
+
+      await new Promise<void>((resolve, reject) => {
+        const request = net.request(update.downloadUrl)
+        request.setHeader("User-Agent", "ChibangaRx")
+        let totalBytes = 0
+        let receivedBytes = 0
+
+        request.on("response", (response) => {
+          if (response.statusCode === 302 || response.statusCode === 301) {
+            const redirectUrl = response.headers["location"]
+            if (redirectUrl) {
+              request.abort()
+              const followRequest = net.request(Array.isArray(redirectUrl) ? redirectUrl[0] : redirectUrl)
+              followRequest.setHeader("User-Agent", "ChibangaRx")
+              followRequest.on("response", (res) => handleResponse(res))
+              followRequest.on("error", reject)
+              followRequest.end()
+              return
+            }
+          }
+          handleResponse(response)
+        })
+
+        function handleResponse(res: any) {
+          totalBytes = parseInt(res.headers["content-length"]?.[0] || "0", 10)
+          const chunks: Buffer[] = []
+
+          res.on("data", (chunk: Buffer) => {
+            chunks.push(chunk)
+            receivedBytes += chunk.length
+            const percent = totalBytes > 0 ? (receivedBytes / totalBytes) * 100 : 0
+            win?.webContents.send("updater:download-progress", {
+              percent,
+              transferred: receivedBytes,
+              total: totalBytes,
+              bytesPerSecond: 0,
+            })
+          })
+
+          res.on("end", async () => {
+            try {
+              const buffer = Buffer.concat(chunks)
+              await fs.writeFile(filePath, buffer)
+              console.log("[ChibangaRx] Download complete:", filePath)
+              resolve()
+            } catch (err) {
+              reject(err)
+            }
+          })
+
+          res.on("error", reject)
+        }
+
+        request.on("error", reject)
+        request.end()
+      })
+
+      isDownloading = false
+      win?.webContents.send("updater:downloaded", { version: update.version })
+      console.log("[ChibangaRx] Update downloaded, ready to install")
+
+      setTimeout(() => {
+        shell.openPath(filePath)
+        app.quit()
+      }, 2000)
     } catch (error: any) {
+      isDownloading = false
       console.error("[ChibangaRx] Download failed:", error.message)
-      win?.webContents.send("updater:download-error", { error: String(error) })
+      win?.webContents.send("updater:download-error", { error: error.message })
     }
   })
 
   ipcMain.handle("updater:install", () => {
-    try {
-      autoUpdater.quitAndInstall(false, true)
-      return { ok: true }
-    } catch (error: any) {
-      return { ok: false, error: String(error) }
-    }
+    if (!availableUpdate) return { ok: false, error: "No update available" }
+    const installDir = app.getPath("userData")
+    const filePath = path.join(installDir, `chibangarx-${availableUpdate.version}-setup.exe`)
+    shell.openPath(filePath)
+    app.quit()
+    return { ok: true }
   })
 
   setTimeout(() => {
     console.log("[ChibangaRx] Running initial update check...")
-    triggerAutoUpdateCheck()
-  }, 1000)
-  setInterval(() => triggerAutoUpdateCheck(), CHECK_INTERVAL)
-}
-
-export async function triggerAutoUpdateCheck(): Promise<void> {
-  try {
-    console.log("[ChibangaRx] Checking for updates...")
-    await autoUpdater.checkForUpdates()
-  } catch (err: any) {
-    console.error("[ChibangaRx] Auto check failed:", err.message)
-    console.log("[ChibangaRx] Trying API fallback...")
-    try {
-      const latestRelease = await checkForUpdatesViaAPI()
-      if (latestRelease) {
-        const currentVersion = app.getVersion()
-        if (isNewerVersion(currentVersion, latestRelease.version)) {
-          console.log("[ChibangaRx] Update found via API fallback:", latestRelease.version)
-        }
-      }
-    } catch (apiErr) {
-      console.error("[ChibangaRx] API fallback also failed:", apiErr)
-    }
-  }
+    checkAndNotify(getMainWindow)
+  }, 2000)
+  setInterval(() => checkAndNotify(getMainWindow), CHECK_INTERVAL)
 }

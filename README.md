@@ -169,5 +169,24 @@ cd chibangarx</code></pre>
     <i>This will compile ChibangaRx, Builds are located in <code>dist/</code> folder. you may be prompted if you want to update the tweak registry. This is only for production builds</i>
   </li>
 </ol>
- <br/>
+## Deploy & Updates
+
+### For Users
+- Updates are downloaded automatically from GitHub Releases
+- The app checks for updates every 30 seconds
+- Notifications appear in-app when updates are available
+
+### For Developers
+- Push code to `main` branch
+- CI runs automatically (lint, typecheck, tests)
+- To release a new version:
+  ```powershell
+  .\scripts\deploy.ps1 -Version "2.39.0"
+  ```
+- GitHub Actions builds and publishes the release
+- Users receive the update automatically
+
+See [DEPLOY.md](DEPLOY.md) for detailed instructions.
+
+<br/>
   <p align="center">Made with ❤️ by chibangar</p>

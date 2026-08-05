@@ -1,6 +1,7 @@
-import { ipcMain } from "electron"
+import { ipcMain, net, shell, app } from "electron"
 import { executePowerShell } from "@main/powershell"
-import { shell } from "electron"
+import { promises as fs } from "fs"
+import path from "path"
 import log from "electron-log"
 import { mainWindow } from "@main/windowState"
 
@@ -320,6 +321,234 @@ async function searchDriverOnline(
   }
 }
 
+// AMD Chipset detection and download
+const AMD_CHIPSET_CHECK_SCRIPT = [
+  "try {",
+  "    $cpu = Get-CimInstance Win32_Processor",
+  "    $isAMD = $cpu.Name -match 'AMD|Ryzen|Athlon'",
+  "",
+  "    if (-not $isAMD) {",
+  '        return @{ isAMD = $false } | ConvertTo-Json',
+  "    }",
+  "",
+  '    $chipsetDrivers = Get-CimInstance Win32_PnPSignedDriver | Where-Object {',
+  '        $_.DeviceClass -match "system|bridge" -and $_.Manufacturer -match "AMD"',
+  "    }",
+  "",
+  "    $currentVersion = ''",
+  "    foreach ($driver in $chipsetDrivers) {",
+  "        if ($driver.DriverVersion) {",
+  "            $currentVersion = $driver.DriverVersion",
+  "            break",
+  "        }",
+  "    }",
+  "",
+  "    return @{",
+  "        isAMD = $true",
+  "        cpuName = $cpu.Name",
+  "        currentVersion = $currentVersion",
+  "        deviceCount = $chipsetDrivers.Count",
+  "    } | ConvertTo-Json",
+  "} catch {",
+  '    return @{ error = $_.Exception.Message } | ConvertTo-Json',
+  "}",
+].join("\n")
+
+async function checkAMDChipset(): Promise<{
+  success: boolean
+  isAMD?: boolean
+  cpuName?: string
+  currentVersion?: string
+  deviceCount?: number
+  error?: string
+}> {
+  try {
+    const result = await executePowerShell(null, {
+      script: AMD_CHIPSET_CHECK_SCRIPT,
+      name: "Check-AMD-Chipset",
+    })
+
+    if (!result.success || !result.output) {
+      return { success: false, error: result.error || "Failed to check AMD chipset" }
+    }
+
+    const parsed = JSON.parse(result.output)
+    if (parsed.error) {
+      return { success: false, error: parsed.error }
+    }
+
+    return {
+      success: true,
+      isAMD: parsed.isAMD || false,
+      cpuName: parsed.cpuName || "",
+      currentVersion: parsed.currentVersion || "",
+      deviceCount: parsed.deviceCount || 0,
+    }
+  } catch (error: any) {
+    console.error("Failed to check AMD chipset:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+async function fetchAMDLatestVersion(): Promise<{
+  success: boolean
+  version?: string
+  downloadUrl?: string
+  releaseNotes?: string
+  error?: string
+}> {
+  try {
+    // Try to get the latest chipset version from the release notes page
+    const versionPage = await new Promise<string>((resolve, reject) => {
+      const request = net.request("https://www.amd.com/en/resources/support-articles/release-notes/RN-RYZEN-CHIPSET.html")
+      request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+      let data = ""
+      request.on("response", (response) => {
+        response.on("data", (chunk) => { data += chunk.toString() })
+        response.on("end", () => resolve(data))
+      })
+      request.on("error", reject)
+      request.end()
+    })
+
+    // Extract version from page
+    const versionMatch = versionPage.match(/(\d+\.\d+\.\d+\.\d+)/)
+    const version = versionMatch ? versionMatch[1] : null
+
+    if (!version) {
+      return { success: false, error: "Could not determine latest AMD chipset version" }
+    }
+
+    // Construct download URL (AMD uses a pattern for chipset downloads)
+    const downloadUrl = `https://drivers.amd.com/drivers/installer/24.10/AMDChipsetSoftwareInstaller.exe`
+
+    return {
+      success: true,
+      version,
+      downloadUrl,
+      releaseNotes: `AMD Ryzen Chipset Driver ${version}`,
+    }
+  } catch (error: any) {
+    console.error("Failed to fetch AMD latest version:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+let amdDownloadAbort: (() => void) | null = null
+
+async function downloadAMDChipset(
+  _event: any,
+  payload: { downloadUrl: string; version: string },
+): Promise<{ success: boolean; filePath?: string; error?: string }> {
+  const { downloadUrl, version } = payload
+  const win = mainWindow
+
+  try {
+    const installDir = app.getPath("userData")
+    const filePath = path.join(installDir, `AMDChipsetSoftware-${version}.exe`)
+
+    win?.webContents.send("amd:download-progress", { percent: 0, status: "starting" })
+
+    await new Promise<void>((resolve, reject) => {
+      const request = net.request(downloadUrl)
+      request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+
+      let totalBytes = 0
+      let receivedBytes = 0
+      const chunks: Buffer[] = []
+
+      amdDownloadAbort = () => request.abort()
+
+      request.on("response", (response) => {
+        if (response.statusCode === 302 || response.statusCode === 301) {
+          const redirectUrl = response.headers["location"]
+          if (redirectUrl) {
+            request.abort()
+            const followUrl = Array.isArray(redirectUrl) ? redirectUrl[0] : redirectUrl
+            const followRequest = net.request(followUrl)
+            followRequest.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+            followRequest.on("response", (res) => handleAMDResponse(res))
+            followRequest.on("error", reject)
+            followRequest.end()
+            return
+          }
+        }
+        handleAMDResponse(response)
+      })
+
+      function handleAMDResponse(res: any) {
+        totalBytes = parseInt(res.headers["content-length"]?.[0] || "0", 10)
+
+        res.on("data", (chunk: Buffer) => {
+          chunks.push(chunk)
+          receivedBytes += chunk.length
+          const percent = totalBytes > 0 ? Math.round((receivedBytes / totalBytes) * 100) : 0
+          win?.webContents.send("amd:download-progress", {
+            percent,
+            transferred: receivedBytes,
+            total: totalBytes,
+          })
+        })
+
+        res.on("end", async () => {
+          try {
+            const buffer = Buffer.concat(chunks)
+            await fs.writeFile(filePath, buffer)
+            console.log("[ChibangaRx] AMD chipset downloaded:", filePath)
+            resolve()
+          } catch (err) {
+            reject(err)
+          }
+        })
+
+        res.on("error", reject)
+      }
+
+      request.on("error", reject)
+      request.end()
+    })
+
+    amdDownloadAbort = null
+    win?.webContents.send("amd:download-complete", { filePath })
+    return { success: true, filePath }
+  } catch (error: any) {
+    amdDownloadAbort = null
+    console.error("Failed to download AMD chipset:", error)
+    win?.webContents.send("amd:download-error", { error: error.message })
+    return { success: false, error: error.message }
+  }
+}
+
+async function installAMDChipset(
+  _event: any,
+  filePath: string,
+): Promise<{ success: boolean; output?: string; error?: string }> {
+  try {
+    // Run the AMD installer silently
+    const script = `Start-Process -FilePath "${filePath}" -ArgumentList "/S" -Wait -NoNewWindow`
+    const result = await executePowerShell(null, {
+      script,
+      name: "Install-AMD-Chipset",
+    })
+
+    if (!result.success) {
+      return { success: false, error: result.error || "Failed to install AMD chipset" }
+    }
+
+    return { success: true, output: "AMD chipset drivers installed successfully" }
+  } catch (error: any) {
+    console.error("Failed to install AMD chipset:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+function cancelAMDDownload(): void {
+  if (amdDownloadAbort) {
+    amdDownloadAbort()
+    amdDownloadAbort = null
+  }
+}
+
 export const setupDriverHandlers = (): void => {
   ipcMain.handle("drivers:get-installed", getInstalledDrivers)
   ipcMain.handle("drivers:get-motherboard", getMotherboardInfo)
@@ -327,6 +556,11 @@ export const setupDriverHandlers = (): void => {
   ipcMain.handle("drivers:install-update", installDriverUpdate)
   ipcMain.handle("drivers:open-windows-update", openWindowsUpdate)
   ipcMain.handle("drivers:search-online", searchDriverOnline)
+  ipcMain.handle("drivers:check-amd", checkAMDChipset)
+  ipcMain.handle("drivers:fetch-amd-version", fetchAMDLatestVersion)
+  ipcMain.handle("drivers:download-amd", downloadAMDChipset)
+  ipcMain.handle("drivers:install-amd", installAMDChipset)
+  ipcMain.handle("drivers:cancel-amd-download", cancelAMDDownload)
   console.log("[ChibangaRx main/drivers.ts]: Driver handlers setup complete")
 }
 
@@ -337,4 +571,9 @@ export const cleanupDriverHandlers = (): void => {
   ipcMain.removeHandler("drivers:install-update")
   ipcMain.removeHandler("drivers:open-windows-update")
   ipcMain.removeHandler("drivers:search-online")
+  ipcMain.removeHandler("drivers:check-amd")
+  ipcMain.removeHandler("drivers:fetch-amd-version")
+  ipcMain.removeHandler("drivers:download-amd")
+  ipcMain.removeHandler("drivers:install-amd")
+  ipcMain.removeHandler("drivers:cancel-amd-download")
 }

@@ -89,8 +89,48 @@ export default function Drivers() {
   const [updateCount, setUpdateCount] = useState(0)
   const [selectedUpdate, setSelectedUpdate] = useState<WindowsUpdateDriver | null>(null)
 
+  // AMD Chipset state
+  const [amdInfo, setAmdInfo] = useState<{ isAMD: boolean; cpuName: string; currentVersion: string; deviceCount: number } | null>(null)
+  const [amdLatestVersion, setAmdLatestVersion] = useState<string | null>(null)
+  const [amdDownloadUrl, setAmdDownloadUrl] = useState<string | null>(null)
+  const [amdReleaseNotes, setAmdReleaseNotes] = useState<string>("")
+  const [amdDownloading, setAmdDownloading] = useState(false)
+  const [amdDownloadProgress, setAmdDownloadProgress] = useState(0)
+  const [amdError, setAmdError] = useState<string | null>(null)
+  const [checkingAMD, setCheckingAMD] = useState(false)
+
   useEffect(() => {
     loadDriverData()
+    checkAMDChipset()
+  }, [])
+
+  useEffect(() => {
+    const onProgress = (_e: any, data: any) => {
+      setAmdDownloadProgress(data.percent || 0)
+    }
+    const onComplete = (_e: any, data: any) => {
+      setAmdDownloading(false)
+      setAmdDownloadProgress(100)
+      toast.success(t("drivers.amdDownloadComplete"))
+      if (data?.filePath) {
+        installAMDChipsetDriver(data.filePath)
+      }
+    }
+    const onError = (_e: any, data: any) => {
+      setAmdDownloading(false)
+      setAmdError(data.error || "Download failed")
+      toast.error(data.error || t("drivers.amdDownloadFailed"))
+    }
+
+    window.electron.ipcRenderer.on("amd:download-progress", onProgress)
+    window.electron.ipcRenderer.on("amd:download-complete", onComplete)
+    window.electron.ipcRenderer.on("amd:download-error", onError)
+
+    return () => {
+      window.electron.ipcRenderer.removeListener("amd:download-progress", onProgress)
+      window.electron.ipcRenderer.removeListener("amd:download-complete", onComplete)
+      window.electron.ipcRenderer.removeListener("amd:download-error", onError)
+    }
   }, [])
 
   async function loadDriverData() {
@@ -113,6 +153,67 @@ export default function Drivers() {
       toast.error(t("common.operationError"))
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function checkAMDChipset() {
+    setCheckingAMD(true)
+    setAmdError(null)
+    try {
+      const result = await invoke({ channel: "drivers:check-amd" })
+      if (result.success && result.isAMD) {
+        setAmdInfo({
+          isAMD: true,
+          cpuName: result.cpuName || "",
+          currentVersion: result.currentVersion || "",
+          deviceCount: result.deviceCount || 0,
+        })
+        // Fetch latest version from AMD
+        const versionResult = await invoke({ channel: "drivers:fetch-amd-version" })
+        if (versionResult.success && versionResult.version) {
+          setAmdLatestVersion(versionResult.version)
+          setAmdDownloadUrl(versionResult.downloadUrl || "")
+          setAmdReleaseNotes(versionResult.releaseNotes || "")
+        }
+      } else {
+        setAmdInfo({ isAMD: false, cpuName: "", currentVersion: "", deviceCount: 0 })
+      }
+    } catch (error: any) {
+      log.error("Failed to check AMD chipset:", error)
+      setAmdError(error.message || "Failed to check AMD chipset")
+    } finally {
+      setCheckingAMD(false)
+    }
+  }
+
+  async function downloadAMDChipset() {
+    if (!amdDownloadUrl || !amdLatestVersion) return
+    setAmdDownloading(true)
+    setAmdDownloadProgress(0)
+    setAmdError(null)
+    try {
+      await invoke({
+        channel: "drivers:download-amd",
+        payload: { downloadUrl: amdDownloadUrl, version: amdLatestVersion },
+      })
+    } catch (error: any) {
+      log.error("Failed to download AMD chipset:", error)
+      setAmdDownloading(false)
+      setAmdError(error.message || "Download failed")
+    }
+  }
+
+  async function installAMDChipsetDriver(filePath: string) {
+    try {
+      const result = await invoke({ channel: "drivers:install-amd", payload: filePath })
+      if (result.success) {
+        toast.success(t("drivers.amdInstallSuccess"))
+      } else {
+        toast.error(result.error || t("drivers.amdInstallFailed"))
+      }
+    } catch (error: any) {
+      log.error("Failed to install AMD chipset:", error)
+      toast.error(error.message || t("drivers.amdInstallFailed"))
     }
   }
 
@@ -275,6 +376,100 @@ export default function Drivers() {
             </div>
           </Card>
         )}
+
+        {/* AMD Chipset Section */}
+        {checkingAMD ? (
+          <Card className="p-5">
+            <div className="flex items-center gap-3">
+              <LoaderCircle className="w-5 h-5 text-chibangarx-primary animate-spin" />
+              <p className="text-chibangarx-text-secondary">{t("drivers.checkingAMD")}</p>
+            </div>
+          </Card>
+        ) : amdInfo?.isAMD ? (
+          <Card className="p-5 border-orange-500/30">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-orange-500/10 rounded-lg">
+                <Cpu className="w-5 h-5 text-orange-500" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-chibangarx-text">
+                  AMD Chipset
+                </h2>
+                <p className="text-xs text-chibangarx-text-secondary">
+                  {amdInfo.cpuName}
+                </p>
+              </div>
+              {amdLatestVersion && amdInfo.currentVersion !== amdLatestVersion && (
+                <span className="px-2 py-1 bg-orange-500/10 text-orange-500 text-xs rounded-full font-medium">
+                  {t("drivers.updateAvailable")}
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <p className="text-xs text-chibangarx-text-secondary">{t("drivers.installedVersion")}</p>
+                <p className="text-sm text-chibangarx-text font-medium">{amdInfo.currentVersion || "N/A"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-chibangarx-text-secondary">{t("drivers.latestVersion")}</p>
+                <p className="text-sm text-chibangarx-text font-medium">{amdLatestVersion || "..."}</p>
+              </div>
+              <div>
+                <p className="text-xs text-chibangarx-text-secondary">{t("drivers.chipsetDevices")}</p>
+                <p className="text-sm text-chibangarx-text font-medium">{amdInfo.deviceCount}</p>
+              </div>
+            </div>
+
+            {amdLatestVersion && amdInfo.currentVersion !== amdLatestVersion && (
+              <div className="mt-4 p-3 bg-orange-500/5 border border-orange-500/20 rounded-lg">
+                <p className="text-sm text-chibangarx-text mb-2">
+                  {t("drivers.amdUpdateDescription")}
+                </p>
+                {amdReleaseNotes && (
+                  <p className="text-xs text-chibangarx-text-secondary mb-3">{amdReleaseNotes}</p>
+                )}
+                {amdError && (
+                  <p className="text-xs text-red-500 mb-3">{amdError}</p>
+                )}
+                {amdDownloading ? (
+                  <div>
+                    <div className="flex justify-between text-xs text-chibangarx-text-secondary mb-1">
+                      <span>{t("drivers.downloading")}</span>
+                      <span>{Math.round(amdDownloadProgress)}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-chibangarx-border-secondary rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-orange-500 rounded-full transition-all duration-300"
+                        style={{ width: `${amdDownloadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button onClick={downloadAMDChipset} className="bg-orange-600 hover:bg-orange-700">
+                      <Download className="w-4 h-4 mr-2" />
+                      {t("drivers.downloadFromAMD")}
+                    </Button>
+                    <Button variant="secondary" onClick={checkAMDChipset}>
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      {t("drivers.refresh")}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {amdLatestVersion && amdInfo.currentVersion === amdLatestVersion && (
+              <div className="mt-3 p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
+                <p className="text-sm text-green-500 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full" />
+                  {t("drivers.amdUpToDate")}
+                </p>
+              </div>
+            )}
+          </Card>
+        ) : amdInfo && !amdInfo.isAMD ? null : null}
 
         {/* Windows Update Drivers */}
         {windowsUpdates.length > 0 && (

@@ -297,6 +297,8 @@ export const en = {
     downloadError: "Download failed",
     restartInfo: "The app will restart to apply the update.",
     restartInstall: "Restart and install",
+    appliedOnClose: "Update downloaded! It will be applied automatically when you close the app.",
+    understood: "Got it",
     restarting: "Restarting...",
     checkAgain: "Check again",
   },

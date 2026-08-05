@@ -24,7 +24,6 @@ export default function UpdateManager(): React.ReactElement {
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadPercent, setDownloadPercent] = useState(0)
   const [isDownloaded, setIsDownloaded] = useState(false)
-  const [isInstalling, setIsInstalling] = useState(false)
   const [showUpdateNotice, setShowUpdateNotice] = useState(false)
 
   useEffect(() => {
@@ -104,11 +103,6 @@ export default function UpdateManager(): React.ReactElement {
     setIsDownloaded(false)
     setShowUpdateNotice(false)
     window.electron.ipcRenderer.send("updater:download")
-  }
-
-  const handleRestart = async () => {
-    setIsInstalling(true)
-    await window.electron.ipcRenderer.invoke("updater:install")
   }
 
   const handleCheckNow = async () => {
@@ -232,14 +226,13 @@ export default function UpdateManager(): React.ReactElement {
                 <p className="text-sm text-green-400">{t("updater.downloaded")}</p>
               </div>
               <p className="text-xs text-chibangarx-text-secondary mb-4">
-                {t("updater.restartInfo")}
+                {t("updater.appliedOnClose")}
               </p>
               <Button
-                onClick={handleRestart}
-                disabled={isInstalling}
+                onClick={() => setModalOpen(false)}
                 className="bg-green-600 hover:bg-green-700"
               >
-                {isInstalling ? t("updater.restarting") : t("updater.restartInstall")}
+                {t("updater.understood")}
               </Button>
             </div>
           )}

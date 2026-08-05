@@ -304,6 +304,8 @@ export const pt = {
     downloadError: "A descarga falhou",
     restartInfo: "A aplicação vai reiniciar para aplicar a atualização.",
     restartInstall: "Reiniciar e instalar",
+    appliedOnClose: "Atualização descarregada! Será aplicada automaticamente quando fechar a aplicação.",
+    understood: "Entendido",
     restarting: "A reiniciar...",
     checkAgain: "Verificar novamente",
   },

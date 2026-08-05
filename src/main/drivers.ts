@@ -687,6 +687,7 @@ function cancelAMDDownload(): void {
   }
 }
 
+export const setupDriverHandlers = (): void => {
   ipcMain.handle("drivers:get-installed", getInstalledDrivers)
   ipcMain.handle("drivers:get-motherboard", getMotherboardInfo)
   ipcMain.handle("drivers:check-updates", checkWindowsUpdateDrivers)
@@ -698,8 +699,8 @@ function cancelAMDDownload(): void {
   ipcMain.handle("drivers:download-amd", downloadAMDChipset)
   ipcMain.handle("drivers:install-amd", installAMDChipset)
   ipcMain.handle("drivers:cancel-amd-download", cancelAMDDownload)
-  ipcMain.handle("drivers:download-and-install-amd", downloadAndInstallAMDChipset)
   console.log("[ChibangaRx main/drivers.ts]: Driver handlers setup complete")
+}
 
 export const cleanupDriverHandlers = (): void => {
   ipcMain.removeHandler("drivers:get-installed")
@@ -714,3 +715,5 @@ export const cleanupDriverHandlers = (): void => {
   ipcMain.removeHandler("drivers:install-amd")
   ipcMain.removeHandler("drivers:cancel-amd-download")
 }
+
+export { downloadAMDChipset, installAMDChipset, cancelAMDDownload }

@@ -188,7 +188,7 @@ export default function Drivers() {
   }
 
   async function downloadAMDChipset() {
-    const url = amdDownloadUrl || "https://drivers.amd.com/drivers/installer/24.10/AMDChipsetSoftwareInstaller.exe"
+    const url = amdDownloadUrl || ""
     const version = amdLatestVersion || "latest"
     setAmdDownloading(true)
     setAmdDownloadProgress(0)

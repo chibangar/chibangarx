@@ -3,6 +3,9 @@ import { executePowerShell } from "@main/powershell"
 import { promises as fs } from "fs"
 import path from "path"
 import log from "electron-log"
+import https from "https"
+import http from "http"
+import { URL } from "url"
 import { mainWindow } from "@main/windowState"
 
 console.log = log.log
@@ -497,6 +500,84 @@ async function fetchAMDLatestVersion(): Promise<{
 
 let amdDownloadAbort: (() => void) | null = null
 
+function downloadFile(
+  url: string,
+  filePath: string,
+  onProgress: (percent: number, transferred: number, total: number) => void,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const parsedUrl = new URL(url)
+    const client = parsedUrl.protocol === "https:" ? https : http
+
+    const headers = {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+      "Referer": "https://www.amd.com/",
+      "Accept": "*/*",
+    }
+
+    function follow(redirectUrl: string) {
+      const parsed = new URL(redirectUrl)
+      const cli = parsed.protocol === "https:" ? https : http
+      const req = cli.get(redirectUrl, { headers }, (res) => {
+        if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          follow(res.headers.location)
+          return
+        }
+        handleResponse(res)
+      })
+      req.on("error", reject)
+      amdDownloadAbort = () => req.destroy()
+    }
+
+    function handleResponse(res: http.IncomingMessage) {
+      if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        follow(res.headers.location)
+        return
+      }
+
+      if (res.statusCode !== 200) {
+        reject(new Error(`HTTP ${res.statusCode}`))
+        return
+      }
+
+      const totalBytes = parseInt(res.headers["content-length"] || "0", 10)
+      let receivedBytes = 0
+      const chunks: Buffer[] = []
+
+      res.on("data", (chunk: Buffer) => {
+        chunks.push(chunk)
+        receivedBytes += chunk.length
+        const percent = totalBytes > 0 ? Math.round((receivedBytes / totalBytes) * 100) : 0
+        onProgress(percent, receivedBytes, totalBytes)
+      })
+
+      res.on("end", async () => {
+        try {
+          const buffer = Buffer.concat(chunks)
+          await fs.writeFile(filePath, buffer)
+          resolve()
+        } catch (err) {
+          reject(err)
+        }
+      })
+
+      res.on("error", reject)
+      amdDownloadAbort = () => res.destroy()
+    }
+
+    const req = client.get(url, { headers }, (res) => {
+      if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        follow(res.headers.location)
+        return
+      }
+      handleResponse(res)
+    })
+
+    req.on("error", reject)
+    amdDownloadAbort = () => req.destroy()
+  })
+}
+
 async function downloadAMDChipset(
   _event: any,
   payload: { downloadUrl: string; version: string },
@@ -510,68 +591,12 @@ async function downloadAMDChipset(
 
     win?.webContents.send("amd:download-progress", { percent: 0, status: "starting" })
 
-    await new Promise<void>((resolve, reject) => {
-      const request = net.request(downloadUrl)
-      request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
-      request.setHeader("Referer", "https://www.amd.com/")
-
-      let totalBytes = 0
-      let receivedBytes = 0
-      const chunks: Buffer[] = []
-
-      amdDownloadAbort = () => request.abort()
-
-      request.on("response", (response) => {
-        if (response.statusCode === 302 || response.statusCode === 301) {
-          const redirectUrl = response.headers["location"]
-          if (redirectUrl) {
-            request.abort()
-            const followUrl = Array.isArray(redirectUrl) ? redirectUrl[0] : redirectUrl
-            const followRequest = net.request(followUrl)
-            followRequest.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
-            followRequest.setHeader("Referer", "https://www.amd.com/")
-            followRequest.on("response", (res) => handleAMDResponse(res))
-            followRequest.on("error", reject)
-            followRequest.end()
-            return
-          }
-        }
-        handleAMDResponse(response)
-      })
-
-      function handleAMDResponse(res: any) {
-        totalBytes = parseInt(res.headers["content-length"]?.[0] || "0", 10)
-
-        res.on("data", (chunk: Buffer) => {
-          chunks.push(chunk)
-          receivedBytes += chunk.length
-          const percent = totalBytes > 0 ? Math.round((receivedBytes / totalBytes) * 100) : 0
-          win?.webContents.send("amd:download-progress", {
-            percent,
-            transferred: receivedBytes,
-            total: totalBytes,
-          })
-        })
-
-        res.on("end", async () => {
-          try {
-            const buffer = Buffer.concat(chunks)
-            await fs.writeFile(filePath, buffer)
-            console.log("[ChibangaRx] AMD chipset downloaded:", filePath)
-            resolve()
-          } catch (err) {
-            reject(err)
-          }
-        })
-
-        res.on("error", reject)
-      }
-
-      request.on("error", reject)
-      request.end()
+    await downloadFile(downloadUrl, filePath, (percent, transferred, total) => {
+      win?.webContents.send("amd:download-progress", { percent, transferred, total })
     })
 
     amdDownloadAbort = null
+    console.log("[ChibangaRx] AMD chipset downloaded:", filePath)
     win?.webContents.send("amd:download-complete", { filePath })
     return { success: true, filePath }
   } catch (error: any) {

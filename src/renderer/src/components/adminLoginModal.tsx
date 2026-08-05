@@ -47,7 +47,10 @@ export default function AdminLoginModal({ open, onClose }: AdminLoginModalProps)
 
   return (
     <Modal open={open} onClose={() => onClose(false)}>
-      <div className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-6 shadow-xl max-w-md w-full mx-4">
+      <div
+        className="bg-chibangarx-card border border-chibangarx-border rounded-2xl p-6 shadow-xl max-w-md w-full mx-4"
+        style={{ WebkitAppRegion: "no-drag" } as any}
+      >
         <div className="flex items-center justify-center mb-4">
           <div className="w-16 h-16 bg-chibangarx-primary/10 rounded-full flex items-center justify-center">
             <Lock className="w-8 h-8 text-chibangarx-primary" />

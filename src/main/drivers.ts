@@ -433,8 +433,75 @@ async function fetchAMDLatestVersion(): Promise<{
   highlights?: string[]
   error?: string
 }> {
+  // Primary: get actual latest version from notFoxils/AMD-Chipset-Drivers repo
   try {
-    // Fetch the release notes page from AMD
+    const linkContent = await new Promise<string>((resolve, reject) => {
+      const request = net.request("https://raw.githubusercontent.com/notFoxils/AMD-Chipset-Drivers/main/configs/link.txt")
+      request.setHeader("User-Agent", "ChibangaRx")
+      let data = ""
+      request.on("response", (response) => {
+        response.on("data", (chunk) => { data += chunk.toString() })
+        response.on("end", () => resolve(data))
+      })
+      request.on("error", reject)
+      request.end()
+    })
+
+    const downloadUrl = linkContent.trim()
+    // Extract version from URL like https://drivers.amd.com/drivers/amd_chipset_software_8.05.04.516.exe
+    const versionMatch = downloadUrl.match(/(\d+\.\d+\.\d+\.\d+)/)
+    const version = versionMatch ? versionMatch[1] : null
+
+    if (version && downloadUrl.startsWith("http")) {
+      // Get release notes from the same repo
+      let highlights: string[] = []
+      try {
+        const readmeContent = await new Promise<string>((resolve, reject) => {
+          const request = net.request("https://raw.githubusercontent.com/notFoxils/AMD-Chipset-Drivers/main/README.md")
+          request.setHeader("User-Agent", "ChibangaRx")
+          let data = ""
+          request.on("response", (response) => {
+            response.on("data", (chunk) => { data += chunk.toString() })
+            response.on("end", () => resolve(data))
+          })
+          request.on("error", reject)
+          request.end()
+        })
+
+        // Extract highlights from README
+        const highlightRegex = /\*\*([^*]+)\*\*/g
+        let match
+        while ((match = highlightRegex.exec(readmeContent)) !== null && highlights.length < 8) {
+          const text = match[1].trim()
+          if (text && text.length > 10 && !text.includes("http") && !text.includes("SHA")) {
+            highlights.push(text)
+          }
+        }
+      } catch {}
+
+      if (highlights.length === 0) {
+        highlights = [
+          "Latest AMD chipset performance improvements",
+          "Bug fixes and stability improvements",
+          "Windows 11 compatibility enhancements",
+        ]
+      }
+
+      console.log(`[ChibangaRx] Latest AMD chipset version: ${version}`)
+      return {
+        success: true,
+        version,
+        downloadUrl,
+        releaseNotes: `AMD Ryzen Chipset Driver ${version}`,
+        highlights,
+      }
+    }
+  } catch (error: any) {
+    console.error("[ChibangaRx] Failed to fetch from tracking repo:", error.message)
+  }
+
+  // Fallback: try AMD release notes page
+  try {
     const pageContent = await new Promise<string>((resolve, reject) => {
       const request = net.request("https://www.amd.com/en/resources/support-articles/release-notes/RN-RYZEN-CHIPSET.html")
       request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
@@ -447,63 +514,29 @@ async function fetchAMDLatestVersion(): Promise<{
       request.end()
     })
 
-    // Extract version from page - look for pattern like "7.06.02.123"
     const versionMatch = pageContent.match(/(\d+\.\d+\.\d+\.\d+)/)
     const version = versionMatch ? versionMatch[1] : null
 
-    if (!version) {
-      // Use fallback version when scraping fails (AMD page is JS-rendered)
-      const fallbackVersion = "8.05.04.516"
+    if (version) {
       return {
         success: true,
-        version: fallbackVersion,
-        downloadUrl: `https://drivers.amd.com/drivers/amd_chipset_software_${fallbackVersion}.exe`,
-        releaseNotes: `AMD Ryzen Chipset Driver ${fallbackVersion}`,
-        highlights: ["Latest AMD chipset performance improvements", "Bug fixes and stability improvements", "Windows 11 compatibility enhancements"],
+        version,
+        downloadUrl: `https://drivers.amd.com/drivers/amd_chipset_software_${version}.exe`,
+        releaseNotes: `AMD Ryzen Chipset Driver ${version}`,
+        highlights: ["Performance improvements", "Bug fixes", "Windows compatibility"],
       }
     }
+  } catch {}
 
-    // Extract highlights/improvements from release notes
-    const highlights: string[] = []
-
-    // Try to extract bullet points or list items from the release notes
-    const highlightRegex = /(?:•|-|\d+\.)\s*([^<\n]{10,150})/g
-    let match
-    while ((match = highlightRegex.exec(pageContent)) !== null && highlights.length < 8) {
-      const text = match[1].trim()
-      if (text && !text.includes("AMD.com") && !text.includes("EULA") && !text.includes("License")) {
-        highlights.push(text)
-      }
-    }
-
-    // If no highlights found, add a default message
-    if (highlights.length === 0) {
-      highlights.push("Performance improvements for AMD Ryzen processors")
-      highlights.push("Bug fixes and stability improvements")
-      highlights.push("Windows 11 compatibility enhancements")
-    }
-
-    // Use the correct AMD chipset driver download URL pattern (requires Referer header)
-    const downloadUrl = `https://drivers.amd.com/drivers/amd_chipset_software_${version}.exe`
-
-    return {
-      success: true,
-      version,
-      downloadUrl,
-      releaseNotes: `AMD Ryzen Chipset Driver ${version}`,
-      highlights,
-    }
-  } catch (error: any) {
-    console.error("Failed to fetch AMD latest version:", error)
-    // Return a fallback so the button still works
-    const fallbackVersion = "8.05.04.516"
-    return {
-      success: true,
-      version: fallbackVersion,
-      downloadUrl: `https://drivers.amd.com/drivers/amd_chipset_software_${fallbackVersion}.exe`,
-      releaseNotes: "AMD Ryzen Chipset Driver",
-      highlights: ["Performance improvements", "Bug fixes", "Windows compatibility"],
-    }
+  // Last resort: known working version
+  const fallbackVersion = "8.05.04.516"
+  console.log(`[ChibangaRx] Using fallback AMD version: ${fallbackVersion}`)
+  return {
+    success: true,
+    version: fallbackVersion,
+    downloadUrl: `https://drivers.amd.com/drivers/amd_chipset_software_${fallbackVersion}.exe`,
+    releaseNotes: `AMD Ryzen Chipset Driver ${fallbackVersion}`,
+    highlights: ["Latest AMD chipset performance improvements", "Bug fixes and stability improvements", "Windows 11 compatibility enhancements"],
   }
 }
 
@@ -654,7 +687,6 @@ function cancelAMDDownload(): void {
   }
 }
 
-export const setupDriverHandlers = (): void => {
   ipcMain.handle("drivers:get-installed", getInstalledDrivers)
   ipcMain.handle("drivers:get-motherboard", getMotherboardInfo)
   ipcMain.handle("drivers:check-updates", checkWindowsUpdateDrivers)
@@ -666,8 +698,8 @@ export const setupDriverHandlers = (): void => {
   ipcMain.handle("drivers:download-amd", downloadAMDChipset)
   ipcMain.handle("drivers:install-amd", installAMDChipset)
   ipcMain.handle("drivers:cancel-amd-download", cancelAMDDownload)
+  ipcMain.handle("drivers:download-and-install-amd", downloadAndInstallAMDChipset)
   console.log("[ChibangaRx main/drivers.ts]: Driver handlers setup complete")
-}
 
 export const cleanupDriverHandlers = (): void => {
   ipcMain.removeHandler("drivers:get-installed")

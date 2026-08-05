@@ -195,7 +195,7 @@ export default function Drivers() {
     setAmdError(null)
     try {
       await invoke({
-        channel: "drivers:download-amd",
+        channel: "drivers:download-and-install-amd",
         payload: { downloadUrl: url, version },
       })
     } catch (error: any) {

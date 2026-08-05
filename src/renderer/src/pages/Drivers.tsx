@@ -90,7 +90,7 @@ export default function Drivers() {
   const [selectedUpdate, setSelectedUpdate] = useState<WindowsUpdateDriver | null>(null)
 
   // AMD Chipset state
-  const [amdInfo, setAmdInfo] = useState<{ isAMD: boolean; cpuName: string; currentVersion: string; deviceCount: number } | null>(null)
+  const [amdInfo, setAmdInfo] = useState<{ isAMD: boolean; cpuName: string; currentVersion: string; driverName: string; deviceCount: number } | null>(null)
   const [amdLatestVersion, setAmdLatestVersion] = useState<string | null>(null)
   const [amdDownloadUrl, setAmdDownloadUrl] = useState<string | null>(null)
   const [amdHighlights, setAmdHighlights] = useState<string[]>([])
@@ -166,6 +166,7 @@ export default function Drivers() {
           isAMD: true,
           cpuName: result.cpuName || "",
           currentVersion: result.currentVersion || "",
+          driverName: result.driverName || "",
           deviceCount: result.deviceCount || 0,
         })
         // Fetch latest version from AMD
@@ -176,7 +177,7 @@ export default function Drivers() {
           setAmdHighlights(versionResult.highlights || [])
         }
       } else {
-        setAmdInfo({ isAMD: false, cpuName: "", currentVersion: "", deviceCount: 0 })
+        setAmdInfo({ isAMD: false, cpuName: "", currentVersion: "", driverName: "", deviceCount: 0 })
       }
     } catch (error: any) {
       log.error("Failed to check AMD chipset:", error)
@@ -412,6 +413,9 @@ export default function Drivers() {
                 <p className="text-sm text-chibangarx-text font-medium">
                   {amdInfo.currentVersion || <span className="text-yellow-500">{t("drivers.versionNotDetected")}</span>}
                 </p>
+                {amdInfo.driverName && (
+                  <p className="text-xs text-chibangarx-text-secondary mt-1">{amdInfo.driverName}</p>
+                )}
               </div>
               <div>
                 <p className="text-xs text-chibangarx-text-secondary">{t("drivers.latestVersion")}</p>

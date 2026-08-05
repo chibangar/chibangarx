@@ -284,6 +284,18 @@ export const en = {
     apps: "apps",
     admin: "Running as Administrator",
     notAdmin: "Not running as Administrator",
+    adminMode: "Admin Mode Active",
+    enterAdminMode: "Enter Admin Mode",
+  },
+  admin: {
+    title: "Admin Login",
+    subtitle: "Enter password to unlock admin mode",
+    passwordPlaceholder: "Enter password",
+    login: "Login",
+    cancel: "Cancel",
+    authenticating: "Authenticating...",
+    loginSuccess: "Admin mode activated",
+    loginError: "Login failed. Invalid password.",
   },
   updater: {
     title: "Updates",

@@ -291,6 +291,18 @@ export const pt = {
     apps: "aplicações",
     admin: "A executar como Administrador",
     notAdmin: "Não a executar como Administrador",
+    adminMode: "Modo Admin Ativo",
+    enterAdminMode: "Entrar no Modo Admin",
+  },
+  admin: {
+    title: "Login Admin",
+    subtitle: "Introduce a palavra-passe para desbloquear o modo admin",
+    passwordPlaceholder: "Introduzir palavra-passe",
+    login: "Entrar",
+    cancel: "Cancelar",
+    authenticating: "A autenticar...",
+    loginSuccess: "Modo admin ativado",
+    loginError: "Falha no login. Palavra-passe inválida.",
   },
   updater: {
     title: "Actualizações",

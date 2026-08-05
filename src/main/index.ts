@@ -10,6 +10,7 @@ import { setupBackupHandlers } from "@main/backup"
 import { setupDebloatHandlers } from "@main/debloat"
 import { setupDriverHandlers } from "@main/drivers"
 import { initAutoUpdater } from "@main/updates"
+import { setupAdminHandlers } from "@main/admin"
 import { setMainWindow } from "@main/windowState"
 import Store from "electron-store"
 import { is } from "@main/utils"
@@ -160,6 +161,7 @@ app
     setupBackupHandlers()
     setupDebloatHandlers()
     setupDriverHandlers()
+    setupAdminHandlers()
     if (store.get("rpcEnabled") !== false) {
       startDiscordRPC()
     }

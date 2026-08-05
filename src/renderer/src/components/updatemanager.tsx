@@ -106,7 +106,7 @@ export default function UpdateManager(): React.ReactElement {
     window.electron.ipcRenderer.send("updater:download")
   }
 
-  const handleInstall = async () => {
+  const handleRestart = async () => {
     setIsInstalling(true)
     await window.electron.ipcRenderer.invoke("updater:install")
   }
@@ -235,7 +235,7 @@ export default function UpdateManager(): React.ReactElement {
                 {t("updater.restartInfo")}
               </p>
               <Button
-                onClick={handleInstall}
+                onClick={handleRestart}
                 disabled={isInstalling}
                 className="bg-green-600 hover:bg-green-700"
               >

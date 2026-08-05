@@ -32,6 +32,49 @@ async function fetchReleaseBody(version: string): Promise<string> {
   })
 }
 
+async function checkForUpdatesViaAPI(): Promise<{ version: string; notes: string } | null> {
+  return new Promise((resolve) => {
+    const url = "https://api.github.com/repos/chibangar/chibangarx/releases/latest"
+    const request = net.request(url)
+    request.setHeader("User-Agent", "ChibangaRx")
+    let data = ""
+    request.on("response", (response) => {
+      response.on("data", (chunk) => { data += chunk.toString() })
+      response.on("end", () => {
+        try {
+          const release = JSON.parse(data)
+          if (release.tag_name) {
+            const latestVersion = release.tag_name.replace(/^v/, "")
+            resolve({
+              version: latestVersion,
+              notes: release.body ?? "",
+            })
+          } else {
+            resolve(null)
+          }
+        } catch {
+          resolve(null)
+        }
+      })
+    })
+    request.on("error", () => resolve(null))
+    request.end()
+  })
+}
+
+function isNewerVersion(current: string, latest: string): boolean {
+  const currentParts = current.split(".").map(Number)
+  const latestParts = latest.split(".").map(Number)
+
+  for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
+    const c = currentParts[i] || 0
+    const l = latestParts[i] || 0
+    if (l > c) return true
+    if (l < c) return false
+  }
+  return false
+}
+
 export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void {
   autoUpdater.autoDownload = true
   autoUpdater.autoInstallOnAppQuit = true
@@ -91,13 +134,46 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
 
   ipcMain.handle("updater:check", async () => {
     console.log("[ChibangaRx] Manual update check triggered")
+    console.log("[ChibangaRx] Current version:", app.getVersion())
+    console.log("[ChibangaRx] isPackaged:", app.isPackaged)
+
     try {
       const result = await autoUpdater.checkForUpdates()
       console.log("[ChibangaRx] Check result:", result?.updateInfo?.version ?? "none")
       return { ok: true, updateInfo: result?.updateInfo ?? null }
     } catch (error: any) {
-      console.error("[ChibangaRx] Check failed:", error.message)
-      return { ok: false, error: String(error) }
+      console.error("[ChibangaRx] electron-updater check failed:", error.message)
+      console.log("[ChibangaRx] Falling back to GitHub API check...")
+
+      try {
+        const latestRelease = await checkForUpdatesViaAPI()
+        if (latestRelease) {
+          const currentVersion = app.getVersion()
+          console.log("[ChibangaRx] Latest release:", latestRelease.version)
+          console.log("[ChibangaRx] Current:", currentVersion)
+
+          if (isNewerVersion(currentVersion, latestRelease.version)) {
+            console.log("[ChibangaRx] Update available via API:", latestRelease.version)
+            availableUpdate = {
+              version: latestRelease.version,
+              releaseNotes: latestRelease.notes,
+            }
+            const win = getMainWindow()
+            win?.webContents.send("updater:available", {
+              version: latestRelease.version,
+              releaseNotes: latestRelease.notes,
+            })
+            return { ok: true, updateInfo: { version: latestRelease.version } }
+          } else {
+            console.log("[ChibangaRx] App is up to date")
+            return { ok: true, updateInfo: null }
+          }
+        }
+        return { ok: false, error: "Could not check for updates" }
+      } catch (apiError: any) {
+        console.error("[ChibangaRx] API check also failed:", apiError.message)
+        return { ok: false, error: String(apiError) }
+      }
     }
   })
 
@@ -133,7 +209,19 @@ export async function triggerAutoUpdateCheck(): Promise<void> {
   try {
     console.log("[ChibangaRx] Checking for updates...")
     await autoUpdater.checkForUpdates()
-  } catch (err) {
-    console.error("[ChibangaRx] Auto check failed:", err)
+  } catch (err: any) {
+    console.error("[ChibangaRx] Auto check failed:", err.message)
+    console.log("[ChibangaRx] Trying API fallback...")
+    try {
+      const latestRelease = await checkForUpdatesViaAPI()
+      if (latestRelease) {
+        const currentVersion = app.getVersion()
+        if (isNewerVersion(currentVersion, latestRelease.version)) {
+          console.log("[ChibangaRx] Update found via API fallback:", latestRelease.version)
+        }
+      }
+    } catch (apiErr) {
+      console.error("[ChibangaRx] API fallback also failed:", apiErr)
+    }
   }
 }

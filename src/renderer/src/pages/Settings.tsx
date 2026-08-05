@@ -30,8 +30,6 @@ function Settings() {
     (localStorage.getItem("pageAnimation") as "up" | "left" | "off") || "up",
   )
   const [checking, setChecking] = useState(false)
-  const [trayEnabled, setTrayEnabled] = useState(true)
-  const [trayLoading, setTrayLoading] = useState(false)
   const [posthogDisabled, setPosthogDisabled] = useState(() => {
     return localStorage.getItem("posthogDisabled") === "true"
   })
@@ -84,10 +82,6 @@ function Settings() {
   }, [theme])
 
   useEffect(() => {
-    invoke({ channel: "tray:get" }).then((status) => setTrayEnabled(status))
-  }, [])
-
-  useEffect(() => {
     invoke({ channel: "rpc-enabled:get" }).then((status) => setRpcEnabled(status))
   }, [])
 
@@ -105,14 +99,6 @@ function Settings() {
     localStorage.removeItem("chibangarx:systemInfo")
     localStorage.removeItem("chibangarx:tweakInfo")
     toast.success(t("settings.cacheCleared"))
-  }
-
-  const handleToggleTray = async () => {
-    setTrayLoading(true)
-    const newStatus = !trayEnabled
-    await invoke({ channel: "tray:set", payload: newStatus })
-    setTrayEnabled(newStatus)
-    setTrayLoading(false)
   }
 
   const handleToggleRpc = async () => {
@@ -438,34 +424,6 @@ function Settings() {
             <SettingSection title={t("settings.other")}>
               <SettingCard>
                 <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-base font-medium text-chibangarx-text mb-1">{t("settings.showTray")}</h3>
-                    <p className="text-sm text-chibangarx-text-secondary">
-                      {t("settings.showTrayDesc")}
-                      <span className="inline-flex items-center gap-1 ml-2 text-yellow-500">
-                        <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
-                        {t("settings.requiresRestart")}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Toggle
-                      checked={trayEnabled}
-                      onChange={handleToggleTray}
-                      disabled={trayLoading}
-                    />
-                    <span
-                      className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        trayEnabled
-                          ? "text-green-400 bg-green-400/10"
-                          : "text-chibangarx-text-secondary bg-chibangarx-border-secondary/20"
-                      }`}
-                    >
-                      {trayEnabled ? t("common.enabled") : t("common.disabled")}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-4">
                   <div className="flex-1">
                     <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.discordRpc")}

@@ -1,14 +1,14 @@
-import { app, shell, BrowserWindow, ipcMain, Tray, desktopCapturer, globalShortcut, session } from "electron"
+import { app, shell, BrowserWindow, ipcMain, desktopCapturer, globalShortcut, session } from "electron"
 import { promises as fs } from "fs"
 import path, { join } from "path"
 import log from "electron-log"
-import { createTray } from "@main/tray"
 import { setupPowerShellHandlers } from "@main/powershell"
 import { setupSystemHandlers } from "@main/system"
 import { setupTweaksHandlers } from "@main/tweakHandler"
 import { setupDNSHandlers } from "@main/dnsHandler"
 import { setupBackupHandlers } from "@main/backup"
 import { setupDebloatHandlers } from "@main/debloat"
+import { setupDriverHandlers } from "@main/drivers"
 import { initAutoUpdater } from "@main/updates"
 import { setMainWindow } from "@main/windowState"
 import Store from "electron-store"
@@ -23,38 +23,7 @@ log.initialize()
 
 const store = new Store()
 
-let trayInstance: Tray | null = null
-let isQuitting = false
 let selectedCaptureSourceId: string | null = null
-if (store.get("backgroundModeConfigured") !== true) {
-  store.set("showTray", true)
-  store.set("backgroundModeConfigured", true)
-}
-
-app.on("before-quit", () => {
-  isQuitting = true
-  trayInstance?.destroy()
-})
-
-ipcMain.handle("tray:get", () => {
-  return store.get("showTray")
-})
-ipcMain.handle("tray:set", (_event: Electron.IpcMainInvokeEvent, value: boolean) => {
-  store.set("showTray", value)
-  if (mainWindow) {
-    if (value) {
-      if (!trayInstance) {
-        trayInstance = createTray(mainWindow)
-      }
-    } else {
-      if (trayInstance) {
-        trayInstance.destroy()
-        trayInstance = null
-      }
-    }
-  }
-  return store.get("showTray")
-})
 
 ipcMain.handle("clips:get-sources", async () => {
   const sources = await desktopCapturer.getSources({
@@ -184,21 +153,13 @@ app
     }
     initAutoUpdater(() => mainWindow)
     console.log("[ChibangaRx]: Auto updater initialized")
-    if (store.get("showTray")) {
-      console.log("[ChibangaRx]: Creating tray...")
-      try {
-        trayInstance = createTray(mainWindow!)
-        console.log("[ChibangaRx]: Tray created")
-      } catch (err: any) {
-        console.error("[ChibangaRx]: Tray creation failed:", err)
-      }
-    }
     setupPowerShellHandlers()
     setupSystemHandlers()
     setupTweaksHandlers()
     setupDNSHandlers()
     setupBackupHandlers()
     setupDebloatHandlers()
+    setupDriverHandlers()
     if (store.get("rpcEnabled") !== false) {
       startDiscordRPC()
     }
@@ -224,18 +185,7 @@ app
 
     ipcMain.on("window-close", () => {
       if (mainWindow) {
-        if (store.get("showTray")) {
-          mainWindow.hide()
-        } else {
-          app.quit()
-        }
-      }
-    })
-
-    mainWindow?.on("close", (event) => {
-      if (!isQuitting && store.get("showTray")) {
-        event.preventDefault()
-        mainWindow?.hide()
+        app.quit()
       }
     })
 

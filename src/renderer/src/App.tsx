@@ -23,6 +23,7 @@ import Debloat from "./pages/Debloat"
 import NoAdmin from "./components/noAdmin"
 import ProSettings from "./pages/ProSettings"
 import Clips from "./pages/Clips"
+import Drivers from "./pages/Drivers"
 import { playSuccess, playError, playBoot } from "./lib/sound"
 
 function App() {
@@ -172,6 +173,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/pro-settings" element={<ProSettings />} />
             <Route path="/clips" element={<Clips />} />
+            <Route path="/drivers" element={<Drivers />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

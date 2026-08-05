@@ -687,6 +687,51 @@ function cancelAMDDownload(): void {
   }
 }
 
+async function downloadAndInstallAMDChipset(
+  _event: any,
+  payload: { downloadUrl: string; version: string },
+): Promise<{ success: boolean; filePath?: string; error?: string }> {
+  const { downloadUrl, version } = payload
+  const win = mainWindow
+
+  // Validate URL - use fallback if empty/invalid
+  let finalUrl = downloadUrl
+  if (!finalUrl || !finalUrl.startsWith("http")) {
+    const fallbackVersion = version && version !== "latest" ? version : "8.05.04.516"
+    finalUrl = `https://drivers.amd.com/drivers/amd_chipset_software_${fallbackVersion}.exe`
+    console.log("[ChibangaRx] AMD download URL was invalid, using fallback:", finalUrl)
+  }
+
+  try {
+    const installDir = app.getPath("userData")
+    const filePath = path.join(installDir, `AMDChipsetSoftware-${version}.exe`)
+
+    win?.webContents.send("amd:download-progress", { percent: 0, status: "starting" })
+
+    await downloadFile(finalUrl, filePath, (percent, transferred, total) => {
+      win?.webContents.send("amd:download-progress", { percent, transferred, total })
+    })
+
+    amdDownloadAbort = null
+    console.log("[ChibangaRx] AMD chipset downloaded:", filePath)
+
+    // Auto-install
+    const installResult = await installAMDChipset(null, filePath)
+    if (installResult.success) {
+      win?.webContents.send("amd:install-complete", { message: installResult.output })
+    } else {
+      win?.webContents.send("amd:install-error", { error: installResult.error })
+    }
+
+    return { success: installResult.success, filePath, error: installResult.error }
+  } catch (error: any) {
+    amdDownloadAbort = null
+    console.error("Failed to download/install AMD chipset:", error)
+    win?.webContents.send("amd:download-error", { error: error.message })
+    return { success: false, error: error.message }
+  }
+}
+
 export const setupDriverHandlers = (): void => {
   ipcMain.handle("drivers:get-installed", getInstalledDrivers)
   ipcMain.handle("drivers:get-motherboard", getMotherboardInfo)
@@ -699,6 +744,7 @@ export const setupDriverHandlers = (): void => {
   ipcMain.handle("drivers:download-amd", downloadAMDChipset)
   ipcMain.handle("drivers:install-amd", installAMDChipset)
   ipcMain.handle("drivers:cancel-amd-download", cancelAMDDownload)
+  ipcMain.handle("drivers:download-and-install-amd", downloadAndInstallAMDChipset)
   console.log("[ChibangaRx main/drivers.ts]: Driver handlers setup complete")
 }
 
@@ -714,6 +760,7 @@ export const cleanupDriverHandlers = (): void => {
   ipcMain.removeHandler("drivers:download-amd")
   ipcMain.removeHandler("drivers:install-amd")
   ipcMain.removeHandler("drivers:cancel-amd-download")
+  ipcMain.removeHandler("drivers:download-and-install-amd")
 }
 
-export { downloadAMDChipset, installAMDChipset, cancelAMDDownload }
+export { downloadAMDChipset, installAMDChipset, cancelAMDDownload, downloadAndInstallAMDChipset }

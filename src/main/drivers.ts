@@ -472,8 +472,8 @@ async function fetchAMDLatestVersion(): Promise<{
       highlights.push("Windows 11 compatibility enhancements")
     }
 
-    // Use the direct AMD auto-detect tool URL which always has the latest chipset drivers
-    const downloadUrl = "https://drivers.amd.com/drivers/installer/24.10/AMDChipsetSoftwareInstaller.exe"
+    // Use the correct AMD chipset driver download URL pattern (requires Referer header)
+    const downloadUrl = `https://drivers.amd.com/drivers/amd_chipset_software_${version}.exe`
 
     return {
       success: true,
@@ -484,11 +484,11 @@ async function fetchAMDLatestVersion(): Promise<{
     }
   } catch (error: any) {
     console.error("Failed to fetch AMD latest version:", error)
-    // Return a fallback with the direct download URL so the button still works
+    // Return a fallback so the button still works
     return {
       success: true,
-      version: "latest",
-      downloadUrl: "https://drivers.amd.com/drivers/installer/24.10/AMDChipsetSoftwareInstaller.exe",
+      version: "8.05.04.516",
+      downloadUrl: "https://drivers.amd.com/drivers/amd_chipset_software_8.05.04.516.exe",
       releaseNotes: "AMD Ryzen Chipset Driver",
       highlights: ["Performance improvements", "Bug fixes", "Windows compatibility"],
     }
@@ -512,7 +512,8 @@ async function downloadAMDChipset(
 
     await new Promise<void>((resolve, reject) => {
       const request = net.request(downloadUrl)
-      request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+      request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
+      request.setHeader("Referer", "https://www.amd.com/")
 
       let totalBytes = 0
       let receivedBytes = 0
@@ -527,7 +528,8 @@ async function downloadAMDChipset(
             request.abort()
             const followUrl = Array.isArray(redirectUrl) ? redirectUrl[0] : redirectUrl
             const followRequest = net.request(followUrl)
-            followRequest.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+            followRequest.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
+            followRequest.setHeader("Referer", "https://www.amd.com/")
             followRequest.on("response", (res) => handleAMDResponse(res))
             followRequest.on("error", reject)
             followRequest.end()

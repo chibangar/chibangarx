@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import { Loader2, Menu, Minus, Shield, Square, Terminal, X, User, Globe, Users, Lock } from "lucide-react"
+import { useState } from "react"
+import { Loader2, Menu, Minus, Shield, Square, Terminal, X } from "lucide-react"
 import { close, minimize, toggleMaximize } from "../lib/electron"
 import chibangarxLogo from "../../../../resources/chibangarxlogo.png"
 import Card from "./ui/Card"
@@ -8,7 +8,6 @@ import InstallConsoleModal from "./installConsoleModal"
 import { useTranslation } from "react-i18next"
 import UpdateManager from "./updatemanager"
 import { playClick, playMinimize, playMaximize, playClose } from "@/lib/sound"
-import AdminLoginModal from "./adminLoginModal"
 
 interface TitleBarProps {
   onToggleSidebar: () => void
@@ -24,47 +23,14 @@ function TitleBar({
   const { t } = useTranslation()
   const { apps, action } = useAppInstallStore()
   const [consoleOpen, setConsoleOpen] = useState(false)
-  const [adminLoginOpen, setAdminLoginOpen] = useState(false)
-  const [username, setUsername] = useState("")
-  const [country, setCountry] = useState("")
-  const [onlineCount, setOnlineCount] = useState(0)
   const actionText = action === "uninstall" ? t("titlebar.uninstalling") : t("titlebar.installing")
 
   const currentApp = apps.find((app) => app.status === "installing")
   const remainingCount = apps.filter((app) => app.status === "pending").length
 
-  useEffect(() => {
-    if (adminStatus) {
-      void window.electron.ipcRenderer.invoke("admin:status").then((status: any) => {
-        if (status?.isAdmin) {
-          setUsername(status.username)
-          setCountry(status.country)
-          setOnlineCount(status.onlineCount)
-        }
-      })
-    }
-  }, [adminStatus])
-
-  const handleAdminClick = () => {
-    if (adminStatus) {
-      void window.electron.ipcRenderer.invoke("admin:logout")
-      window.location.reload()
-    } else {
-      setAdminLoginOpen(true)
-    }
-  }
-
-  const handleAdminLogin = (isAdmin: boolean) => {
-    setAdminLoginOpen(false)
-    if (isAdmin) {
-      window.location.reload()
-    }
-  }
-
   return (
     <>
       <InstallConsoleModal open={consoleOpen} onClose={() => setConsoleOpen(false)} />
-      <AdminLoginModal open={adminLoginOpen} onClose={handleAdminLogin} />
       <div
         style={{ WebkitAppRegion: "drag" } as any}
         className="h-[50px] fixed top-0 left-0 right-0 flex justify-between items-center pl-4 bg-chibangarx-bg z-50"
@@ -96,48 +62,24 @@ function TitleBar({
                 ? `${actionText} ${apps[0].name}`
                  : currentApp
                    ? `${actionText} ${currentApp.name}, ${remainingCount} ${t("titlebar.left")}`
-                   : `${actionText} ${apps.length} ${t("titlebar.apps")}`}
+                 : `${actionText} ${apps.length} ${t("titlebar.apps")}`}
               <Terminal className="w-3 h-3 text-chibangarx-primary" />
             </Card>
           )}
         </div>
 
-        <div className="flex items-center gap-2" style={{ WebkitAppRegion: "no-drag" } as any}>
-          {adminStatus && username && (
-            <div className="flex items-center gap-3 text-xs text-chibangarx-text-secondary px-3 py-1.5 bg-chibangarx-card border border-chibangarx-border-secondary rounded-xl">
-              <div className="flex items-center gap-1">
-                <User size={12} />
-                <span>{username}</span>
-              </div>
-              <div className="w-px h-3 bg-chibangarx-border-secondary" />
-              <div className="flex items-center gap-1">
-                <Globe size={12} />
-                <span className="uppercase">{country || "??"}</span>
-              </div>
-              <div className="w-px h-3 bg-chibangarx-border-secondary" />
-              <div className="flex items-center gap-1">
-                <Users size={12} />
-                <span>{onlineCount}</span>
-              </div>
-            </div>
-          )}
+        <div className="flex" style={{ WebkitAppRegion: "no-drag" } as any}>
           <UpdateManager />
-          <button
-            onClick={handleAdminClick}
-            className={`h-12.5 w-12 inline-flex items-center justify-center transition-colors rounded ${
-              adminStatus
-                ? "text-chibangarx-primary bg-chibangarx-primary/10 hover:bg-chibangarx-primary/20"
-                : "text-chibangarx-text-secondary hover:bg-chibangarx-accent"
-            }`}
-            title={adminStatus ? t("titlebar.adminMode") : t("titlebar.enterAdminMode")}
-            style={{ WebkitAppRegion: "no-drag" } as any}
+          <div
+            className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
+             title={adminStatus ? t("titlebar.admin") : t("titlebar.notAdmin")}
           >
             {adminStatus ? (
-              <Shield className="w-5 h-5" />
+              <Shield className="w-5 h-5 text-chibangarx-primary" />
             ) : (
-              <Lock className="w-5 h-5" />
+              <Shield className="w-5 h-5 text-red-600" />
             )}
-          </button>
+          </div>
           <button
             onClick={() => { playMinimize(); minimize() }}
             className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"

@@ -1,0 +1,240 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap")
+layer(base);
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@theme {
+  --color-chibangarx-old-primary: #01e5ff;
+  --color-chibangarx-primary: var(--color-primary);
+  --color-chibangarx-text: var(--color-text);
+  --color-chibangarx-text-secondary: var(--color-text-secondary);
+  --color-chibangarx-text-muted: var(--color-text-muted);
+  --color-chibangarx-bg: var(--color-bg);
+  --color-chibangarx-card: var(--color-card);
+  --color-chibangarx-border: var(--color-border);
+  --color-chibangarx-secondary: var(--color-secondary);
+  --color-chibangarx-accent: var(--color-accent);
+  --color-chibangarx-border-secondary: var(--color-border-secondary);
+  --color-chibangarx-old-secondary: #005fff;
+  --animate-border-spin: border-spin 3s linear infinite;
+
+  @keyframes border-spin {
+    from {
+      --angle: 0deg;
+    }
+    to {
+      --angle: 360deg;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer utilities {
+  /* ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-chibangarx-text-muted);
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-chibangarx-primary);
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-chibangarx-secondary);
+  } */
+  .light {
+    --color-chibangarx-bg: #f0f0f0;
+    --color-chibangarx-text: #1e293b;
+    --color-chibangarx-text-dark: #334155;
+    --color-chibangarx-text-darker: #475569;
+    --color-chibangarx-text-secondary: #64748b;
+    --color-chibangarx-text-muted: #94a3b8;
+    --color-chibangarx-card: #ffffff;
+    --color-chibangarx-border: #d5dae2;
+    --color-chibangarx-border-secondary: #cbd5e1;
+    --color-chibangarx-primary: #3b82f6;
+    --color-chibangarx-secondary: #2dac7d;
+    --color-chibangarx-accent: #f1f5f9;
+  }
+
+  :root {
+    --color-chibangarx-bg: #0c121f;
+    --color-chibangarx-text: #f0f4f8;
+    --color-chibangarx-text-dark: #d3dbe4;
+    --color-chibangarx-text-darker: #aab4c3;
+    --color-chibangarx-text-secondary: #7e92a9;
+    --color-chibangarx-text-muted: #4b5970;
+    --color-chibangarx-card: #131c2c;
+    --color-chibangarx-border: #1f2a3d;
+    --color-chibangarx-border-secondary: #212f44;
+    --color-chibangarx-primary: #4f90e6;
+    --color-chibangarx-secondary: #3db58a;
+    --color-chibangarx-accent: #243144;
+  }
+
+  .purple {
+    --color-chibangarx-bg: #120f1c;
+    --color-chibangarx-text: #e3d8ff;
+    --color-chibangarx-text-dark: #cbb8ff;
+    --color-chibangarx-text-darker: #b199ff;
+    --color-chibangarx-text-secondary: #9a85e8;
+    --color-chibangarx-text-muted: #4a3a6b;
+    --color-chibangarx-card: #1a1430;
+    --color-chibangarx-border: #2f1b60;
+    --color-chibangarx-border-secondary: #3a2178;
+    --color-chibangarx-primary: #8e44ff;
+    --color-chibangarx-secondary: #3463ff;
+    --color-chibangarx-accent: #3b1673;
+  }
+
+  .gray {
+    --color-chibangarx-bg: #111214;
+    --color-chibangarx-text: #f5f6fa;
+    --color-chibangarx-text-dark: #e0e2e6;
+    --color-chibangarx-text-darker: #c8ccd2;
+    --color-chibangarx-text-secondary: #aeb3bb;
+    --color-chibangarx-text-muted: #7a7f87;
+    --color-chibangarx-card: #18191b;
+    --color-chibangarx-border: #26272b;
+    --color-chibangarx-border-secondary: #232426;
+    --color-chibangarx-primary: #6366f1;
+    --color-chibangarx-secondary: #b981f8;
+    --color-chibangarx-accent: #232324;
+  }
+
+  .classic {
+    --color-chibangarx-bg: #0f172a;
+    --color-chibangarx-text: #ffffff;
+    --color-chibangarx-text-dark: #e6e6e6;
+    --color-chibangarx-text-darker: #cccccc;
+    --color-chibangarx-text-secondary: #94a3b8;
+    --color-chibangarx-text-muted: #475569;
+    --color-chibangarx-card: #162033;
+    --color-chibangarx-border: #253144;
+    --color-chibangarx-border-secondary: #1e293b;
+    --color-chibangarx-primary: #3b82f6;
+    --color-chibangarx-secondary: #2dac7d;
+    --color-chibangarx-accent: #2e394b;
+  }
+
+  .space {
+    --color-chibangarx-bg: #030810;
+    --color-chibangarx-text: #e4eaf6;
+    --color-chibangarx-text-dark: #bcc8e0;
+    --color-chibangarx-text-darker: #8e9fbd;
+    --color-chibangarx-text-secondary: #6a7ea0;
+    --color-chibangarx-text-muted: #2e3f5c;
+    --color-chibangarx-card: #080f22;
+    --color-chibangarx-border: #142040;
+    --color-chibangarx-border-secondary: #101a34;
+    --color-chibangarx-primary: #5d8eff;
+    --color-chibangarx-secondary: #9b6dff;
+    --color-chibangarx-accent: #0d1830;
+  }
+
+  .space .bg-chibangarx-card,
+  .space [class*="bg-chibangarx-card"] {
+    box-shadow: 0 0 20px rgba(93, 142, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+  .Toastify__toast {
+    background-color: var(--color-chibangarx-card) !important;
+    border: 1px solid var(--color-chibangarx-border) !important;
+    color: var(--color-chibangarx-text) !important;
+    --toastify-icon-color-success: var(--color-chibangarx-secondary) !important;
+  }
+  .Toastify__close-button {
+    color: var(--color-chibangarx-text-secondary) !important;
+  }
+}
+
+@layer base {
+  html {
+    font-family: "Poppins", "Noto Sans", sans-serif;
+    font-synthesis: none;
+  }
+}
+@layer utilities {
+  * {
+    user-select: none;
+  }
+}
+
+.recharts-line path {
+  stroke: var(--color-chibangarx-primary);
+}
+
+button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+body {
+  scrollbar-color: var(--color-chibangarx-primary) var(--color-chibangarx-bg);
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: var(--twinkle-start, 0.3); }
+  50% { opacity: var(--twinkle-end, 1); }
+}
+
+@keyframes shootingStar {
+  0% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(35deg);
+  }
+  70% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(300px) translateY(200px) rotate(35deg);
+  }
+}
+
+@keyframes planetFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}

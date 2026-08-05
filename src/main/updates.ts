@@ -76,15 +76,17 @@ function isNewerVersion(current: string, latest: string): boolean {
 }
 
 export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void {
-  autoUpdater.autoDownload = true
+  autoUpdater.autoDownload = false
   autoUpdater.autoInstallOnAppQuit = true
   autoUpdater.channel = "latest"
+  autoUpdater.disableDifferentialDownload = false
 
   if (!app.isPackaged) {
     autoUpdater.forceDevUpdateConfig = true
   }
 
   console.log("[ChibangaRx] Auto-updater initialized, current version:", app.getVersion())
+  console.log("[ChibangaRx] Differential download:", !autoUpdater.disableDifferentialDownload)
 
   autoUpdater.on("update-available", async (info: UpdateInfo) => {
     console.log("[ChibangaRx] Update available:", info.version)
@@ -179,12 +181,13 @@ export function initAutoUpdater(getMainWindow: () => BrowserWindow | null): void
 
   ipcMain.on("updater:download", async () => {
     console.log("[ChibangaRx] Downloading update...")
+    const win = getMainWindow()
+    win?.webContents.send("updater:downloading", {})
     try {
       await autoUpdater.downloadUpdate()
       console.log("[ChibangaRx] Download complete")
     } catch (error: any) {
       console.error("[ChibangaRx] Download failed:", error.message)
-      const win = getMainWindow()
       win?.webContents.send("updater:download-error", { error: String(error) })
     }
   })

@@ -42,6 +42,10 @@ function Home() {
     router("tweaks")
   }
 
+  const goToDrivers = () => {
+    router("drivers")
+  }
+
   const fetchActiveTweaks = async () => {
     try {
       const active = await invoke({ channel: "tweak:active" })
@@ -276,6 +280,22 @@ function Home() {
           <div className="ml-auto">
             <Button variant="outline" className="flex items-center gap-2" onClick={goToTweaks}>
               <Zap size={18} /> {t("home.visitTweaks")}
+            </Button>
+          </div>
+        </Card>
+        <Card className="bg-chibangarx-card backdrop-blur-xs rounded-xl border border-chibangarx-border hover:shadow-xs overflow-hidden p-3 w-full mt-4 flex gap-4 items-center">
+          <div className="p-3 bg-cyan-500/10 rounded-lg items-center justify-center text-center">
+            <Cpu className="text-cyan-500" size={24} />
+          </div>
+          <div>
+            <h1 className="font-medium text-chibangarx-text">{t("home.driversTitle")}</h1>
+            <p className="text-chibangarx-text-secondary">
+              {t("home.driversDesc")}
+            </p>
+          </div>
+          <div className="ml-auto">
+            <Button variant="outline" className="flex items-center gap-2" onClick={goToDrivers}>
+              <Cpu size={18} /> {t("home.visitDrivers")}
             </Button>
           </div>
         </Card>

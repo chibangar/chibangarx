@@ -64,9 +64,16 @@ export default function UpdateManager(): React.ReactElement {
       setIsDownloading(false)
     }
 
+    const onDownloading = () => {
+      setIsDownloading(true)
+      setDownloadPercent(0)
+      setIsDownloaded(false)
+    }
+
     window.electron.ipcRenderer.on("updater:available", onAvailable)
     window.electron.ipcRenderer.on("updater:not-available", onNotAvailable)
     window.electron.ipcRenderer.on("updater:error", onError)
+    window.electron.ipcRenderer.on("updater:downloading", onDownloading)
     window.electron.ipcRenderer.on("updater:download-progress", onProgress)
     window.electron.ipcRenderer.on("updater:downloaded", onDownloaded)
     window.electron.ipcRenderer.on("updater:download-error", onDownloadError)
@@ -84,6 +91,7 @@ export default function UpdateManager(): React.ReactElement {
       window.electron.ipcRenderer.removeListener("updater:available", onAvailable)
       window.electron.ipcRenderer.removeListener("updater:not-available", onNotAvailable)
       window.electron.ipcRenderer.removeListener("updater:error", onError)
+      window.electron.ipcRenderer.removeListener("updater:downloading", onDownloading)
       window.electron.ipcRenderer.removeListener("updater:download-progress", onProgress)
       window.electron.ipcRenderer.removeListener("updater:downloaded", onDownloaded)
       window.electron.ipcRenderer.removeListener("updater:download-error", onDownloadError)

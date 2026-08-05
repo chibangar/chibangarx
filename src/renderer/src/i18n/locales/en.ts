@@ -70,6 +70,9 @@ export const en = {
     slowPc: "PC Running slow?",
     slowPcDesc: "Try Using Tweaks to improve system performance and privacy.",
     visitTweaks: "Visit Tweaks",
+    driversTitle: "Outdated Drivers?",
+    driversDesc: "Detect and install updates for your motherboard and chipset drivers.",
+    visitDrivers: "Visit Drivers",
   },
   settings: {
     appearance: "Appearance",

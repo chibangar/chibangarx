@@ -73,6 +73,9 @@ export const pt = {
     slowPc: "PC Lento?",
     slowPcDesc: "Tente utilizar Ajustes para melhorar o desempenho e privacidade do sistema.",
     visitTweaks: "Visitar Ajustes",
+    driversTitle: "Drivers Desatualizados?",
+    driversDesc: "Detectar e instalar atualizações para os drivers da sua placa-mãe e chipset.",
+    visitDrivers: "Visitar Drivers",
   },
   settings: {
     appearance: "Aparência",

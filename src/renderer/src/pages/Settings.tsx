@@ -54,10 +54,12 @@ function Settings() {
     try {
       setChecking(true)
       const res = await invoke({ channel: "updater:check" })
-      if (res?.ok && !res.updateInfo) {
+      if (res?.found) {
+        toast.info(t("settings.updateAvailable") + `: ${res.version}`)
+      } else if (res?.ok) {
         toast.success(t("settings.upToDate"))
-      } else if (res?.updateInfo) {
-        toast.info(t("settings.updateAvailable") + `: ${res.updateInfo.version}`)
+      } else {
+        toast.error(res?.error || t("settings.checkError"))
       }
     } catch (e) {
       toast.error(String(e))
@@ -249,7 +251,9 @@ function Settings() {
                     <h3 className="text-base font-medium text-chibangarx-text mb-1">
                       {t("settings.checkForUpdates")}
                     </h3>
-                    <p className="text-sm text-chibangarx-text-secondary">{t("settings.checkForUpdates")}</p>
+                    <p className="text-sm text-chibangarx-text-secondary">
+                      {t("settings.checkForUpdatesDesc")}
+                    </p>
                   </div>
                   <Button onClick={checkForUpdates} disabled={checking}>
                     {checking ? t("settings.checking") : t("settings.checkForUpdates")}

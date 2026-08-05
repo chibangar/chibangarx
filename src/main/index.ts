@@ -151,7 +151,7 @@ app
     } catch (err: any) {
       console.error("[ChibangaRx]: createWindow failed:", err)
     }
-    initAutoUpdater(() => mainWindow)
+    initAutoUpdater()
     console.log("[ChibangaRx]: Auto updater initialized")
     setupPowerShellHandlers()
     setupSystemHandlers()

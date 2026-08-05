@@ -1,6 +1,6 @@
 {
   "name": "chibangarx",
-  "version": "2.38.18",
+  "version": "2.38.19",
   "description": "ChibangaRx",
   "main": "./out/main/index.js",
   "author": "chibangar",
@@ -173,7 +173,10 @@
       "shortcutName": "${productName}",
       "uninstallDisplayName": "${productName}",
       "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
       "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
       "installerSidebar": "build/chibangarxinstallerleftsidebar.bmp",
       "uninstallerSidebar": "build/chibangarxinstallerleftsidebar.bmp",
       "installerHeader": "build/chibangarxinstallerheader.bmp"

@@ -1,0 +1,14 @@
+{
+  "title": "Disable Activity History",
+  "name": "disable-activity-history",
+  "risk": "safe",
+  "category": ["Privacy", "Performance"],
+  "description": "Disables Windows activity history tracking",
+  "deepDescription": "Disables activity history collection to improve privacy and reduce background tracking overhead. This prevents Windows from storing and syncing activity history data.",
+  "links": [
+    {
+      "name": "Winhance",
+      "url": "https://winhance.net"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Mouse Hover Time",
+  "name": "mouse-hover-time",
+  "risk": "safe",
+  "category": ["General", "Input"],
+  "description": "Reduces mouse hover time for faster UI interactions",
+  "deepDescription": "Sets mouse hover time to 100ms for faster tooltip and context menu activation, improving user interface responsiveness.",
+  "links": [
+    {
+      "name": "Winhance",
+      "url": "https://winhance.net"
+    }
+  ]
+}

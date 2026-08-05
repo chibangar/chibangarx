@@ -718,6 +718,7 @@ export const pt = {
     refresh: "Atualizar",
     versionNotDetected: "Versão não detetada",
     downloadAndInstall: "Descarregar e Instalar",
+    downloadVersion: "Descarregar v",
     improvements: "Melhorias",
   },
   tweakData: {

@@ -188,14 +188,15 @@ export default function Drivers() {
   }
 
   async function downloadAMDChipset() {
-    if (!amdDownloadUrl || !amdLatestVersion) return
+    const url = amdDownloadUrl || "https://drivers.amd.com/drivers/installer/24.10/AMDChipsetSoftwareInstaller.exe"
+    const version = amdLatestVersion || "latest"
     setAmdDownloading(true)
     setAmdDownloadProgress(0)
     setAmdError(null)
     try {
       await invoke({
         channel: "drivers:download-amd",
-        payload: { downloadUrl: amdDownloadUrl, version: amdLatestVersion },
+        payload: { downloadUrl: url, version },
       })
     } catch (error: any) {
       log.error("Failed to download AMD chipset:", error)
@@ -478,7 +479,7 @@ export default function Drivers() {
                   <div className="flex gap-2">
                     <Button onClick={downloadAMDChipset} className="bg-orange-600 hover:bg-orange-700">
                       <Download className="w-4 h-4 mr-2" />
-                      {t("drivers.downloadAndInstall")}
+                      {amdLatestVersion ? `${t("drivers.downloadVersion")} ${amdLatestVersion}` : t("drivers.downloadFromAMD")}
                     </Button>
                     <Button variant="secondary" onClick={checkAMDChipset}>
                       <RefreshCw className="w-4 h-4 mr-2" />

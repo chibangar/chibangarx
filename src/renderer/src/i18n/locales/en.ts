@@ -710,6 +710,7 @@ export const en = {
     refresh: "Refresh",
     versionNotDetected: "Version not detected",
     downloadAndInstall: "Download & Install",
+    downloadVersion: "Download v",
     improvements: "Improvements",
   },
   tweakData: {

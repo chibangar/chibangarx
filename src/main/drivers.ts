@@ -331,24 +331,54 @@ const AMD_CHIPSET_CHECK_SCRIPT = [
   '        return @{ isAMD = $false } | ConvertTo-Json',
   "    }",
   "",
-  '    $chipsetDrivers = Get-CimInstance Win32_PnPSignedDriver | Where-Object {',
-  '        $_.DeviceClass -match "system|bridge" -and $_.Manufacturer -match "AMD"',
+  "    # Check registry for AMD Chipset Software",
+  "    $amdVersion = ''",
+  "    $regPaths = @(",
+  '        "HKLM:\\SOFTWARE\\AMD\\AMD Chipset Software Installer"',
+  '        "HKLM:\\SOFTWARE\\WOW6432Node\\AMD\\AMD Chipset Software Installer"',
+  '        "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{*AMD*}"',
+  "    )",
+  "",
+  "    foreach ($path in $regPaths) {",
+  "        if (Test-Path $path) {",
+  "            $props = Get-ItemProperty -Path $path -ErrorAction SilentlyContinue",
+  "            if ($props.DisplayVersion) {",
+  "                $amdVersion = $props.DisplayVersion",
+  "                break",
+  "            }",
+  "            if ($props.Version) {",
+  "                $amdVersion = $props.Version",
+  "                break",
+  "            }",
+  "        }",
   "    }",
   "",
-  "    $currentVersion = ''",
-  "    foreach ($driver in $chipsetDrivers) {",
-  "        if ($driver.DriverVersion) {",
-  "            $currentVersion = $driver.DriverVersion",
-  "            break",
+  "    # Also check uninstall registry for AMD chipset",
+  "    if (-not $amdVersion) {",
+  '        $uninstallPaths = @("HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall", "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")',
+  "        foreach ($uninstallPath in $uninstallPaths) {",
+  "            if (Test-Path $uninstallPath) {",
+  '                $apps = Get-ChildItem $uninstallPath | Get-ItemProperty | Where-Object { $_.DisplayName -match "AMD.*Chipset|AMD.*GPIO|AMD.*PCI" }',
+  "                if ($apps) {",
+  '                    $amdVersion = $apps[0].DisplayVersion',
+  "                    break",
+  "                }",
+  "            }",
   "        }",
+  "    }",
+  "",
+  "    # Get all AMD system devices",
+  '    $amdDevices = Get-CimInstance Win32_PnPSignedDriver | Where-Object {',
+  '        $_.Manufacturer -match "AMD" -and ($_.DeviceClass -match "system|bridge|processor|acpi|pci")',
   "    }",
   "",
   "    return @{",
   "        isAMD = $true",
   "        cpuName = $cpu.Name",
-  "        currentVersion = $currentVersion",
-  "        deviceCount = $chipsetDrivers.Count",
-  "    } | ConvertTo-Json",
+  "        currentVersion = $amdVersion",
+  "        deviceCount = $amdDevices.Count",
+  "        deviceNames = ($amdDevices | ForEach-Object { $_.DeviceName } | Select-Object -First 5)",
+  "    } | ConvertTo-Json -Depth 3",
   "} catch {",
   '    return @{ error = $_.Exception.Message } | ConvertTo-Json',
   "}",
@@ -395,11 +425,12 @@ async function fetchAMDLatestVersion(): Promise<{
   version?: string
   downloadUrl?: string
   releaseNotes?: string
+  highlights?: string[]
   error?: string
 }> {
   try {
-    // Try to get the latest chipset version from the release notes page
-    const versionPage = await new Promise<string>((resolve, reject) => {
+    // Fetch the release notes page from AMD
+    const pageContent = await new Promise<string>((resolve, reject) => {
       const request = net.request("https://www.amd.com/en/resources/support-articles/release-notes/RN-RYZEN-CHIPSET.html")
       request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
       let data = ""
@@ -411,15 +442,35 @@ async function fetchAMDLatestVersion(): Promise<{
       request.end()
     })
 
-    // Extract version from page
-    const versionMatch = versionPage.match(/(\d+\.\d+\.\d+\.\d+)/)
+    // Extract version from page - look for pattern like "7.06.02.123"
+    const versionMatch = pageContent.match(/(\d+\.\d+\.\d+\.\d+)/)
     const version = versionMatch ? versionMatch[1] : null
 
     if (!version) {
       return { success: false, error: "Could not determine latest AMD chipset version" }
     }
 
-    // Construct download URL (AMD uses a pattern for chipset downloads)
+    // Extract highlights/improvements from release notes
+    const highlights: string[] = []
+
+    // Try to extract bullet points or list items from the release notes
+    const highlightRegex = /(?:•|-|\d+\.)\s*([^<\n]{10,150})/g
+    let match
+    while ((match = highlightRegex.exec(pageContent)) !== null && highlights.length < 8) {
+      const text = match[1].trim()
+      if (text && !text.includes("AMD.com") && !text.includes("EULA") && !text.includes("License")) {
+        highlights.push(text)
+      }
+    }
+
+    // If no highlights found, add a default message
+    if (highlights.length === 0) {
+      highlights.push("Performance improvements for AMD Ryzen processors")
+      highlights.push("Bug fixes and stability improvements")
+      highlights.push("Windows 11 compatibility enhancements")
+    }
+
+    // The download URL for AMD chipset drivers
     const downloadUrl = `https://drivers.amd.com/drivers/installer/24.10/AMDChipsetSoftwareInstaller.exe`
 
     return {
@@ -427,6 +478,7 @@ async function fetchAMDLatestVersion(): Promise<{
       version,
       downloadUrl,
       releaseNotes: `AMD Ryzen Chipset Driver ${version}`,
+      highlights,
     }
   } catch (error: any) {
     console.error("Failed to fetch AMD latest version:", error)

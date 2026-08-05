@@ -708,6 +708,9 @@ export const en = {
     amdInstallFailed: "Failed to install AMD chipset drivers",
     amdUpToDate: "AMD chipset drivers are up to date",
     refresh: "Refresh",
+    versionNotDetected: "Version not detected",
+    downloadAndInstall: "Download & Install",
+    improvements: "Improvements",
   },
   tweakData: {
     "24-hour-clock": { title: "Set 24-Hour Clock", description: "Changes clock to display 24-hour format." },

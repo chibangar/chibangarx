@@ -93,7 +93,7 @@ export default function Drivers() {
   const [amdInfo, setAmdInfo] = useState<{ isAMD: boolean; cpuName: string; currentVersion: string; deviceCount: number } | null>(null)
   const [amdLatestVersion, setAmdLatestVersion] = useState<string | null>(null)
   const [amdDownloadUrl, setAmdDownloadUrl] = useState<string | null>(null)
-  const [amdReleaseNotes, setAmdReleaseNotes] = useState<string>("")
+  const [amdHighlights, setAmdHighlights] = useState<string[]>([])
   const [amdDownloading, setAmdDownloading] = useState(false)
   const [amdDownloadProgress, setAmdDownloadProgress] = useState(0)
   const [amdError, setAmdError] = useState<string | null>(null)
@@ -173,7 +173,7 @@ export default function Drivers() {
         if (versionResult.success && versionResult.version) {
           setAmdLatestVersion(versionResult.version)
           setAmdDownloadUrl(versionResult.downloadUrl || "")
-          setAmdReleaseNotes(versionResult.releaseNotes || "")
+          setAmdHighlights(versionResult.highlights || [])
         }
       } else {
         setAmdInfo({ isAMD: false, cpuName: "", currentVersion: "", deviceCount: 0 })
@@ -409,7 +409,9 @@ export default function Drivers() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
               <div>
                 <p className="text-xs text-chibangarx-text-secondary">{t("drivers.installedVersion")}</p>
-                <p className="text-sm text-chibangarx-text font-medium">{amdInfo.currentVersion || "N/A"}</p>
+                <p className="text-sm text-chibangarx-text font-medium">
+                  {amdInfo.currentVersion || <span className="text-yellow-500">{t("drivers.versionNotDetected")}</span>}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-chibangarx-text-secondary">{t("drivers.latestVersion")}</p>
@@ -421,31 +423,58 @@ export default function Drivers() {
               </div>
             </div>
 
-            {amdLatestVersion && amdInfo.currentVersion !== amdLatestVersion && (
+            {amdLatestVersion && (
               <div className="mt-4 p-3 bg-orange-500/5 border border-orange-500/20 rounded-lg">
                 <p className="text-sm text-chibangarx-text mb-2">
                   {t("drivers.amdUpdateDescription")}
                 </p>
-                {amdReleaseNotes && (
-                  <p className="text-xs text-chibangarx-text-secondary mb-3">{amdReleaseNotes}</p>
+
+                {/* Highlights/Improvements */}
+                {amdHighlights.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-xs font-medium text-chibangarx-text mb-2">{t("drivers.improvements")}:</p>
+                    <ul className="space-y-1">
+                      {amdHighlights.map((highlight, idx) => (
+                        <li key={idx} className="text-xs text-chibangarx-text-secondary flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-1.5 flex-shrink-0" />
+                          {highlight}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
+
                 {amdError && (
                   <p className="text-xs text-red-500 mb-3">{amdError}</p>
                 )}
-                {amdDownloading ? (
-                  <div>
-                    <div className="flex justify-between text-xs text-chibangarx-text-secondary mb-1">
-                      <span>{t("drivers.downloading")}</span>
-                      <span>{Math.round(amdDownloadProgress)}%</span>
+
+                {amdInfo.currentVersion && amdInfo.currentVersion !== amdLatestVersion ? (
+                  amdDownloading ? (
+                    <div>
+                      <div className="flex justify-between text-xs text-chibangarx-text-secondary mb-1">
+                        <span>{t("drivers.downloading")}</span>
+                        <span>{Math.round(amdDownloadProgress)}%</span>
+                      </div>
+                      <div className="w-full h-2 bg-chibangarx-border-secondary rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-orange-500 rounded-full transition-all duration-300"
+                          style={{ width: `${amdDownloadProgress}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full h-2 bg-chibangarx-border-secondary rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-orange-500 rounded-full transition-all duration-300"
-                        style={{ width: `${amdDownloadProgress}%` }}
-                      />
+                  ) : (
+                    <div className="flex gap-2">
+                      <Button onClick={downloadAMDChipset} className="bg-orange-600 hover:bg-orange-700">
+                        <Download className="w-4 h-4 mr-2" />
+                        {t("drivers.downloadAndInstall")}
+                      </Button>
+                      <Button variant="secondary" onClick={checkAMDChipset}>
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        {t("drivers.refresh")}
+                      </Button>
                     </div>
-                  </div>
-                ) : (
+                  )
+                ) : !amdInfo.currentVersion ? (
                   <div className="flex gap-2">
                     <Button onClick={downloadAMDChipset} className="bg-orange-600 hover:bg-orange-700">
                       <Download className="w-4 h-4 mr-2" />
@@ -456,11 +485,11 @@ export default function Drivers() {
                       {t("drivers.refresh")}
                     </Button>
                   </div>
-                )}
+                ) : null}
               </div>
             )}
 
-            {amdLatestVersion && amdInfo.currentVersion === amdLatestVersion && (
+            {amdLatestVersion && amdInfo.currentVersion && amdInfo.currentVersion === amdLatestVersion && (
               <div className="mt-3 p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
                 <p className="text-sm text-green-500 flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-500 rounded-full" />

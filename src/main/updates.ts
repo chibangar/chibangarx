@@ -5,8 +5,8 @@ import log from "electron-log"
 autoUpdater.logger = log
 ;(autoUpdater.logger as any).transports.file.level = "info"
 
-autoUpdater.autoDownload = false
-autoUpdater.autoInstallOnAppQuit = false
+autoUpdater.autoDownload = true
+autoUpdater.autoInstallOnAppQuit = true
 
 const CHECK_INTERVAL = 4 * 60 * 60 * 1000 // 4 hours
 const INITIAL_CHECK_DELAY = 30_000 // 30 seconds after launch

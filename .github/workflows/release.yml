@@ -35,6 +35,6 @@ jobs:
         run: pnpm run build:vite
 
       - name: Build and publish release
-        run: pnpm exec electron-builder --win zip --publish always
+        run: pnpm exec electron-builder --win nsis --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

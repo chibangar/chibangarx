@@ -1,6 +1,6 @@
 {
   "name": "chibangarx",
-  "version": "2.39.8",
+  "version": "2.39.9",
   "description": "ChibangaRx",
   "main": "./out/main/index.js",
   "author": "chibangar",
@@ -167,7 +167,7 @@
       "requestedExecutionLevel": "requireAdministrator",
       "icon": "resources/chibangarx.ico",
       "target": [
-        "zip"
+        "nsis"
       ]
     },
     "nsis": {
@@ -176,9 +176,10 @@
       "uninstallDisplayName": "${productName}",
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "oneClick": false,
+      "oneClick": true,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": false,
       "installerSidebar": "build/chibangarxinstallerleftsidebar.bmp",
       "uninstallerSidebar": "build/chibangarxinstallerleftsidebar.bmp",
       "installerHeader": "build/chibangarxinstallerheader.bmp"

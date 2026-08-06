@@ -17,6 +17,7 @@ import ReplayBuffer from './segra/ReplayBuffer';
 import Clips from './segra/Clips';
 import Highlights from './segra/Highlights';
 import VideoEditor from './segra/VideoEditor';
+import Settings from './segra/Settings';
 
 function SegraApp() {
   const { selectedVideo, setSelectedVideo } = useSelectedVideo();
@@ -41,6 +42,7 @@ function SegraApp() {
       case 'Replay Buffer': return <ReplayBuffer />;
       case 'Clips': return <Clips />;
       case 'Highlights': return <Highlights />;
+      case 'Settings': return <Settings />;
       default: return <Sessions />;
     }
   };

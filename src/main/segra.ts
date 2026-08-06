@@ -633,5 +633,31 @@ export function setupSegraHandlers(): void {
     }))
   })
 
+  // Open directory dialog
+  ipcMain.handle('dialog:openDirectory', async () => {
+    if (!mainWindow) return { canceled: true, filePaths: [] }
+    const result = await mainWindow.webContents.session.dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    })
+    return result
+  })
+
+  // Get app version
+  ipcMain.handle('app:getVersion', () => {
+    return app.getVersion()
+  })
+
+  // Open log file in default editor
+  ipcMain.handle('openLogFile', async () => {
+    const logPath = join(app.getPath('userData'), 'logs', 'main.log')
+    try {
+      await fs.access(logPath)
+      const { shell } = await import('electron')
+      shell.openPath(logPath)
+    } catch {
+      console.log('[Segra] Log file not found:', logPath)
+    }
+  })
+
   console.log('[Segra] IPC handlers registered')
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import Modal from "@/components/ui/modal"
 import Button from "@/components/ui/button"
-import { Bell, X, Download, Check, Loader2 } from "lucide-react"
+import { Bell, X, Download, Loader2 } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import { useTranslation } from "react-i18next"
 import { toast } from "react-toastify"
@@ -40,6 +40,7 @@ export default function UpdateManager(): React.ReactElement {
   const [totalBytes, setTotalBytes] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [isInstalling, setIsInstalling] = useState(false)
+  const [isChecking, setIsChecking] = useState(false)
 
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return "0 B"
@@ -61,18 +62,20 @@ export default function UpdateManager(): React.ReactElement {
     let ignore = false
 
     const fetchVersion = async () => {
-      const result = await window.electron.ipcRenderer.invoke("updater:get-version")
-      if (!ignore && result) {
-        setCurrentVersion(result.currentVersion)
-        setUpdateState(result.newState)
-        setUpdateVersion(result.version || null)
-        setReleaseNotes(result.releaseNotes || "")
-        setDownloadPercent(result.percent)
-        setDownloadSpeed(result.downloadSpeed)
-        setDownloadedBytes(result.downloadedBytes)
-        setTotalBytes(result.totalBytes)
-        setError(result.error)
-      }
+      try {
+        const result = await window.electron.ipcRenderer.invoke("updater:get-version")
+        if (!ignore && result) {
+          setCurrentVersion(result.currentVersion)
+          setUpdateState(result.newState)
+          setUpdateVersion(result.version || null)
+          setReleaseNotes(result.releaseNotes || "")
+          setDownloadPercent(result.percent)
+          setDownloadSpeed(result.downloadSpeed)
+          setDownloadedBytes(result.downloadedBytes)
+          setTotalBytes(result.totalBytes)
+          setError(result.error)
+        }
+      } catch {}
     }
     void fetchVersion()
 
@@ -102,20 +105,32 @@ export default function UpdateManager(): React.ReactElement {
   }, [])
 
   const handleCheckNow = async () => {
-    const result = await window.electron.ipcRenderer.invoke("updater:check")
-    if (result?.found) {
-      toast.success(t("updater.updateAvailable"))
-    } else if (!result?.ok) {
-      toast.error(result?.error || t("updater.checkError"))
-    } else {
-      toast.success(t("updater.noUpdate"))
+    if (isChecking) return
+    setIsChecking(true)
+    try {
+      const result = await window.electron.ipcRenderer.invoke("updater:check")
+      if (result?.found) {
+        toast.success(t("updater.updateAvailable"))
+      } else if (!result?.ok && result?.error) {
+        toast.error(result.error)
+      } else {
+        toast.success(t("updater.noUpdate"))
+      }
+    } catch (err: any) {
+      toast.error(err?.message || t("updater.checkError"))
+    } finally {
+      setIsChecking(false)
     }
   }
 
   const handleDownload = async () => {
-    const result = await window.electron.ipcRenderer.invoke("updater:download")
-    if (!result?.ok) {
-      toast.error(result?.error || t("updater.checkError"))
+    try {
+      const result = await window.electron.ipcRenderer.invoke("updater:download")
+      if (!result?.ok && result?.error) {
+        toast.error(result.error)
+      }
+    } catch (err: any) {
+      toast.error(err?.message || t("updater.checkError"))
     }
   }
 
@@ -189,7 +204,13 @@ export default function UpdateManager(): React.ReactElement {
               {updateState === "idle" && (
                 <p className="text-chibangarx-text mb-4">{t("updater.noUpdate")}</p>
               )}
-              <Button onClick={handleCheckNow}>{t("updater.checkNow")}</Button>
+              <Button onClick={handleCheckNow} disabled={isChecking}>
+                {isChecking ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> {t("updater.checking")}</>
+                ) : (
+                  t("updater.checkNow")
+                )}
+              </Button>
             </div>
           )}
 

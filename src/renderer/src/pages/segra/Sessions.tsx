@@ -1,0 +1,22 @@
+import { Play } from 'lucide-react';
+import ContentPage from './components/ContentPage';
+import { useAppState } from './context/AppStateContext';
+import ContentCard from './components/ContentCard';
+
+export default function Sessions() {
+  const { recording } = useAppState();
+  const isRecordingFinishing = recording && recording.endTime !== null;
+  const progressCardElement = isRecordingFinishing ? <ContentCard key="recording-progress" type="Session" isLoading /> : null;
+
+  return (
+    <ContentPage
+      contentType="Session"
+      sectionId="sessions"
+      title="Sessions"
+      Icon={Play}
+      progressItems={isRecordingFinishing ? { recording: true } : {}}
+      isProgressVisible={isRecordingFinishing}
+      progressCardElement={progressCardElement}
+    />
+  );
+}

@@ -9,6 +9,7 @@ import { setupDNSHandlers } from "@main/dnsHandler"
 import { setupBackupHandlers } from "@main/backup"
 import { setupDebloatHandlers } from "@main/debloat"
 import { setupDriverHandlers } from "@main/drivers"
+import { setupSegraHandlers, setSegraMainWindow } from "@main/segra"
 import { initAutoUpdater } from "@main/updates"
 import { setMainWindow } from "@main/windowState"
 import Store from "electron-store"
@@ -105,6 +106,7 @@ function createWindow(): void {
     })
     console.log("[ChibangaRx]: BrowserWindow created")
     setMainWindow(mainWindow)
+    setSegraMainWindow(mainWindow)
   } catch (err: any) {
     console.error("[ChibangaRx]: BrowserWindow creation failed:", err)
     throw err
@@ -160,6 +162,7 @@ app
     setupBackupHandlers()
     setupDebloatHandlers()
     setupDriverHandlers()
+    setupSegraHandlers()
     if (store.get("rpcEnabled") !== false) {
       startDiscordRPC()
     }
@@ -206,7 +209,9 @@ app
       if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
 
-    app.on("will-quit", () => globalShortcut.unregisterAll())
+    app.on("will-quit", () => {
+      globalShortcut.unregisterAll()
+    })
   })
   .catch((err: any) => {
     console.error("[ChibangaRx]: app.whenReady failed:", err)

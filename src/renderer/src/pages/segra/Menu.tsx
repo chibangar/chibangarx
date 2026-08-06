@@ -5,7 +5,7 @@ import { sendMessageToBackend } from './utils/MessageUtils';
 import { useClipping } from './context/ClippingContext';
 import { useAiHighlights } from './context/AiHighlightsContext';
 import ClippingCard from './components/ClippingCard';
-import { Clapperboard, OctagonX, Settings, History, Crown, Monitor, Play, LucideIcon } from 'lucide-react';
+import { Clapperboard, OctagonX, Settings, History, Crown, Monitor, Play, LucideIcon, Zap, Scissors } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRef, useEffect, useLayoutEffect, useState, useMemo } from 'react';
 import Button from './components/Button';
@@ -31,6 +31,8 @@ export default function Menu({ selectedMenu, onSelectMenu }: MenuProps) {
   const { aiProgress } = useAiHighlights();
   const { clippingProgress, cancelClip } = useClipping();
   const [buttonCooldown, setButtonCooldown] = useState(false);
+  const [autoClipEnabled, setAutoClipEnabled] = useState(false);
+  const [autoClipCooldown, setAutoClipCooldown] = useState(false);
 
   const buttonRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [indicatorPosition, setIndicatorPosition] = useState({ top: 12 });
@@ -123,7 +125,7 @@ export default function Menu({ selectedMenu, onSelectMenu }: MenuProps) {
         </AnimatePresence>
       </div>
 
-      <div className="mb-4 px-4">
+      <div className="mb-4 px-4 space-y-2">
         <Button
           variant="primary"
           className="w-full h-12 justify-center"
@@ -140,6 +142,37 @@ export default function Menu({ selectedMenu, onSelectMenu }: MenuProps) {
             <><Monitor className="w-4 h-4" /> Start Recording</>
           )}
         </Button>
+
+        {(appState.recording || appState.preRecording) && (
+          <>
+            <button
+              onClick={() => setAutoClipEnabled(!autoClipEnabled)}
+              className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                autoClipEnabled
+                  ? 'bg-chibangarx-primary/20 border-chibangarx-primary text-chibangarx-primary'
+                  : 'border-chibangarx-border text-chibangarx-text-secondary hover:bg-chibangarx-border-secondary hover:text-chibangarx-text'
+              }`}
+            >
+              <Zap className={`w-4 h-4 ${autoClipEnabled ? 'fill-chibangarx-primary' : ''}`} />
+              AutoClip {autoClipEnabled ? 'ON' : 'OFF'}
+            </button>
+
+            {autoClipEnabled && (
+              <Button
+                variant="secondary"
+                className="w-full h-10 justify-center"
+                disabled={autoClipCooldown}
+                onClick={() => {
+                  setAutoClipCooldown(true);
+                  setTimeout(() => setAutoClipCooldown(false), 3000);
+                  sendMessageToBackend('CreateAutoClip', { duration: 30 });
+                }}
+              >
+                <Scissors className="w-4 h-4" /> Clip Now (30s)
+              </Button>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

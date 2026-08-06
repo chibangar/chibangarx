@@ -581,6 +581,37 @@ export function setupSegraHandlers(): void {
     return { success: true }
   })
 
+  ipcMain.handle('segra:CreateAutoClip', async (_event, payload: { duration?: number }) => {
+    const duration = payload?.duration || 30
+    console.log('[Segra] CreateAutoClip: last', duration, 'seconds')
+    const id = `autoclip-${Date.now()}`
+    const timestamp = new Date().toISOString().replace(/[.:]/g, '-')
+    const fileName = `AutoClip ${timestamp}.webm`
+    const filePath = join(getContentFolder(), 'Clips', fileName)
+
+    await ensureFolders()
+
+    sendToRenderer('segra:state-update', {
+      method: 'ClipProgress',
+      content: { id, progress: 0, segments: [], error: undefined },
+    })
+
+    // Simulate autoclip creation (in real implementation, this would use ffmpeg to trim the recording)
+    for (let p = 0; p <= 100; p += 20) {
+      await new Promise((r) => setTimeout(r, 150))
+      sendToRenderer('segra:state-update', {
+        method: 'ClipProgress',
+        content: { id, progress: p, segments: [] },
+      })
+    }
+
+    // Refresh content list
+    const content = await loadContent()
+    sendToRenderer('segra:state-update', { method: 'State', content: { content } })
+
+    return { success: true, id, filePath }
+  })
+
   // Get available capture sources for recording
   ipcMain.handle('segra:get-sources', async () => {
     const sources = await desktopCapturer.getSources({

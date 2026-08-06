@@ -1,9 +1,112 @@
 import { app, ipcMain, BrowserWindow, desktopCapturer } from 'electron'
 import { promises as fs } from 'fs'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 import path, { join } from 'path'
 import os from 'os'
 
+const execAsync = promisify(exec)
+
 let mainWindow: BrowserWindow | null = null
+
+interface GameListEntry {
+  name: string
+  executables: string[]
+  igdbId?: number | null
+  icon?: string
+}
+
+const KNOWN_GAMES: GameListEntry[] = [
+  { name: 'Counter-Strike 2', executables: ['cs2.exe'], igdbId: 22834 },
+  { name: 'Valorant', executables: ['VALORANT-Win64-Shipping.exe'], igdbId: 122940 },
+  { name: 'Fortnite', executables: ['FortniteClient-Win64-Shipping.exe'], igdbId: 19604 },
+  { name: 'League of Legends', executables: ['League of Legends.exe'], igdbId: 11526 },
+  { name: 'Apex Legends', executables: ['r5apex.exe'], igdbId: 118932 },
+  { name: 'Overwatch 2', executables: ['Overwatch.exe'], igdbId: 10341 },
+  { name: 'Call of Duty: Warzone', executables: ['cod.exe', 'Warzone.exe'], igdbId: 130583 },
+  { name: 'Call of Duty: Modern Warfare II', executables: ['cod.exe'], igdbId: 134593 },
+  { name: 'GTA V', executables: ['GTA5.exe', 'GTA5_Enhanced.exe'], igdbId: 1020 },
+  { name: 'Red Dead Redemption 2', executables: ['RDR2.exe'], igdbId: 183813 },
+  { name: 'Minecraft', executables: ['Minecraft.Windows.exe'], igdbId: 12128 },
+  { name: 'PUBG: Battlegrounds', executables: ['TslGame.exe'], igdbId: 16918 },
+  { name: 'Rocket League', executables: ['RocketLeague.exe'], igdbId: 21987 },
+  { name: 'Dota 2', executables: ['dota2.exe'], igdbId: 1475 },
+  { name: 'Rust', executables: ['RustClient.exe'], igdbId: 22838 },
+  { name: 'Rainbow Six Siege', executables: ['RainbowSix.exe'], igdbId: 11283 },
+  { name: 'Hogwarts Legacy', executables: ['HogwartsLegacy.exe'], igdbId: 85744 },
+  { name: 'Elden Ring', executables: ['eldenring.exe'], igdbId: 107574 },
+  { name: 'Cyberpunk 2077', executables: ['Cypunk2077.exe'], igdbId: 4797 },
+  { name: 'Baldur\'s Gate 3', executables: ['bg3.exe'], igdbId: 70644 },
+  { name: 'Palworld', executables: ['Palworld-Win64-Shipping.exe'], igdbId: 195930 },
+  { name: 'The Finals', executables: ['Discovery.exe'], igdbId: 173268 },
+  { name: 'War Thunder', executables: ['aces.exe'], igdbId: 10500 },
+  { name: 'World of Warcraft', executables: ['Wow.exe'], igdbId: 2984 },
+  { name: 'StarCraft II', executables: ['SC2Switcher.exe', 'SC2_x64.exe'], igdbId: 2151 },
+  { name: 'Hearthstone', executables: ['Hearthstone.exe'], igdbId: 5447 },
+  { name: 'Diablo IV', executables: ['DiabloIV.exe'], igdbId: 127255 },
+  { name: 'Destiny 2', executables: ['destiny2.exe'], igdbId: 32769 },
+  { name: 'Tom Clancy\'s The Division 2', executables: ['TheDivision2.exe'], igdbId: 34761 },
+  { name: ' Battlefield 2042', executables: ['BF2042.exe'], igdbId: 130614 },
+  { name: 'Fall Guys', executables: ['FallGuys_client.exe'], igdbId: 101714 },
+  { name: 'Genshin Impact', executables: ['GenshinImpact.exe'], igdbId: 116044 },
+  { name: 'Naraka: Bladepoint', executables: ['NarakaBladepoint.exe'], igdbId: 139355 },
+  { name: 'Dead by Daylight', executables: ['DeadByDaylight-Win64-Shipping.exe'], igdbId: 63948 },
+  { name: 'FC 25', executables: ['FC25.exe', 'FIFA25.exe'], igdbId: 189800 },
+  { name: 'EA Sports FC 24', executables: ['FC24.exe', 'FIFA24.exe'], igdbId: 182857 },
+  { name: 'Sea of Thieves', executables: ['SoTGame.exe'], igdbId: 50361 },
+  { name: 'Forza Horizon 5', executables: ['ForzaHorizon5.exe'], igdbId: 81764 },
+  { name: 'Call of Duty: Black Ops 6', executables: ['cod.exe'], igdbId: 241525 },
+]
+
+let gameDetectionTimer: NodeJS.Timeout | null = null
+
+async function detectRunningGames(): Promise<GameListEntry[]> {
+  try {
+    const { stdout } = await execAsync('tasklist /FO CSV /NH', { timeout: 5000 })
+    const lines = stdout.split('\n').filter(Boolean)
+    const runningExecutables = new Set<string>()
+
+    for (const line of lines) {
+      const match = line.match(/^"([^"]+)"/)
+      if (match) {
+        runningExecutables.add(match[1].toLowerCase())
+      }
+    }
+
+    const detected: GameListEntry[] = []
+    for (const game of KNOWN_GAMES) {
+      const found = game.executables.some((exe) => runningExecutables.has(exe.toLowerCase()))
+      if (found) {
+        detected.push(game)
+      }
+    }
+
+    return detected
+  } catch (err) {
+    console.error('[Segra] Game detection error:', err)
+    return []
+  }
+}
+
+function startGameDetection(intervalMs: number = 5000): void {
+  if (gameDetectionTimer) clearInterval(gameDetectionTimer)
+
+  const check = async () => {
+    const games = await detectRunningGames()
+    sendToRenderer('segra:state-update', { method: 'GameList', content: games })
+  }
+
+  // Initial check after 2 seconds
+  setTimeout(check, 2000)
+  gameDetectionTimer = setInterval(check, intervalMs)
+}
+
+function stopGameDetection(): void {
+  if (gameDetectionTimer) {
+    clearInterval(gameDetectionTimer)
+    gameDetectionTimer = null
+  }
+}
 
 interface SegraContent {
   id: string
@@ -141,10 +244,14 @@ export function setupSegraHandlers(): void {
 
   ensureFolders().catch(console.error)
 
+  // Start game detection
+  startGameDetection(5000)
+
   ipcMain.handle('segra:get-state', async () => {
     const content = await loadContent()
     const cacheFolder = getCacheFolder()
     const contentFolder = getContentFolder()
+    const gameList = await detectRunningGames()
 
     let currentFolderSizeGb = 0
     try {
@@ -173,7 +280,7 @@ export function setupSegraHandlers(): void {
       codecs: [],
       availableOBSVersions: [],
       isCheckingForUpdates: false,
-      gameList: [],
+      gameList,
       maxDisplayHeight: 1080,
       currentFolderSizeGb: Math.round(currentFolderSizeGb / (1024 * 1024 * 1024) * 100) / 100,
       recordingDriveUsedGb: null,

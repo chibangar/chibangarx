@@ -1,11 +1,16 @@
-import { app, ipcMain, BrowserWindow } from "electron"
+import { app, ipcMain, BrowserWindow, net } from "electron"
 import { autoUpdater } from "electron-updater"
 import log from "electron-log"
+import { join } from "path"
+import { createWriteStream } from "fs"
+import { pipeline } from "stream/promises"
+import { promisify } from "util"
+import { execFile } from "child_process"
 
 autoUpdater.logger = log
 ;(autoUpdater.logger as any).transports.file.level = "info"
 
-autoUpdater.autoDownload = true
+autoUpdater.autoDownload = false
 autoUpdater.autoInstallOnAppQuit = true
 
 // Force dev mode to use dev-app-update.yml
@@ -196,10 +201,67 @@ export function initAutoUpdater(): void {
     updateInfo.newState = "downloading"
     updateInfo.error = null
     sendUpdateToRenderer()
+
     try {
-      await autoUpdater.downloadUpdate()
+      // Fetch release info from GitHub API
+      const response = await fetch("https://api.github.com/repos/chibangar/chibangarx/releases/latest")
+      if (!response.ok) throw new Error(`GitHub API returned ${response.status}`)
+
+      const release = await response.json()
+      // Find the NSIS installer asset
+      const asset = release.assets?.find((a: any) =>
+        a.name?.endsWith(".exe") && a.name?.includes("Setup")
+      )
+      if (!asset) throw new Error("No installer found in release assets")
+
+      const downloadUrl = asset.browser_download_url
+      log.info("[ChibangaRx] Downloading from:", downloadUrl)
+
+      // Use Electron's net.fetch to download (bypasses CORS/auth issues)
+      const downloadResponse = await net.fetch(downloadUrl)
+      if (!downloadResponse.ok) throw new Error(`Download failed: ${downloadResponse.status}`)
+
+      const contentLength = Number(downloadResponse.headers.get("content-length")) || 0
+      updateInfo.totalBytes = contentLength
+
+      const tempDir = app.getPath("temp")
+      const installerPath = join(tempDir, asset.name)
+
+      // Download with progress tracking
+      const body = downloadResponse.body
+      if (!body) throw new Error("No response body")
+
+      const reader = body.getReader()
+      const writer = createWriteStream(installerPath)
+      let downloaded = 0
+      const startTime = Date.now()
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        downloaded += value.length
+        writer.write(Buffer.from(value))
+
+        updateInfo.downloadedBytes = downloaded
+        updateInfo.percent = contentLength > 0 ? Math.round((downloaded / contentLength) * 100) : 0
+        const elapsed = (Date.now() - startTime) / 1000
+        updateInfo.downloadSpeed = elapsed > 0 ? downloaded / elapsed : 0
+        sendUpdateToRenderer()
+      }
+
+      writer.end()
+      log.info("[ChibangaRx] Download complete:", installerPath)
+
+      updateInfo.newState = "downloaded"
+      updateInfo.percent = 100
+      sendUpdateToRenderer()
+
+      // Store the installer path for installation
+      ;(updateInfo as any).installerPath = installerPath
       return { ok: true }
     } catch (err: any) {
+      log.error("[ChibangaRx] Download failed:", err.message)
       updateInfo.newState = "error"
       updateInfo.error = err.message
       sendUpdateToRenderer()
@@ -211,9 +273,18 @@ export function initAutoUpdater(): void {
     log.info("[ChibangaRx] User requested to install update")
     updateInfo.newState = "installing"
     sendUpdateToRenderer()
-    void app.whenReady().then(() => {
+
+    const installerPath = (updateInfo as any).installerPath
+    if (installerPath) {
+      log.info("[ChibangaRx] Running installer:", installerPath)
+      // Run the NSIS installer silently, then quit
+      execFile(installerPath, ["/S"], () => {
+        app.quit()
+      })
+    } else {
+      // Fallback to electron-updater
       autoUpdater.quitAndInstall(false, true)
-    })
+    }
     return { ok: true }
   })
 

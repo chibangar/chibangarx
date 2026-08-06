@@ -5,11 +5,11 @@ import log from "electron-log"
 autoUpdater.logger = log
 ;(autoUpdater.logger as any).transports.file.level = "info"
 
-autoUpdater.autoDownload = true
-autoUpdater.autoInstallOnAppQuit = true
+autoUpdater.autoDownload = false
+autoUpdater.autoInstallOnAppQuit = false
 
 const CHECK_INTERVAL = 4 * 60 * 60 * 1000 // 4 hours
-const INITIAL_CHECK_DELAY = 5000 + Math.floor(Math.random() * 5000) // 5-10 seconds
+const INITIAL_CHECK_DELAY = 30_000 // 30 seconds after launch
 
 type UpdateState = "idle" | "checking" | "available" | "downloading" | "downloaded" | "installing" | "error"
 
@@ -38,6 +38,7 @@ let updateInfo: UpdateInfo = {
 }
 
 let checkTimer: NodeJS.Timeout | null = null
+let lastCheckedVersion: string | null = null
 
 function sendUpdateToRenderer(): void {
   const win = getMainWindow()
@@ -64,14 +65,88 @@ function resetUpdateInfo(): void {
   }
 }
 
+function compareVersions(a: string, b: string): number {
+  const pa = a.split(".").map(Number)
+  const pb = b.split(".").map(Number)
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const na = pa[i] || 0
+    const nb = pb[i] || 0
+    if (na > nb) return 1
+    if (na < nb) return -1
+  }
+  return 0
+}
+
+function isVersionNewer(remote: string, local: string): boolean {
+  return compareVersions(remote, local) > 0
+}
+
 function startPeriodicChecks(): void {
   if (checkTimer) clearInterval(checkTimer)
   checkTimer = setInterval(() => {
     if (updateInfo.newState === "idle" || updateInfo.newState === "error") {
       log.info("[ChibangaRx] Scheduled update check")
-      void autoUpdater.checkForUpdates().catch(() => {})
+      void performUpdateCheck()
     }
   }, CHECK_INTERVAL)
+}
+
+async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; error?: string }> {
+  const currentVersion = app.getVersion()
+
+  if (updateInfo.newState === "checking" || updateInfo.newState === "downloading") {
+    log.info("[ChibangaRx] Update check already in progress")
+    return { ok: true, found: false }
+  }
+
+  resetUpdateInfo()
+  updateInfo.newState = "checking"
+  sendUpdateToRenderer()
+
+  try {
+    const result = await autoUpdater.checkForUpdates()
+
+    if (result?.updateInfo) {
+      const remoteVersion = result.updateInfo.version
+
+      if (!isVersionNewer(remoteVersion, currentVersion)) {
+        log.info("[ChibangaRx] Already up to date:", currentVersion, "(remote:", remoteVersion, ")")
+        updateInfo.newState = "idle"
+        updateInfo.error = null
+        lastCheckedVersion = remoteVersion
+        sendUpdateToRenderer()
+        return { ok: true, found: false }
+      }
+
+      log.info("[ChibangaRx] Update available:", remoteVersion, "(current:", currentVersion, ")")
+      updateInfo.version = remoteVersion
+      updateInfo.releaseNotes = typeof result.updateInfo.releaseNotes === "string" ? result.updateInfo.releaseNotes : ""
+      updateInfo.newState = "available"
+      updateInfo.error = null
+      lastCheckedVersion = remoteVersion
+      sendUpdateToRenderer()
+      return { ok: true, found: true, ...updateInfo }
+    } else {
+      log.info("[ChibangaRx] No update info returned")
+      updateInfo.newState = "idle"
+      sendUpdateToRenderer()
+      return { ok: true, found: false }
+    }
+  } catch (err: any) {
+    const errMsg = err?.message ?? String(err)
+
+    if (errMsg.includes("No published state") || errMsg.includes("404") || errMsg.includes("net::ERR")) {
+      log.info("[ChibangaRx] No release found or network error (normal for dev/local):", errMsg)
+      updateInfo.newState = "idle"
+      updateInfo.error = null
+    } else {
+      log.error("[ChibangaRx] Update check error:", errMsg)
+      updateInfo.newState = "error"
+      updateInfo.error = errMsg
+    }
+    sendUpdateToRenderer()
+    return { ok: false, found: false, error: errMsg }
+  }
 }
 
 export function initAutoUpdater(): void {
@@ -82,38 +157,16 @@ export function initAutoUpdater(): void {
   })
 
   ipcMain.handle("updater:check", async () => {
-    if (updateInfo.newState === "checking" || updateInfo.newState === "downloading") {
-      log.info("[ChibangaRx] Update check already in progress")
-      sendUpdateToRenderer()
-      return { ok: true, ...updateInfo }
-    }
-    resetUpdateInfo()
-    updateInfo.newState = "checking"
-    sendUpdateToRenderer()
-    try {
-      const result = await autoUpdater.checkForUpdates()
-      if (result?.updateInfo) {
-        updateInfo.version = result.updateInfo.version
-        updateInfo.releaseNotes = typeof result.updateInfo.releaseNotes === "string" ? result.updateInfo.releaseNotes : ""
-        updateInfo.newState = "available"
-        sendUpdateToRenderer()
-        return { ok: true, found: true, ...updateInfo }
-      } else {
-        updateInfo.newState = "idle"
-        sendUpdateToRenderer()
-        return { ok: true, found: false, ...updateInfo }
-      }
-    } catch (err: any) {
-      updateInfo.newState = "error"
-      updateInfo.error = err.message
-      sendUpdateToRenderer()
-      return { ok: false, ...updateInfo }
-    }
+    return await performUpdateCheck()
   })
 
   ipcMain.handle("updater:download", async () => {
     if (updateInfo.newState === "downloading") {
       return { ok: true }
+    }
+    if (updateInfo.newState !== "available" && updateInfo.newState !== "error") {
+      log.info("[ChibangaRx] No update available to download")
+      return { ok: false, error: "No update available" }
     }
     log.info("[ChibangaRx] User requested download update")
     updateInfo.newState = "downloading"
@@ -140,11 +193,11 @@ export function initAutoUpdater(): void {
     return { ok: true }
   })
 
-  // Initial check after 5-10 seconds
+  // Initial check after 30 seconds
   setTimeout(() => {
     if (app.isPackaged) {
       log.info("[ChibangaRx] Running initial update check...")
-      void autoUpdater.checkForUpdates().catch(() => {})
+      void performUpdateCheck()
     }
   }, INITIAL_CHECK_DELAY)
 
@@ -162,8 +215,18 @@ export function initAutoUpdater(): void {
   })
 
   autoUpdater.on("update-available", (info) => {
-    log.info("[ChibangaRx] Update available:", info.version)
-    updateInfo.version = info.version
+    const currentVersion = app.getVersion()
+    const remoteVersion = info.version
+
+    if (!isVersionNewer(remoteVersion, currentVersion)) {
+      log.info("[ChibangaRx] Auto event: already up to date:", remoteVersion)
+      updateInfo.newState = "idle"
+      sendUpdateToRenderer()
+      return
+    }
+
+    log.info("[ChibangaRx] Auto event: update available:", remoteVersion)
+    updateInfo.version = remoteVersion
     updateInfo.releaseNotes = typeof info.releaseNotes === "string" ? info.releaseNotes : ""
     updateInfo.newState = "available"
     updateInfo.error = null
@@ -173,6 +236,7 @@ export function initAutoUpdater(): void {
   autoUpdater.on("update-not-available", () => {
     log.info("[ChibangaRx] Up to date, version:", app.getVersion())
     updateInfo.newState = "idle"
+    updateInfo.error = null
     sendUpdateToRenderer()
   })
 
@@ -197,9 +261,11 @@ export function initAutoUpdater(): void {
   autoUpdater.on("error", (err) => {
     const errMsg = err?.message ?? String(err)
     log.error("[ChibangaRx] Auto-updater error:", errMsg)
-    if (errMsg.includes("No published state") || errMsg.includes("404")) {
-      log.info("[ChibangaRx] No release found - this is normal for dev/local builds")
+
+    if (errMsg.includes("No published state") || errMsg.includes("404") || errMsg.includes("net::ERR")) {
+      log.info("[ChibangaRx] No release found or network error (normal for dev/local builds)")
       updateInfo.newState = "idle"
+      updateInfo.error = null
     } else {
       updateInfo.newState = "error"
       updateInfo.error = errMsg

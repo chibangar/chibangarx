@@ -49,6 +49,10 @@ function Settings() {
   const [soundEnabled, setSoundEnabled] = useState(() => {
     return localStorage.getItem("chibangarx:soundEnabled") !== "false"
   })
+  const [autostartEnabled, setAutostartEnabled] = useState(false)
+  const [autostartLoading, setAutostartLoading] = useState(false)
+  const [minimizeToTrayEnabled, setMinimizeToTrayEnabled] = useState(true)
+  const [minimizeToTrayLoading, setMinimizeToTrayLoading] = useState(false)
 
   const checkForUpdates = async () => {
     try {
@@ -96,6 +100,14 @@ function Settings() {
     localStorage.setItem("posthogDisabled", posthogDisabled.toString())
   }, [posthogDisabled])
 
+  useEffect(() => {
+    invoke({ channel: "autostart:get" }).then((enabled) => setAutostartEnabled(enabled))
+  }, [])
+
+  useEffect(() => {
+    invoke({ channel: "minimizeToTray:get" }).then((enabled) => setMinimizeToTrayEnabled(enabled))
+  }, [])
+
   const clearCache = async () => {
     await invoke({ channel: "clear-chibangarx-cache" })
     localStorage.removeItem("chibangarx:systemInfo")
@@ -110,6 +122,24 @@ function Settings() {
     setRpcEnabled(newStatus)
     setRpcLoading(false)
     toast.success(t("settings.discordRpc") + " " + (newStatus ? t("common.enabled") : t("common.disabled")))
+  }
+
+  const handleToggleAutostart = async () => {
+    setAutostartLoading(true)
+    const newStatus = !autostartEnabled
+    await invoke({ channel: "autostart:set", payload: newStatus })
+    setAutostartEnabled(newStatus)
+    setAutostartLoading(false)
+    toast.success(t("settings.autostart") + " " + (newStatus ? t("common.enabled") : t("common.disabled")))
+  }
+
+  const handleToggleMinimizeToTray = async () => {
+    setMinimizeToTrayLoading(true)
+    const newStatus = !minimizeToTrayEnabled
+    await invoke({ channel: "minimizeToTray:set", payload: newStatus })
+    setMinimizeToTrayEnabled(newStatus)
+    setMinimizeToTrayLoading(false)
+    toast.success(t("settings.minimizeToTray") + " " + (newStatus ? t("common.enabled") : t("common.disabled")))
   }
 
   const handleRestartExplorer = async () => {
@@ -450,6 +480,62 @@ function Settings() {
                       }`}
                     >
                       {rpcEnabled ? t("common.enabled") : t("common.disabled")}
+                    </span>
+                  </div>
+                </div>
+              </SettingCard>
+              <SettingCard>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
+                      {t("settings.autostart")}
+                    </h3>
+                    <p className="text-sm text-chibangarx-text-secondary">
+                      {t("settings.autostartDesc")}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Toggle
+                      checked={autostartEnabled}
+                      onChange={handleToggleAutostart}
+                      disabled={autostartLoading}
+                    />
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded-full ${
+                        autostartEnabled
+                          ? "text-green-400 bg-green-400/10"
+                          : "text-chibangarx-text-secondary bg-chibangarx-border-secondary/20"
+                      }`}
+                    >
+                      {autostartEnabled ? t("common.enabled") : t("common.disabled")}
+                    </span>
+                  </div>
+                </div>
+              </SettingCard>
+              <SettingCard>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
+                      {t("settings.minimizeToTray")}
+                    </h3>
+                    <p className="text-sm text-chibangarx-text-secondary">
+                      {t("settings.minimizeToTrayDesc")}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Toggle
+                      checked={minimizeToTrayEnabled}
+                      onChange={handleToggleMinimizeToTray}
+                      disabled={minimizeToTrayLoading}
+                    />
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded-full ${
+                        minimizeToTrayEnabled
+                          ? "text-green-400 bg-green-400/10"
+                          : "text-chibangarx-text-secondary bg-chibangarx-border-secondary/20"
+                      }`}
+                    >
+                      {minimizeToTrayEnabled ? t("common.enabled") : t("common.disabled")}
                     </span>
                   </div>
                 </div>

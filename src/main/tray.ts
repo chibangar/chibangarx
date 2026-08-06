@@ -1,4 +1,4 @@
-import { Tray, Menu, app, BrowserWindow } from "electron"
+import { Tray, Menu, app, BrowserWindow, shell } from "electron"
 import path from "path"
 
 export function createTray(mainWindow: BrowserWindow): Tray {
@@ -6,6 +6,7 @@ export function createTray(mainWindow: BrowserWindow): Tray {
 
   const contextMenu = Menu.buildFromTemplate([
     { label: "Abrir ChibangaRx", click: (): void => mainWindow.show() },
+    { label: "Releases", click: (): void => shell.openExternal("https://github.com/chibangar/chibangarxbolt/releases") },
     { label: "Encerrar", click: (): void => app.quit() },
   ])
 

@@ -3,8 +3,6 @@ import { autoUpdater } from "electron-updater"
 import log from "electron-log"
 import { join } from "path"
 import { createWriteStream } from "fs"
-import { pipeline } from "stream/promises"
-import { promisify } from "util"
 import { execFile } from "child_process"
 
 autoUpdater.logger = log
@@ -86,6 +84,42 @@ function compareVersions(a: string, b: string): number {
   return 0
 }
 
+function filterRelevantUpdates(updates: any[]): any[] {
+  if (!Array.isArray(updates)) return []
+
+  const currentVersion = app.getVersion()
+  const currentVersionNum = currentVersion.split(".").map(Number)
+
+  return updates
+    .filter(update => {
+      if (!update.version) return false
+
+      const updateVersionNum = update.version.split(".").map(Number)
+
+      for (let i = 0; i < Math.max(currentVersionNum.length, updateVersionNum.length); i++) {
+        const c = currentVersionNum[i] || 0
+        const u = updateVersionNum[i] || 0
+
+        if (u > c) return true
+        if (u < c) return false
+      }
+      return false
+    })
+    .sort((a, b) => {
+      const versionA = a.version.split(".").map(Number)
+      const versionB = b.version.split(".").map(Number)
+
+      for (let i = 0; i < Math.max(versionA.length, versionB.length); i++) {
+        const va = versionA[i] || 0
+        const vb = versionB[i] || 0
+
+        if (va !== vb) return vb - va
+      }
+      return 0
+    })
+    .slice(0, 5)
+}
+
 function isVersionNewer(remote: string, local: string): boolean {
   return compareVersions(remote, local) > 0
 }
@@ -100,7 +134,7 @@ function startPeriodicChecks(): void {
   }, CHECK_INTERVAL)
 }
 
-async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; error?: string }> {
+async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; error?: string | null; version?: string; releaseNotes?: string; currentVersion?: string; newState?: UpdateState; percent?: number; downloadedBytes?: number; totalBytes?: number; downloadSpeed?: number }> {
   const currentVersion = app.getVersion()
 
   if (updateInfo.newState === "checking" || updateInfo.newState === "downloading") {
@@ -115,28 +149,34 @@ async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; erro
   // Always use GitHub API directly for reliable version check
   try {
     log.info("[ChibangaRx] Checking GitHub releases for update... Current version:", currentVersion)
-    const response = await fetch("https://api.github.com/repos/chibangar/chibangarx/releases/latest")
+    const response = await fetch("https://api.github.com/repos/chibangar/chibangarx/releases?per_page=10")
     if (response.ok) {
-      const release = await response.json()
-      const remoteVersion = release.tag_name?.replace("v", "")
+      const releases = await response.json()
+      const relevantReleases = filterRelevantUpdates(releases)
 
-      log.info("[ChibangaRx] GitHub latest release:", remoteVersion)
+      if (relevantReleases.length > 0) {
+        const latestRelease = relevantReleases[0]
+        const remoteVersion = latestRelease.tag_name?.replace("v", "")
 
-      if (remoteVersion && isVersionNewer(remoteVersion, currentVersion)) {
-        log.info("[ChibangaRx] UPDATE AVAILABLE:", currentVersion, "->", remoteVersion)
-        updateInfo.version = remoteVersion
-        updateInfo.releaseNotes = release.body || ""
-        updateInfo.newState = "available"
-        updateInfo.error = null
-        sendUpdateToRenderer()
-        return { ok: true, found: true, ...updateInfo }
-      } else {
-        log.info("[ChibangaRx] Already up to date:", currentVersion)
-        updateInfo.newState = "idle"
-        updateInfo.error = null
-        sendUpdateToRenderer()
-        return { ok: true, found: false }
+        log.info("[ChibangaRx] GitHub relevant releases:", relevantReleases.map(r => r.tag_name))
+        log.info("[ChibangaRx] Latest relevant release:", remoteVersion)
+
+        if (remoteVersion && isVersionNewer(remoteVersion, currentVersion)) {
+          log.info("[ChibangaRx] UPDATE AVAILABLE:", currentVersion, "->", remoteVersion)
+          updateInfo.version = remoteVersion
+          updateInfo.releaseNotes = latestRelease.body || ""
+          updateInfo.newState = "available"
+          updateInfo.error = null
+          sendUpdateToRenderer()
+          return { ok: true, found: true, ...updateInfo }
+        }
       }
+
+      log.info("[ChibangaRx] Already up to date:", currentVersion)
+      updateInfo.newState = "idle"
+      updateInfo.error = null
+      sendUpdateToRenderer()
+      return { ok: true, found: false }
     }
   } catch (err: any) {
     log.error("[ChibangaRx] GitHub API check failed:", err.message)

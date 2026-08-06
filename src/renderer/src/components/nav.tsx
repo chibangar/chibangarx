@@ -8,6 +8,7 @@ import {
   Home,
   Icon,
   LayoutGrid,
+  Package,
   RotateCw,
   Settings,
   Trophy,
@@ -41,6 +42,7 @@ const tabIcons = {
   drivers: <Cpu size={20} />,
   proSettings: <Trophy size={20} />,
   clips: <Video size={20} />,
+  releases: <Package size={20} />,
   settings: <Settings size={20} />,
 }
 
@@ -70,6 +72,7 @@ function Nav({ collapsed }) {
     drivers: { label: t("nav.drivers"), path: "/drivers" },
     proSettings: { label: t("nav.proSettings"), path: "/pro-settings" },
     clips: { label: t("nav.clips"), path: "/clips" },
+    releases: { label: t("nav.releases"), path: "/releases" },
     settings: { label: t("nav.settings"), path: "/settings" },
   }
 

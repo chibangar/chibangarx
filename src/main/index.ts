@@ -12,6 +12,7 @@ import { setupDriverHandlers } from "@main/drivers"
 import { setupSegraHandlers, setSegraMainWindow } from "@main/segra"
 import { initAutoUpdater } from "@main/updates"
 import { setMainWindow } from "@main/windowState"
+import { createTray } from "@main/tray"
 import Store from "electron-store"
 import { is } from "@main/utils"
 import { startDiscordRPC } from "@main/rpc"
@@ -23,6 +24,9 @@ console.warn = log.warn
 log.initialize()
 
 const store = new Store()
+
+// Handle minimize to tray on close
+let shouldQuit = false
 
 let selectedCaptureSourceId: string | null = null
 
@@ -107,6 +111,7 @@ function createWindow(): void {
     console.log("[ChibangaRx]: BrowserWindow created")
     setMainWindow(mainWindow)
     setSegraMainWindow(mainWindow)
+    createTray(mainWindow)
   } catch (err: any) {
     console.error("[ChibangaRx]: BrowserWindow creation failed:", err)
     throw err
@@ -128,6 +133,14 @@ function createWindow(): void {
   mainWindow.once("ready-to-show", () => {
     console.log("[ChibangaRx]: Window ready to show")
     mainWindow!.show()
+  })
+
+  // Handle close to tray
+  mainWindow.on("close", (event) => {
+    if (!shouldQuit && store.get("minimizeToTray") !== false) {
+      event.preventDefault()
+      mainWindow?.hide()
+    }
   })
 
   mainWindow.webContents.on(
@@ -188,8 +201,33 @@ app
 
     ipcMain.on("window-close", () => {
       if (mainWindow) {
+        shouldQuit = true
         app.quit()
       }
+    })
+
+    // Auto-start handlers
+    ipcMain.handle("autostart:get", () => {
+      return app.getLoginItemSettings().openAtLogin
+    })
+
+    ipcMain.handle("autostart:set", (_event: Electron.IpcMainInvokeEvent, enabled: boolean) => {
+      app.setLoginItemSettings({
+        openAtLogin: enabled,
+        path: app.getPath("exe"),
+        args: [],
+      })
+      return app.getLoginItemSettings().openAtLogin
+    })
+
+    // Minimize to tray handlers
+    ipcMain.handle("minimizeToTray:get", () => {
+      return store.get("minimizeToTray") !== false
+    })
+
+    ipcMain.handle("minimizeToTray:set", (_event: Electron.IpcMainInvokeEvent, enabled: boolean) => {
+      store.set("minimizeToTray", enabled)
+      return enabled
     })
 
     ipcMain.handle("get-resources-path", () => {

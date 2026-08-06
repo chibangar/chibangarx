@@ -5,7 +5,7 @@ import { sendMessageToBackend } from './utils/MessageUtils';
 import { useClipping } from './context/ClippingContext';
 import { useAiHighlights } from './context/AiHighlightsContext';
 import ClippingCard from './components/ClippingCard';
-import { Clapperboard, OctagonX, Settings, History, Crown, Monitor, Play, LucideIcon, Zap, Scissors } from 'lucide-react';
+import { Clapperboard, OctagonX, Settings, History, Crown, Monitor, Play, LucideIcon, Zap, Scissors, Gamepad2, ChevronDown } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRef, useEffect, useLayoutEffect, useState, useMemo } from 'react';
 import Button from './components/Button';
@@ -33,6 +33,8 @@ export default function Menu({ selectedMenu, onSelectMenu }: MenuProps) {
   const [buttonCooldown, setButtonCooldown] = useState(false);
   const [autoClipEnabled, setAutoClipEnabled] = useState(false);
   const [autoClipCooldown, setAutoClipCooldown] = useState(false);
+  const [selectedGame, setSelectedGame] = useState<string>('Auto');
+  const [showGameDropdown, setShowGameDropdown] = useState(false);
 
   const buttonRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [indicatorPosition, setIndicatorPosition] = useState({ top: 12 });
@@ -126,6 +128,46 @@ export default function Menu({ selectedMenu, onSelectMenu }: MenuProps) {
       </div>
 
       <div className="mb-4 px-4 space-y-2">
+        {appState.gameList.length > 0 && !appState.recording && !appState.preRecording && (
+          <div className="relative">
+            <button
+              onClick={() => setShowGameDropdown(!showGameDropdown)}
+              className="w-full flex items-center justify-between gap-2 py-2 px-3 rounded-lg text-sm border border-chibangarx-border text-chibangarx-text-secondary hover:bg-chibangarx-border-secondary hover:text-chibangarx-text transition-all duration-200"
+            >
+              <div className="flex items-center gap-2 truncate">
+                <Gamepad2 className="w-4 h-4 shrink-0 text-chibangarx-primary" />
+                <span className="truncate">{selectedGame === 'Auto' ? 'Auto-detect game' : selectedGame}</span>
+              </div>
+              <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${showGameDropdown ? 'rotate-180' : ''}`} />
+            </button>
+            {showGameDropdown && (
+              <div className="absolute bottom-full left-0 right-0 mb-1 bg-chibangarx-card border border-chibangarx-border rounded-lg shadow-xl overflow-hidden z-50">
+                <button
+                  onClick={() => { setSelectedGame('Auto'); setShowGameDropdown(false); }}
+                  className={`w-full flex items-center gap-2 py-2 px-3 text-sm text-left hover:bg-chibangarx-border-secondary transition-colors ${
+                    selectedGame === 'Auto' ? 'text-chibangarx-primary bg-chibangarx-primary/10' : 'text-chibangarx-text-secondary'
+                  }`}
+                >
+                  <Monitor className="w-4 h-4" />
+                  Auto-detect game
+                </button>
+                {appState.gameList.map((game) => (
+                  <button
+                    key={game.name}
+                    onClick={() => { setSelectedGame(game.name); setShowGameDropdown(false); }}
+                    className={`w-full flex items-center gap-2 py-2 px-3 text-sm text-left hover:bg-chibangarx-border-secondary transition-colors ${
+                      selectedGame === game.name ? 'text-chibangarx-primary bg-chibangarx-primary/10' : 'text-chibangarx-text-secondary'
+                    }`}
+                  >
+                    <Gamepad2 className="w-4 h-4" />
+                    {game.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <Button
           variant="primary"
           className="w-full h-12 justify-center"
@@ -133,7 +175,11 @@ export default function Menu({ selectedMenu, onSelectMenu }: MenuProps) {
           onClick={() => {
             setButtonCooldown(true);
             setTimeout(() => setButtonCooldown(false), 1000);
-            sendMessageToBackend(appState.recording || appState.preRecording ? 'StopRecording' : 'StartRecording');
+            if (appState.recording || appState.preRecording) {
+              sendMessageToBackend('StopRecording');
+            } else {
+              sendMessageToBackend('StartRecording', { game: selectedGame === 'Auto' ? 'Unknown' : selectedGame });
+            }
           }}
         >
           {appState.recording || appState.preRecording ? (

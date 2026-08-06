@@ -376,8 +376,16 @@ export function setupSegraHandlers(): void {
     isRecording = true
     recordingStartTime = new Date()
 
+    // Auto-detect game if not specified
+    let game = payload?.game || 'Unknown'
+    if (game === 'Unknown') {
+      const detectedGames = await detectRunningGames()
+      if (detectedGames.length > 0) {
+        game = detectedGames[0].name
+      }
+    }
+
     const timestamp = recordingStartTime.toISOString().replace(/[.:]/g, '-')
-    const game = payload?.game || 'Unknown'
     const fileName = `${game} ${timestamp}.webm`
     currentRecordingPath = join(getContentFolder(), 'Sessions', fileName)
 

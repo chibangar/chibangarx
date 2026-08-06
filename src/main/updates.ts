@@ -8,6 +8,11 @@ autoUpdater.logger = log
 autoUpdater.autoDownload = true
 autoUpdater.autoInstallOnAppQuit = true
 
+// Force dev mode to use dev-app-update.yml
+if (!app.isPackaged) {
+  autoUpdater.forceDevUpdateConfig = true
+}
+
 const CHECK_INTERVAL = 4 * 60 * 60 * 1000 // 4 hours
 const INITIAL_CHECK_DELAY = 10_000 // 10 seconds after launch
 
@@ -38,7 +43,6 @@ let updateInfo: UpdateInfo = {
 }
 
 let checkTimer: NodeJS.Timeout | null = null
-let lastCheckedVersion: string | null = null
 
 function sendUpdateToRenderer(): void {
   const win = getMainWindow()
@@ -113,7 +117,6 @@ async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; erro
         log.info("[ChibangaRx] Already up to date:", currentVersion, "(remote:", remoteVersion, ")")
         updateInfo.newState = "idle"
         updateInfo.error = null
-        lastCheckedVersion = remoteVersion
         sendUpdateToRenderer()
         return { ok: true, found: false }
       }
@@ -123,7 +126,6 @@ async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; erro
       updateInfo.releaseNotes = typeof result.updateInfo.releaseNotes === "string" ? result.updateInfo.releaseNotes : ""
       updateInfo.newState = "available"
       updateInfo.error = null
-      lastCheckedVersion = remoteVersion
       sendUpdateToRenderer()
       return { ok: true, found: true, ...updateInfo }
     } else {
@@ -134,6 +136,34 @@ async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; erro
     }
   } catch (err: any) {
     const errMsg = err?.message ?? String(err)
+
+    // Try fallback: check GitHub API directly
+    try {
+      log.info("[ChibangaRx] Trying GitHub API fallback...")
+      const response = await fetch("https://api.github.com/repos/chibangar/chibangarx/releases/latest")
+      if (response.ok) {
+        const release = await response.json()
+        const remoteVersion = release.tag_name?.replace("v", "")
+
+        if (remoteVersion && isVersionNewer(remoteVersion, currentVersion)) {
+          log.info("[ChibangaRx] Fallback: update found:", remoteVersion)
+          updateInfo.version = remoteVersion
+          updateInfo.releaseNotes = release.body || ""
+          updateInfo.newState = "available"
+          updateInfo.error = null
+          sendUpdateToRenderer()
+          return { ok: true, found: true, ...updateInfo }
+        } else {
+          log.info("[ChibangaRx] Fallback: already up to date")
+          updateInfo.newState = "idle"
+          updateInfo.error = null
+          sendUpdateToRenderer()
+          return { ok: true, found: false }
+        }
+      }
+    } catch (fallbackErr: any) {
+      log.error("[ChibangaRx] Fallback check failed:", fallbackErr.message)
+    }
 
     if (errMsg.includes("No published state") || errMsg.includes("404") || errMsg.includes("net::ERR")) {
       log.info("[ChibangaRx] No release found or network error (normal for dev/local):", errMsg)
@@ -151,6 +181,7 @@ async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; erro
 
 export function initAutoUpdater(): void {
   log.info("[ChibangaRx] Auto-updater initialized, version:", app.getVersion())
+  log.info("[ChibangaRx] Packaged:", app.isPackaged)
 
   ipcMain.handle("updater:get-version", () => {
     return { ...updateInfo }

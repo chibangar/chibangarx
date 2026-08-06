@@ -165,7 +165,7 @@ export function setupSegraHandlers(): void {
         ? { startTime: recordingStartTime, endTime: null, game: 'Unknown', isUsingGameHook: false }
         : undefined,
       preRecording: undefined,
-      hasLoadedObs: false,
+      hasLoadedObs: true,
       content,
       inputDevices: [],
       outputDevices: [],

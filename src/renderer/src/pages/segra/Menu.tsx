@@ -27,7 +27,7 @@ const MENU_ICONS: Record<MenuItemId, LucideIcon> = {
 export default function Menu({ selectedMenu, onSelectMenu }: MenuProps) {
   const settings = useSettings();
   const appState = useAppState();
-  const { hasLoadedObs, recording, preRecording } = appState;
+  const { recording, preRecording } = appState;
   const { aiProgress } = useAiHighlights();
   const { clippingProgress, cancelClip } = useClipping();
   const [buttonCooldown, setButtonCooldown] = useState(false);
@@ -123,18 +123,11 @@ export default function Menu({ selectedMenu, onSelectMenu }: MenuProps) {
         </AnimatePresence>
       </div>
 
-      {!hasLoadedObs && (
-        <div className="mb-4 flex flex-col items-center px-4">
-          <div className="w-8 h-8 border-2 border-chibangarx-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-center mt-2 text-chibangarx-text-secondary text-sm">Starting OBS</p>
-        </div>
-      )}
-
       <div className="mb-4 px-4">
         <Button
           variant="primary"
           className="w-full h-12 justify-center"
-          disabled={buttonCooldown || !appState.hasLoadedObs || (appState.recording || appState.preRecording ? false : false)}
+          disabled={buttonCooldown}
           onClick={() => {
             setButtonCooldown(true);
             setTimeout(() => setButtonCooldown(false), 1000);
@@ -144,7 +137,7 @@ export default function Menu({ selectedMenu, onSelectMenu }: MenuProps) {
           {appState.recording || appState.preRecording ? (
             <><OctagonX className="w-4 h-4" /> Stop</>
           ) : (
-            <><Monitor className="w-4 h-4" /> Display Capture</>
+            <><Monitor className="w-4 h-4" /> Start Recording</>
           )}
         </Button>
       </div>

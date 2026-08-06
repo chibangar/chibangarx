@@ -9,7 +9,7 @@ autoUpdater.autoDownload = true
 autoUpdater.autoInstallOnAppQuit = true
 
 const CHECK_INTERVAL = 4 * 60 * 60 * 1000 // 4 hours
-const INITIAL_CHECK_DELAY = 30_000 // 30 seconds after launch
+const INITIAL_CHECK_DELAY = 10_000 // 10 seconds after launch
 
 type UpdateState = "idle" | "checking" | "available" | "downloading" | "downloaded" | "installing" | "error"
 
@@ -193,18 +193,14 @@ export function initAutoUpdater(): void {
     return { ok: true }
   })
 
-  // Initial check after 30 seconds
+  // Initial check after 10 seconds
   setTimeout(() => {
-    if (app.isPackaged) {
-      log.info("[ChibangaRx] Running initial update check...")
-      void performUpdateCheck()
-    }
+    log.info("[ChibangaRx] Running initial update check...")
+    void performUpdateCheck()
   }, INITIAL_CHECK_DELAY)
 
   // Periodic checks every 4 hours
-  if (app.isPackaged) {
-    startPeriodicChecks()
-  }
+  startPeriodicChecks()
 
   // electron-updater events
   autoUpdater.on("checking-for-update", () => {

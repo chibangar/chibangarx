@@ -111,6 +111,25 @@ export function initAutoUpdater(): void {
     }
   })
 
+  ipcMain.handle("updater:download", async () => {
+    if (updateInfo.newState === "downloading") {
+      return { ok: true }
+    }
+    log.info("[ChibangaRx] User requested download update")
+    updateInfo.newState = "downloading"
+    updateInfo.error = null
+    sendUpdateToRenderer()
+    try {
+      await autoUpdater.downloadUpdate()
+      return { ok: true }
+    } catch (err: any) {
+      updateInfo.newState = "error"
+      updateInfo.error = err.message
+      sendUpdateToRenderer()
+      return { ok: false, error: err.message }
+    }
+  })
+
   ipcMain.handle("updater:install", () => {
     log.info("[ChibangaRx] User requested to install update")
     updateInfo.newState = "installing"

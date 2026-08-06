@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import Modal from "@/components/ui/modal"
 import Button from "@/components/ui/button"
-import { Bell, X } from "lucide-react"
+import { Bell, X, Download, Check, Loader2 } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import { useTranslation } from "react-i18next"
 import { toast } from "react-toastify"
@@ -112,6 +112,13 @@ export default function UpdateManager(): React.ReactElement {
     }
   }
 
+  const handleDownload = async () => {
+    const result = await window.electron.ipcRenderer.invoke("updater:download")
+    if (!result?.ok) {
+      toast.error(result?.error || t("updater.checkError"))
+    }
+  }
+
   const handleRestart = async () => {
     setIsInstalling(true)
     await window.electron.ipcRenderer.invoke("updater:install")
@@ -125,14 +132,23 @@ export default function UpdateManager(): React.ReactElement {
     <>
       <button
         onClick={() => setModalOpen(true)}
-        className="relative h-8 w-8 inline-flex items-center justify-center rounded-md text-chibangarx-text-secondary hover:bg-chibangarx-accent hover:text-chibangarx-primary transition-colors"
+        className="relative h-9 w-9 inline-flex items-center justify-center rounded-lg text-chibangarx-text-secondary hover:bg-chibangarx-accent hover:text-chibangarx-primary transition-all duration-200 active:scale-95"
         title={t("updater.title")}
         style={{ WebkitAppRegion: "no-drag" } as any}
       >
-        <Bell size={14} />
-        {updateState === "available" || updateState === "downloading" || updateState === "downloaded" ? (
-          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-chibangarx-bg" />
-        ) : null}
+        {updateState === "downloading" ? (
+          <Loader2 size={16} className="animate-spin text-chibangarx-primary" />
+        ) : updateState === "downloaded" ? (
+          <Download size={16} className="text-green-400" />
+        ) : (
+          <Bell size={16} />
+        )}
+        {(updateState === "available" || updateState === "downloading" || updateState === "downloaded") && (
+          <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-chibangarx-bg" />
+          </span>
+        )}
       </button>
 
       <Modal open={modalOpen} onClose={handleDismiss}>
@@ -219,7 +235,7 @@ export default function UpdateManager(): React.ReactElement {
                   >
                     {t("updater.later")}
                   </Button>
-                  <Button onClick={handleCheckNow}>
+                  <Button onClick={handleDownload}>
                     {t("updater.download")}
                   </Button>
                 </div>

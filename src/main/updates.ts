@@ -107,73 +107,66 @@ async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; erro
   updateInfo.newState = "checking"
   sendUpdateToRenderer()
 
+  // Always use GitHub API directly for reliable version check
   try {
-    const result = await autoUpdater.checkForUpdates()
+    log.info("[ChibangaRx] Checking GitHub releases for update... Current version:", currentVersion)
+    const response = await fetch("https://api.github.com/repos/chibangar/chibangarx/releases/latest")
+    if (response.ok) {
+      const release = await response.json()
+      const remoteVersion = release.tag_name?.replace("v", "")
 
-    if (result?.updateInfo) {
-      const remoteVersion = result.updateInfo.version
+      log.info("[ChibangaRx] GitHub latest release:", remoteVersion)
 
-      if (!isVersionNewer(remoteVersion, currentVersion)) {
-        log.info("[ChibangaRx] Already up to date:", currentVersion, "(remote:", remoteVersion, ")")
+      if (remoteVersion && isVersionNewer(remoteVersion, currentVersion)) {
+        log.info("[ChibangaRx] UPDATE AVAILABLE:", currentVersion, "->", remoteVersion)
+        updateInfo.version = remoteVersion
+        updateInfo.releaseNotes = release.body || ""
+        updateInfo.newState = "available"
+        updateInfo.error = null
+        sendUpdateToRenderer()
+        return { ok: true, found: true, ...updateInfo }
+      } else {
+        log.info("[ChibangaRx] Already up to date:", currentVersion)
         updateInfo.newState = "idle"
         updateInfo.error = null
         sendUpdateToRenderer()
         return { ok: true, found: false }
       }
-
-      log.info("[ChibangaRx] Update available:", remoteVersion, "(current:", currentVersion, ")")
-      updateInfo.version = remoteVersion
-      updateInfo.releaseNotes = typeof result.updateInfo.releaseNotes === "string" ? result.updateInfo.releaseNotes : ""
-      updateInfo.newState = "available"
-      updateInfo.error = null
-      sendUpdateToRenderer()
-      return { ok: true, found: true, ...updateInfo }
-    } else {
-      log.info("[ChibangaRx] No update info returned")
-      updateInfo.newState = "idle"
-      sendUpdateToRenderer()
-      return { ok: true, found: false }
     }
   } catch (err: any) {
-    const errMsg = err?.message ?? String(err)
+    log.error("[ChibangaRx] GitHub API check failed:", err.message)
+  }
 
-    // Try fallback: check GitHub API directly
-    try {
-      log.info("[ChibangaRx] Trying GitHub API fallback...")
-      const response = await fetch("https://api.github.com/repos/chibangar/chibangarx/releases/latest")
-      if (response.ok) {
-        const release = await response.json()
-        const remoteVersion = release.tag_name?.replace("v", "")
+  // Fallback to electron-updater
+  try {
+    log.info("[ChibangaRx] Trying electron-updater fallback...")
+    const result = await autoUpdater.checkForUpdates()
 
-        if (remoteVersion && isVersionNewer(remoteVersion, currentVersion)) {
-          log.info("[ChibangaRx] Fallback: update found:", remoteVersion)
-          updateInfo.version = remoteVersion
-          updateInfo.releaseNotes = release.body || ""
-          updateInfo.newState = "available"
-          updateInfo.error = null
-          sendUpdateToRenderer()
-          return { ok: true, found: true, ...updateInfo }
-        } else {
-          log.info("[ChibangaRx] Fallback: already up to date")
-          updateInfo.newState = "idle"
-          updateInfo.error = null
-          sendUpdateToRenderer()
-          return { ok: true, found: false }
-        }
+    if (result?.updateInfo) {
+      const remoteVersion = result.updateInfo.version
+
+      if (isVersionNewer(remoteVersion, currentVersion)) {
+        log.info("[ChibangaRx] electron-updater: update found:", remoteVersion)
+        updateInfo.version = remoteVersion
+        updateInfo.releaseNotes = typeof result.updateInfo.releaseNotes === "string" ? result.updateInfo.releaseNotes : ""
+        updateInfo.newState = "available"
+        updateInfo.error = null
+        sendUpdateToRenderer()
+        return { ok: true, found: true, ...updateInfo }
       }
-    } catch (fallbackErr: any) {
-      log.error("[ChibangaRx] Fallback check failed:", fallbackErr.message)
     }
 
-    if (errMsg.includes("No published state") || errMsg.includes("404") || errMsg.includes("net::ERR")) {
-      log.info("[ChibangaRx] No release found or network error (normal for dev/local):", errMsg)
-      updateInfo.newState = "idle"
-      updateInfo.error = null
-    } else {
-      log.error("[ChibangaRx] Update check error:", errMsg)
-      updateInfo.newState = "error"
-      updateInfo.error = errMsg
-    }
+    log.info("[ChibangaRx] electron-updater: no update found")
+    updateInfo.newState = "idle"
+    updateInfo.error = null
+    sendUpdateToRenderer()
+    return { ok: true, found: false }
+  } catch (err: any) {
+    const errMsg = err?.message ?? String(err)
+    log.error("[ChibangaRx] electron-updater error:", errMsg)
+
+    updateInfo.newState = "error"
+    updateInfo.error = errMsg
     sendUpdateToRenderer()
     return { ok: false, found: false, error: errMsg }
   }

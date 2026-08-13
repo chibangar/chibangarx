@@ -10,6 +10,8 @@ import {
   Bell,
   Package,
   AlertTriangle,
+  Download,
+  FolderOpen,
 } from "lucide-react"
 import RootDiv from "@/components/rootdiv"
 import Card from "@/components/ui/Card"
@@ -48,6 +50,25 @@ interface ReleaseHistoryEntry {
   prerelease: boolean
 }
 
+interface LatestAsset {
+  name: string
+  url: string
+  size: number
+}
+
+interface LatestRelease {
+  version: string
+  tagName: string
+  assets: LatestAsset[]
+}
+
+interface AssetDownload {
+  percent: number
+  downloading: boolean
+  done: boolean
+  path?: string
+}
+
 export default function Updates() {
   const { t } = useTranslation()
   const [currentVersion, setCurrentVersion] = useState("")
@@ -60,6 +81,8 @@ export default function Updates() {
   const [totalBytes, setTotalBytes] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [history, setHistory] = useState<ReleaseHistoryEntry[]>([])
+  const [latestRelease, setLatestRelease] = useState<LatestRelease | null>(null)
+  const [assetDownloads, setAssetDownloads] = useState<Record<string, AssetDownload>>({})
   const [isChecking, setIsChecking] = useState(false)
   const [isInstalling, setIsInstalling] = useState(false)
 
@@ -88,6 +111,15 @@ export default function Updates() {
     }
   }
 
+  const loadLatestAssets = async () => {
+    try {
+      const release = await window.electron.ipcRenderer.invoke("updater:latest-assets")
+      setLatestRelease(release)
+    } catch (err: any) {
+      console.error("Failed to load latest release assets:", err)
+    }
+  }
+
   const loadVersion = async () => {
     try {
       const result = await window.electron.ipcRenderer.invoke("updater:get-version")
@@ -108,6 +140,7 @@ export default function Updates() {
   useEffect(() => {
     void loadVersion()
     void loadHistory()
+    void loadLatestAssets()
 
     const onStateUpdate = (_event: unknown, payload: UpdateStatePayload) => {
       setUpdateState(payload.newState)
@@ -120,9 +153,22 @@ export default function Updates() {
       setError(payload.error)
     }
 
+    const onAssetProgress = (
+      _event: unknown,
+      payload: { name: string; percent: number },
+    ) => {
+      setAssetDownloads((prev) => {
+        const current = prev[payload.name]
+        if (!current || !current.downloading) return prev
+        return { ...prev, [payload.name]: { ...current, percent: payload.percent } }
+      })
+    }
+
     window.electron.ipcRenderer.on("updater:state", onStateUpdate)
+    window.electron.ipcRenderer.on("updater:asset-progress", onAssetProgress)
     return () => {
       window.electron.ipcRenderer.removeListener("updater:state", onStateUpdate)
+      window.electron.ipcRenderer.removeListener("updater:asset-progress", onAssetProgress)
     }
   }, [])
 
@@ -139,6 +185,7 @@ export default function Updates() {
         toast.success(t("updatesPage.upToDate"))
       }
       await loadHistory()
+      await loadLatestAssets()
     } catch (err: any) {
       toast.error(err?.message || t("updatesPage.error"))
     } finally {
@@ -160,6 +207,34 @@ export default function Updates() {
   const handleRestart = async () => {
     setIsInstalling(true)
     await window.electron.ipcRenderer.invoke("updater:install")
+  }
+
+  const handleDownloadAsset = async (asset: LatestAsset) => {
+    if (assetDownloads[asset.name]?.downloading) return
+    setAssetDownloads((prev) => ({
+      ...prev,
+      [asset.name]: { percent: 0, downloading: true, done: false },
+    }))
+    try {
+      const result = await window.electron.ipcRenderer.invoke("updater:download-asset", {
+        url: asset.url,
+        name: asset.name,
+      })
+      if (result?.ok) {
+        setAssetDownloads((prev) => ({
+          ...prev,
+          [asset.name]: { percent: 100, downloading: false, done: true, path: result.path },
+        }))
+        toast.success(t("updatesPage.downloadComplete", { name: asset.name }))
+      }
+    } catch (err: any) {
+      console.error("Asset download failed:", err)
+      toast.error(err?.message || t("updatesPage.error"))
+      setAssetDownloads((prev) => ({
+        ...prev,
+        [asset.name]: { percent: 0, downloading: false, done: false },
+      }))
+    }
   }
 
   const showDownloadProgress = updateState === "downloading"
@@ -295,6 +370,84 @@ export default function Updates() {
               </div>
             </Card>
           )}
+
+        <div className="pt-2">
+          <h2 className="text-lg font-semibold text-chibangarx-text flex items-center gap-2 mb-4">
+            <Download className="w-5 h-5 text-chibangarx-primary" />
+            {t("updatesPage.downloads")}
+          </h2>
+          <p className="text-xs text-chibangarx-text-muted mb-4">{t("updatesPage.downloadsDesc")}</p>
+
+          {latestRelease && latestRelease.assets.length > 0 ? (
+            <Card className="p-5">
+              <p className="text-sm text-chibangarx-text mb-4">
+                {t("updatesPage.latestRelease", { version: latestRelease.version })}
+              </p>
+              <div className="space-y-3">
+                {latestRelease.assets.map((asset) => {
+                  const dl = assetDownloads[asset.name]
+                  const sizeMB = asset.size ? (asset.size / 1024 / 1024).toFixed(1) : null
+                  return (
+                    <div
+                      key={asset.name}
+                      className="flex items-center gap-3 p-3 rounded-xl bg-chibangarx-bg border border-chibangarx-border-secondary"
+                    >
+                      <div className="p-2 bg-chibangarx-accent rounded-lg shrink-0">
+                        <Package className="w-4 h-4 text-chibangarx-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className="text-sm font-medium text-chibangarx-text truncate"
+                          title={asset.name}
+                        >
+                          {asset.name}
+                        </p>
+                        {sizeMB && <p className="text-xs text-chibangarx-text-muted">{sizeMB} MB</p>}
+                        {dl?.downloading && (
+                          <div className="w-full h-1.5 bg-chibangarx-border-secondary rounded-full overflow-hidden mt-1.5">
+                            <div
+                              className="h-full bg-chibangarx-primary rounded-full transition-all duration-300"
+                              style={{ width: `${dl.percent}%` }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      {dl?.done ? (
+                        <Button
+                          variant="secondary"
+                          onClick={() =>
+                            window.electron.ipcRenderer.invoke("updater:open-downloads")
+                          }
+                        >
+                          <FolderOpen className="w-4 h-4" /> {t("updatesPage.openFolder")}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => handleDownloadAsset(asset)}
+                          disabled={dl?.downloading}
+                        >
+                          {dl?.downloading ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" /> {dl.percent}%
+                            </>
+                          ) : (
+                            <>
+                              <Download className="w-4 h-4" /> {t("updatesPage.downloadAsset")}
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </Card>
+          ) : (
+            <Card className="p-6 text-center text-chibangarx-text-secondary text-sm">
+              {t("updatesPage.historyEmpty")}
+            </Card>
+          )}
+        </div>
 
         <div className="pt-2">
           <h2 className="text-lg font-semibold text-chibangarx-text flex items-center gap-2 mb-4">

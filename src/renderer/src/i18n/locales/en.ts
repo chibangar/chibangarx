@@ -405,6 +405,12 @@ export const en = {
     prerelease: "Pre-release",
     noNotes: "No release notes for this version",
     viewOnGithub: "View on GitHub",
+    downloads: "Downloads",
+    downloadsDesc: "Download the installer or the portable version of the latest release",
+    latestRelease: "Latest release: v{{version}}",
+    downloadAsset: "Download",
+    downloadComplete: "Downloaded {{name}}",
+    openFolder: "Open folder",
   },
   debloat: {
     title: "Debloat+",

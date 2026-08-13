@@ -412,6 +412,12 @@ export const pt = {
     prerelease: "Pré-lançamento",
     noNotes: "Sem notas de versão para esta actualização",
     viewOnGithub: "Ver no GitHub",
+    downloads: "Downloads",
+    downloadsDesc: "Descarregue o instalador ou a versão portable da release mais recente",
+    latestRelease: "Release mais recente: v{{version}}",
+    downloadAsset: "Descarregar",
+    downloadComplete: "Descarregado: {{name}}",
+    openFolder: "Abrir pasta",
   },
   debloat: {
     title: "Debloat+",

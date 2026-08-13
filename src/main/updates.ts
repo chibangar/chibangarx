@@ -1,4 +1,4 @@
-import { app, ipcMain, BrowserWindow, net } from "electron"
+import { app, ipcMain, BrowserWindow, net, shell } from "electron"
 import { autoUpdater } from "electron-updater"
 import log from "electron-log"
 import { join } from "path"
@@ -271,6 +271,81 @@ export function initAutoUpdater(): void {
       log.error("[ChibangaRx] Failed to fetch release history:", err.message)
       throw err
     }
+  })
+
+  ipcMain.handle("updater:latest-assets", async () => {
+    try {
+      const response = await fetch(
+        "https://api.github.com/repos/chibangar/chibangarx/releases/latest",
+      )
+      if (!response.ok) throw new Error(`GitHub API returned ${response.status}`)
+      const release = await response.json()
+      const assets = (release.assets || [])
+        .filter((a: any) => a.name?.endsWith(".exe") || a.name?.endsWith(".zip"))
+        .map((a: any) => ({
+          name: a.name,
+          url: a.browser_download_url,
+          size: a.size || 0,
+        }))
+      return {
+        version: release.tag_name?.replace("v", ""),
+        tagName: release.tag_name,
+        assets,
+      }
+    } catch (err: any) {
+      log.error("[ChibangaRx] Failed to fetch latest release assets:", err.message)
+      throw err
+    }
+  })
+
+  ipcMain.handle(
+    "updater:download-asset",
+    async (
+      _event: Electron.IpcMainInvokeEvent,
+      options: { url: string; name: string },
+    ): Promise<{ ok: boolean; path: string }> => {
+      const { url, name } = options || {}
+      if (!url || !/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/releases\/download\//.test(url)) {
+        throw new Error("Invalid download URL")
+      }
+
+      const downloadsDir = app.getPath("downloads")
+      const filePath = join(downloadsDir, name)
+      const response = await net.fetch(url)
+      if (!response.ok) throw new Error(`Download failed: ${response.status}`)
+
+      const contentLength = Number(response.headers.get("content-length")) || 0
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error("No response body")
+
+      const writer = createWriteStream(filePath)
+      let downloaded = 0
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        downloaded += value.length
+        writer.write(Buffer.from(value))
+        const win = getMainWindow()
+        win?.webContents.send("updater:asset-progress", {
+          name,
+          percent: contentLength > 0 ? Math.round((downloaded / contentLength) * 100) : 0,
+          downloaded,
+          total: contentLength,
+        })
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        writer.end((err) => (err ? reject(err) : resolve()))
+      })
+
+      log.info("[ChibangaRx] Asset downloaded:", filePath)
+      return { ok: true, path: filePath }
+    },
+  )
+
+  ipcMain.handle("updater:open-downloads", () => {
+    shell.openPath(app.getPath("downloads"))
   })
 
   ipcMain.handle("updater:download", async () => {

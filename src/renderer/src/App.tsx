@@ -28,11 +28,11 @@ import Drivers from "./pages/Drivers"
 import GameClips from "./pages/GameClips"
 import Updates from "./pages/Updates"
 import { playSuccess, playError, playBoot } from "./lib/sound"
-import LoginScreen from "./components/LoginScreen"
+import StartupSplash from "./components/StartupSplash"
 import galaxyBackground from "./assets/galaxy-background.jpg"
 
 function App() {
-  const [sessionStarted, setSessionStarted] = useState(false)
+  const [startupComplete, setStartupComplete] = useState(false)
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("sidebarCollapsed") === "true",
@@ -41,6 +41,11 @@ function App() {
   const { setAppStatus, clearApps } = useAppInstallStore()
   const { setOnline } = useOnlineStore()
   const { t } = useTranslation()
+
+  useEffect(() => {
+    const timer = setTimeout(() => setStartupComplete(true), 1500)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     const listeners = {
@@ -158,27 +163,27 @@ function App() {
         className="pointer-events-none fixed inset-0 z-0 bg-chibangarx-bg/75"
       />
       {theme === "space" && <StarField />}
-      {sessionStarted && <FirstTime />}
+      {startupComplete && <FirstTime />}
       <ChangelogModal
-        open={sessionStarted && changelogOpen}
+        open={startupComplete && changelogOpen}
         onClose={() => {
           localStorage.setItem("chibangarx:changelogSeenVersion", CURRENT_VERSION)
           setChangelogOpen(false)
         }}
       />
       <NoAdmin
-        open={sessionStarted && adminStatus === false}
+        open={startupComplete && adminStatus === false}
         onClose={() => setAdminStatus(true)}
       />
-      <TitleBar
-        onToggleSidebar={toggleSidebar}
-        sidebarCollapsed={sidebarCollapsed}
-        adminStatus={adminStatus}
-      />
-      {!sessionStarted ? (
-        <LoginScreen onContinue={() => setSessionStarted(true)} />
+      {!startupComplete ? (
+        <StartupSplash />
       ) : (
         <>
+          <TitleBar
+            onToggleSidebar={toggleSidebar}
+            sidebarCollapsed={sidebarCollapsed}
+            adminStatus={adminStatus}
+          />
           <Nav collapsed={sidebarCollapsed} />
           <div className="relative z-10 flex flex-1 pt-[50px]">
             <main

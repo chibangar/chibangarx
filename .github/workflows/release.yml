@@ -52,7 +52,10 @@ jobs:
           cat RELEASE_NOTES.md
 
       - name: Build and publish release
-        run: pnpm exec electron-builder --win --publish always
+        # Publish a single Windows target. Publishing NSIS and portable in the same
+        # invocation can race and create two GitHub releases with the same tag,
+        # leaving /releases/latest without the installer required by old clients.
+        run: pnpm exec electron-builder --win nsis --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

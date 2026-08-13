@@ -224,11 +224,9 @@ export default function UpdateManager(): React.ReactElement {
                   {t("updater.newVersion")}:{" "}
                   <span className="font-bold text-chibangarx-primary">{updateVersion}</span>
                 </p>
-                {releaseNotes && (
-                  <div className="text-xs text-chibangarx-text-secondary max-h-48 overflow-y-auto prose prose-invert prose-headings:text-chibangarx-primary prose-li:text-chibangarx-text">
-                    <ReactMarkdown>{releaseNotes}</ReactMarkdown>
-                  </div>
-                )}
+                <div className="text-xs text-chibangarx-text-secondary max-h-48 overflow-y-auto prose prose-invert prose-headings:text-chibangarx-primary prose-li:text-chibangarx-text">
+                  <ReactMarkdown>{releaseNotes || t("updater.releaseSummary")}</ReactMarkdown>
+                </div>
               </div>
 
               {updateState === "downloading" && (

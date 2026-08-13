@@ -319,16 +319,16 @@ export default function Updates() {
                 )}
               </div>
 
-              {releaseNotes && (
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-chibangarx-text mb-2">
-                    {t("updatesPage.whatChanged")}
-                  </p>
-                  <div className="bg-chibangarx-bg rounded-xl p-4 border border-chibangarx-border-secondary text-sm text-chibangarx-text-secondary max-h-72 overflow-y-auto custom-scrollbar prose prose-invert prose-headings:text-chibangarx-primary prose-li:text-chibangarx-text prose-p:text-chibangarx-text-secondary">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{releaseNotes}</ReactMarkdown>
-                  </div>
+              <div className="mb-4">
+                <p className="text-sm font-medium text-chibangarx-text mb-2">
+                  {t("updatesPage.whatChanged")}
+                </p>
+                <div className="bg-chibangarx-bg rounded-xl p-4 border border-chibangarx-border-secondary text-sm text-chibangarx-text-secondary max-h-72 overflow-y-auto custom-scrollbar prose prose-invert prose-headings:text-chibangarx-primary prose-li:text-chibangarx-text prose-p:text-chibangarx-text-secondary">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {releaseNotes || t("updater.releaseSummary")}
+                  </ReactMarkdown>
                 </div>
-              )}
+              </div>
 
               {showDownloadProgress && (
                 <div className="space-y-2 mb-4">

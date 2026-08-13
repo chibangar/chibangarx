@@ -337,6 +337,8 @@ export const pt = {
     newVersion: "Nova versão disponível",
     versionAvailable: "A versão {{version}} está pronta para instalar.",
     versionDownloaded: "A versão {{version}} foi descarregada e está pronta para instalar.",
+    releaseSummary:
+      "Esta atualização inclui as melhorias mais recentes de estabilidade, arranque e atualização automática.",
     details: "Detalhes",
     download: "Descarregar actualização",
     downloading: "A descarregar...",

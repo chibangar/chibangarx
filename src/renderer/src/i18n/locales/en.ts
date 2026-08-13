@@ -330,6 +330,8 @@ export const en = {
     newVersion: "New version available",
     versionAvailable: "Version {{version}} is ready to install.",
     versionDownloaded: "Version {{version}} has been downloaded and is ready to install.",
+    releaseSummary:
+      "This update includes the latest reliability, startup and automatic-update improvements.",
     details: "Details",
     download: "Download update",
     downloading: "Downloading...",

@@ -347,7 +347,7 @@ export const pt = {
     versionAvailable: "A versão {{version}} está pronta para instalar.",
     versionDownloaded: "A versão {{version}} foi descarregada e está pronta para instalar.",
     releaseSummary:
-      "Esta atualização inclui as melhorias mais recentes de estabilidade, arranque e atualização automática.",
+      "- Melhorias de estabilidade e arranque.\n- Atualização interna mais simples e segura.\n- Os seus dados e preferências são preservados.",
     details: "Detalhes",
     download: "Descarregar actualização",
     downloading: "A descarregar...",

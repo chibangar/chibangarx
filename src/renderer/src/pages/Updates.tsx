@@ -64,7 +64,7 @@ interface AssetDownload {
 }
 
 export default function Updates() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [currentVersion, setCurrentVersion] = useState("")
   const [updateState, setUpdateState] = useState<UpdateState>("idle")
   const [updateVersion, setUpdateVersion] = useState<string | null>(null)
@@ -79,6 +79,9 @@ export default function Updates() {
   const [assetDownloads, setAssetDownloads] = useState<Record<string, AssetDownload>>({})
   const [isChecking, setIsChecking] = useState(false)
   const [isInstalling, setIsInstalling] = useState(false)
+  const displayedReleaseNotes = i18n.resolvedLanguage?.startsWith("pt")
+    ? t("updater.releaseSummary")
+    : releaseNotes || t("updater.releaseSummary")
 
   const getErrorMessage = (code: string | null): string =>
     code === "updateTemporarilyUnavailable"
@@ -325,7 +328,7 @@ export default function Updates() {
                 </p>
                 <div className="bg-chibangarx-bg rounded-xl p-4 border border-chibangarx-border-secondary text-sm text-chibangarx-text-secondary max-h-72 overflow-y-auto custom-scrollbar prose prose-invert prose-headings:text-chibangarx-primary prose-li:text-chibangarx-text prose-p:text-chibangarx-text-secondary">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {releaseNotes || t("updater.releaseSummary")}
+                    {displayedReleaseNotes}
                   </ReactMarkdown>
                 </div>
               </div>

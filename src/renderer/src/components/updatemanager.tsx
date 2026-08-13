@@ -22,7 +22,7 @@ interface UpdateStatePayload {
 }
 
 export default function UpdateManager(): React.ReactElement {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const [updateState, setUpdateState] = useState<UpdateState>("idle")
   const [updateVersion, setUpdateVersion] = useState<string | null>(null)
@@ -35,6 +35,9 @@ export default function UpdateManager(): React.ReactElement {
   const [error, setError] = useState<string | null>(null)
   const [isInstalling, setIsInstalling] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
+  const displayedReleaseNotes = i18n.resolvedLanguage?.startsWith("pt")
+    ? t("updater.releaseSummary")
+    : releaseNotes || t("updater.releaseSummary")
 
   const getErrorMessage = (code: string | null): string =>
     code === "updateTemporarilyUnavailable"
@@ -225,7 +228,7 @@ export default function UpdateManager(): React.ReactElement {
                   <span className="font-bold text-chibangarx-primary">{updateVersion}</span>
                 </p>
                 <div className="text-xs text-chibangarx-text-secondary max-h-48 overflow-y-auto prose prose-invert prose-headings:text-chibangarx-primary prose-li:text-chibangarx-text">
-                  <ReactMarkdown>{releaseNotes || t("updater.releaseSummary")}</ReactMarkdown>
+                  <ReactMarkdown>{displayedReleaseNotes}</ReactMarkdown>
                 </div>
               </div>
 

@@ -40,15 +40,12 @@ jobs:
         id: release_notes
         shell: bash
         run: |
-          # Get previous tag
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          if [ -z "$PREV_TAG" ]; then
-            # No previous tag, get all commits
-            git log --pretty=format:"- %s (%h)" > RELEASE_NOTES.md
-          else
-            # Get commits since last tag
-            git log $PREV_TAG..HEAD --pretty=format:"- %s (%h)" > RELEASE_NOTES.md
+          NOTES_FILE="release-notes/pt-PT/${GITHUB_REF_NAME}.md"
+          if [ ! -s "$NOTES_FILE" ]; then
+            echo "Falta o ficheiro obrigatório de notas PT-PT: $NOTES_FILE" >&2
+            exit 1
           fi
+          cp "$NOTES_FILE" RELEASE_NOTES.md
           cat RELEASE_NOTES.md
 
       - name: Build and publish release

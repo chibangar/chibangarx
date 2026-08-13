@@ -6,9 +6,11 @@ import {
   desktopCapturer,
   globalShortcut,
   session,
+  dialog,
 } from "electron"
 import { promises as fs } from "fs"
 import path, { join } from "path"
+import { pathToFileURL } from "url"
 import log from "electron-log"
 import { setupPowerShellHandlers } from "@main/powershell"
 import { setupSystemHandlers } from "@main/system"
@@ -221,6 +223,23 @@ app
       if (mainWindow) {
         shouldQuit = true
         app.quit()
+      }
+    })
+
+    ipcMain.handle("ambient-music:choose-file", async () => {
+      if (!mainWindow) return null
+      const result = await dialog.showOpenDialog(mainWindow, {
+        title: "Selecionar música ambiente",
+        properties: ["openFile"],
+        filters: [{ name: "Áudio", extensions: ["mp3", "wav", "m4a", "aac", "ogg", "flac"] }],
+      })
+      if (result.canceled || result.filePaths.length === 0) return null
+
+      const filePath = result.filePaths[0]
+      return {
+        path: filePath,
+        url: pathToFileURL(filePath).toString(),
+        name: path.basename(filePath),
       }
     })
 

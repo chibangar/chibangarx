@@ -1,373 +1,163 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChibangaRx - Windows Debloat & Optimization</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ChibangaRx: mantenha o seu Windows rápido, limpo e atualizado."
+    />
+    <title>ChibangaRx — O seu Windows, refinado</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#conteudo">Saltar para o conteúdo</a>
+    <header class="nav">
+      <a class="brand" href="#topo" aria-label="ChibangaRx, início"><span>CR</span> ChibangaRx</a>
+      <nav aria-label="Navegação principal">
+        <a href="#funcionalidades">Funcionalidades</a><a href="#atualizacoes">Atualizações</a
+        ><a href="#faq">FAQ</a>
+      </nav>
+      <a
+        class="button small"
+        href="https://github.com/chibangar/chibangarx/releases/latest"
+        target="_blank"
+        rel="noreferrer"
+        >Descarregar</a
+      >
+    </header>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0f;
-            color: #e4e4e7;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
-            animation: pulse 8s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-        }
-
-        .logo {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 1.5rem;
-            filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.4));
-        }
-
-        h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #818cf8, #6366f1, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .tagline {
-            font-size: 1.25rem;
-            color: #a1a1aa;
-            margin-bottom: 2.5rem;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 0.875rem 2rem;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #818cf8);
-            color: white;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: #e4e4e7;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .screenshot {
-            margin-top: 4rem;
-            max-width: 900px;
-            width: 100%;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .features {
-            padding: 6rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .features h2 {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #e4e4e7, #a1a1aa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .features .subtitle {
-            text-align: center;
-            color: #71717a;
-            margin-bottom: 4rem;
-            font-size: 1.1rem;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover {
-            border-color: rgba(99, 102, 241, 0.3);
-            background: rgba(99, 102, 241, 0.03);
-            transform: translateY(-4px);
-        }
-
-        .feature-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-            color: #f4f4f5;
-        }
-
-        .feature-card p {
-            color: #71717a;
-            font-size: 0.95rem;
-        }
-
-        .install-section {
-            padding: 6rem 2rem;
-            text-align: center;
-            background: rgba(99, 102, 241, 0.03);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .install-section h2 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: #f4f4f5;
-        }
-
-        .code-block {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.25rem 2rem;
-            font-family: 'Cascadia Code', 'Fira Code', monospace;
-            font-size: 1rem;
-            color: #a78bfa;
-            display: inline-block;
-            max-width: 100%;
-            overflow-x: auto;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .code-block:hover {
-            border-color: rgba(99, 102, 241, 0.4);
-        }
-
-        .code-block .copy {
-            color: #52525b;
-            font-size: 0.85rem;
-            margin-left: 1rem;
-        }
-
-        .faq {
-            padding: 6rem 2rem;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .faq h2 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 3rem;
-            color: #f4f4f5;
-        }
-
-        .faq-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 1.5rem 0;
-        }
-
-        .faq-item h3 {
-            font-size: 1.1rem;
-            color: #e4e4e7;
-            margin-bottom: 0.5rem;
-        }
-
-        .faq-item p {
-            color: #71717a;
-            font-size: 0.95rem;
-        }
-
-        footer {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: #52525b;
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        footer a {
-            color: #818cf8;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            .tagline { font-size: 1rem; }
-            .features h2 { font-size: 1.75rem; }
-        }
-    </style>
-</head>
-<body>
-    <section class="hero">
-        <div class="hero-content">
-            <img src="https://raw.githubusercontent.com/chibangar/chibangarx/main/resources/chibangarxlogo.png" alt="ChibangaRx Logo" class="logo">
-            <h1>ChibangaRx</h1>
-            <p class="tagline">Debloqueia, otimiza e personaliza o teu Windows. Tudo de forma rapida e segura.</p>
-            <div class="buttons">
-                <a href="https://github.com/chibangar/chibangarx/releases/latest" class="btn btn-primary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    Download
-                </a>
-                <a href="https://github.com/chibangar/chibangarx" class="btn btn-secondary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                    GitHub
-                </a>
-            </div>
+    <main id="conteudo">
+      <section class="hero" id="topo">
+        <div class="aurora"></div>
+        <div class="hero-copy">
+          <p class="eyebrow">CONTROLO LOCAL · ATUALIZAÇÕES SIMPLES</p>
+          <h1>Um Windows mais rápido.<br /><em>Sem complicações.</em></h1>
+          <p class="lead">
+            Otimize, limpe e mantenha o seu PC atualizado numa experiência elegante, segura e feita
+            para si.
+          </p>
+          <div class="actions">
+            <a
+              class="button"
+              href="https://github.com/chibangar/chibangarx/releases/latest/download/chibangarx-2.45.15-Setup.exe"
+              >Descarregar para Windows</a
+            >
+            <a class="button ghost" href="#funcionalidades">Explorar funcionalidades</a>
+          </div>
+          <p class="fine">Windows 10/11 · Preferências guardadas localmente</p>
         </div>
-        <img src="https://raw.githubusercontent.com/chibangar/chibangarx/main/images/appshowcase.png" alt="ChibangaRx Screenshot" class="screenshot">
-    </section>
+        <div class="app-window" role="img" aria-label="Pré-visualização do painel ChibangaRx">
+          <div class="window-bar"><i></i><i></i><i></i><b>ChibangaRx</b></div>
+          <div class="window-body">
+            <aside>Início<br />Modo inteligente<br />Ajustes<br />Limpeza<br />Atualizações</aside>
+            <div class="dashboard">
+              <small>VISÃO GERAL</small>
+              <h2>Olá de novo</h2>
+              <p>O seu sistema está pronto.</p>
+              <div class="stats">
+                <span><b>12</b>Ajustes</span><span><b>3.8 GB</b>Libertados</span
+                ><span><b>✓</b>Atualizado</span>
+              </div>
+              <div class="scan"><b>Otimização inteligente</b><button>Analisar agora</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    <section class="features">
-        <h2>Funcionalidades</h2>
-        <p class="subtitle">Tudo o que precisas para otimizar o teu Windows</p>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">&#9889;</div>
-                <h3>40+ Ajustes</h3>
-                <p>40 ajustes de sistema em 7 categorias com toggles reversiveis, presets recomendados e detecao de compatibilidade GPU.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#128465;</div>
-                <h3>Limpeza do Sistema</h3>
-                <p>Limpa 6 categorias de ficheiros temporarios com deteccao de tamanho por categoria.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#127760;</div>
-                <h3>Gerador DNS</h3>
-                <p>Altera DNS com 5 provedores pre-definidos, DNS personalizado, teste de ping para encontrar o mais rapido e limpeza de cache.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#128230;</div>
-                <h3>Instalador de Apps</h3>
-                <p>Instala e desinstala 156 apps em 10 categorias com Winget ou Chocolatey.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#128269;</div>
-                <h3>Utilitarios</h3>
-                <p>15 utilitarios incluindo SFC, DISM, Check Disk, reinicio de drivers GPU, reset de rede e mais.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">&#128190;</div>
-                <h3>Backup & Reverter</h3>
-                <p>Cria e restaura pontos de restauracao do Windows, reverte ajustes individuais ou todos.</p>
-            </div>
+      <section class="section" id="funcionalidades">
+        <p class="eyebrow">TUDO NUM SÓ LUGAR</p>
+        <h2>O essencial para cuidar do seu PC</h2>
+        <div class="grid">
+          <article>
+            <span>✦</span>
+            <h3>Modo inteligente</h3>
+            <p>Recomendações ajustadas ao hardware e ao perfil do seu computador.</p>
+          </article>
+          <article>
+            <span>⚡</span>
+            <h3>Desempenho</h3>
+            <p>Ajustes claros e reversíveis para tornar o Windows mais fluido.</p>
+          </article>
+          <article>
+            <span>◌</span>
+            <h3>Limpeza segura</h3>
+            <p>Recupere espaço sem perder os ficheiros que realmente importam.</p>
+          </article>
+          <article>
+            <span>↻</span>
+            <h3>Atualização interna</h3>
+            <p>
+              Descarregue, acompanhe o progresso e reinicie para aplicar — sem assistentes manuais.
+            </p>
+          </article>
+          <article>
+            <span>♪</span>
+            <h3>Música local</h3>
+            <p>Escolha uma faixa no seu PC. O ficheiro fica consigo e nunca é enviado.</p>
+          </article>
+          <article>
+            <span>◇</span>
+            <h3>Privacidade primeiro</h3>
+            <p>O seu nome e preferências permanecem guardados apenas no dispositivo.</p>
+          </article>
         </div>
-    </section>
+      </section>
 
-    <section class="install-section">
-        <h2>Instalacao Rapida</h3>
-        <p style="color: #71717a; margin-bottom: 1.5rem;">Abre o PowerShell e cola este comando:</p>
-        <div class="code-block" onclick="navigator.clipboard.writeText('irm https://raw.githubusercontent.com/chibangar/chibangarx/main/get.ps1 | iex')">
-            irm https://raw.githubusercontent.com/chibangar/chibangarx/main/get.ps1 | iex
-            <span class="copy">(clicar para copiar)</span>
+      <section class="section update" id="atualizacoes">
+        <div>
+          <p class="eyebrow">SEMPRE ATUAL</p>
+          <h2>Uma atualização que não interrompe</h2>
+          <p>
+            O sino avisa quando existe uma nova versão, mostra as notas em português de Portugal e
+            acompanha o download. Quando estiver pronta, basta escolher
+            <strong>Reiniciar para atualizar</strong>.
+          </p>
         </div>
-    </section>
+        <div class="update-card">
+          <span>Nova versão disponível</span><b>v2.45.15</b>
+          <p>Melhorias de experiência, música ambiente local e site oficial.</p>
+          <button>Reiniciar para atualizar</button>
+        </div>
+      </section>
 
-    <section class="faq">
-        <h2>Perguntas Frequentes</h2>
-        <div class="faq-item">
-            <h3>O ChibangaRx e seguro?</h3>
-            <p>Sim. O ChibangaRx e totalmente open source com licenca GPL-V3. Qualquer pessoa pode ver, editar ou compilar o codigo.</p>
+      <section class="section" id="faq">
+        <p class="eyebrow">PERGUNTAS FREQUENTES</p>
+        <h2>Simples e transparente</h2>
+        <div class="faq">
+          <details>
+            <summary>A aplicação envia os meus dados?</summary>
+            <p>
+              O nome e as preferências pessoais ficam apenas no seu PC. Os ficheiros de música
+              escolhidos localmente não são copiados nem enviados.
+            </p>
+          </details>
+          <details>
+            <summary>Como funcionam as atualizações?</summary>
+            <p>
+              A aplicação verifica a versão publicada, descarrega internamente e aplica-a de forma
+              silenciosa quando confirmar o reinício.
+            </p>
+          </details>
+          <details>
+            <summary>Preciso de iniciar sessão?</summary>
+            <p>
+              Não. Na primeira utilização só é pedido um nome para personalizar a saudação; não
+              existe autenticação.
+            </p>
+          </details>
+          <details>
+            <summary>Posso desligar os sons?</summary>
+            <p>Sim. Os sons e a música ambiente têm controlos próprios nas Definições.</p>
+          </details>
         </div>
-        <div class="faq-item">
-            <h3>Posso desfazer as alteracoes?</h3>
-            <p>Sim, todos os ajustes sao reversiveis. Podes usar o reversor de ajustes ou um ponto de restauracao do sistema.</p>
-        </div>
-        <div class="faq-item">
-            <h3>Por que e que preciso de permissoes de administrador?</h3>
-            <p>As permissoes de administrador sao necessarias para aplicar ajustes a nivel do sistema e criar/gerir pontos de restauracao.</p>
-        </div>
-        <div class="faq-item">
-            <h3>O Windows Defender bloqueia o programa?</h3>
-            <p>O ChibangaRx nao esta assinado digitalmente. Quando executas um exe nao assinado, o Windows assume que e inseguro. Clica em "Mais informacoes" e depois "Executar mesmo assim".</p>
-        </div>
-    </section>
-
+      </section>
+    </main>
     <footer>
-        <p>Feito com &#10084;&#65039; por <a href="https://github.com/chibangar">chibangar</a> | <a href="https://github.com/chibangar/chibangarx">GitHub</a></p>
+      <a class="brand" href="#topo"><span>CR</span> ChibangaRx</a>
+      <p>O seu sistema, refinado.</p>
+      <a href="https://github.com/chibangar/chibangarx" target="_blank" rel="noreferrer">GitHub</a>
     </footer>
-</body>
+  </body>
 </html>

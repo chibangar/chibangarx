@@ -12,6 +12,7 @@ import Card from "@/components/ui/Card"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useTranslation } from "react-i18next"
 import { isValidUserName, normalizeUserName, USER_NAME_MAX_LENGTH } from "@/lib/profile"
+import { useAmbientMusic } from "@/components/AmbientMusicProvider"
 
 interface SettingsProps {
   userName: string
@@ -20,6 +21,7 @@ interface SettingsProps {
 
 function Settings({ userName, onUserNameChange }: SettingsProps) {
   const { t } = useTranslation()
+  const ambientMusic = useAmbientMusic()
 
   const themes = [
     { label: t("settings.system"), value: "system" },
@@ -426,6 +428,55 @@ function Settings({ userName, onUserNameChange }: SettingsProps) {
                       {t("settings.saveName")}
                     </Button>
                   </div>
+                </div>
+              </SettingCard>
+            </SettingSection>
+
+            <SettingSection title={t("audio.ambientTitle")}>
+              <SettingCard>
+                <div className="ph-no-capture space-y-4">
+                  <div>
+                    <h3 className="text-base font-medium text-chibangarx-text">
+                      {ambientMusic.trackName || t("audio.noTrack")}
+                    </h3>
+                    <p className="mt-1 text-sm text-chibangarx-text-secondary">
+                      {t("audio.localOnly")}
+                    </p>
+                  </div>
+                  <label className="block text-sm text-chibangarx-text" htmlFor="ambient-volume">
+                    {t("audio.volume", { volume: Math.round(ambientMusic.volume * 100) })}
+                  </label>
+                  <input
+                    id="ambient-volume"
+                    type="range"
+                    min="0"
+                    max="0.5"
+                    step="0.01"
+                    value={ambientMusic.volume}
+                    onChange={(event) => ambientMusic.setVolume(Number(event.target.value))}
+                    className="w-full accent-chibangarx-primary"
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <Button onClick={() => void ambientMusic.chooseTrack(false)}>
+                      {t("audio.chooseTrack")}
+                    </Button>
+                    {ambientMusic.trackName && (
+                      <>
+                        <Button
+                          variant="secondary"
+                          onClick={() => void ambientMusic.togglePlayback()}
+                        >
+                          {ambientMusic.isPlaying
+                            ? t("audio.pauseAmbient")
+                            : t("audio.playAmbient")}
+                        </Button>
+                        <Button variant="secondary" onClick={ambientMusic.clearTrack}>
+                          {t("audio.removeTrack")}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                  <p className="text-xs text-chibangarx-text-secondary">{t("audio.consent")}</p>
                 </div>
               </SettingCard>
             </SettingSection>

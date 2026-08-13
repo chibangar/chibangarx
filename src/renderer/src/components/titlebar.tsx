@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Loader2, Menu, Minus, Shield, Square, Terminal, X } from "lucide-react"
+import { Loader2, Menu, Minus, Music, Pause, Shield, Square, Terminal, X } from "lucide-react"
 import { close, minimize, toggleMaximize } from "../lib/electron"
 import chibangarxLogo from "../../../../resources/chibangarxlogo.png"
 import Card from "./ui/Card"
@@ -8,6 +8,7 @@ import InstallConsoleModal from "./installConsoleModal"
 import { useTranslation } from "react-i18next"
 import UpdateManager from "./updatemanager"
 import { playClick, playMinimize, playMaximize, playClose } from "@/lib/sound"
+import { useAmbientMusic } from "./AmbientMusicProvider"
 
 interface TitleBarProps {
   onToggleSidebar: () => void
@@ -23,6 +24,7 @@ function TitleBar({
   const { t } = useTranslation()
   const { apps, action } = useAppInstallStore()
   const [consoleOpen, setConsoleOpen] = useState(false)
+  const { isPlaying, trackName, togglePlayback } = useAmbientMusic()
   const actionText = action === "uninstall" ? t("titlebar.uninstalling") : t("titlebar.installing")
 
   const currentApp = apps.find((app) => app.status === "installing")
@@ -37,7 +39,10 @@ function TitleBar({
       >
         <div className="flex items-center gap-3 h-full pr-4">
           <button
-            onClick={() => { playClick(); onToggleSidebar() }}
+            onClick={() => {
+              playClick()
+              onToggleSidebar()
+            }}
             className="h-7 w-7 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors rounded"
             style={{ WebkitAppRegion: "no-drag" } as any}
           >
@@ -60,19 +65,30 @@ function TitleBar({
               <Loader2 className="animate-spin text-xs w-4 h-4" />
               {apps.length === 1
                 ? `${actionText} ${apps[0].name}`
-                 : currentApp
-                   ? `${actionText} ${currentApp.name}, ${remainingCount} ${t("titlebar.left")}`
-                 : `${actionText} ${apps.length} ${t("titlebar.apps")}`}
+                : currentApp
+                  ? `${actionText} ${currentApp.name}, ${remainingCount} ${t("titlebar.left")}`
+                  : `${actionText} ${apps.length} ${t("titlebar.apps")}`}
               <Terminal className="w-3 h-3 text-chibangarx-primary" />
             </Card>
           )}
         </div>
 
         <div className="flex" style={{ WebkitAppRegion: "no-drag" } as any}>
+          <button
+            onClick={() => void togglePlayback()}
+            className="relative h-9 w-9 inline-flex items-center justify-center rounded-lg text-chibangarx-text-secondary hover:bg-chibangarx-accent hover:text-chibangarx-primary transition-all duration-200 active:scale-95"
+            title={isPlaying ? t("audio.pauseAmbient") : t("audio.playAmbient")}
+            aria-label={isPlaying ? t("audio.pauseAmbient") : t("audio.playAmbient")}
+          >
+            {isPlaying ? <Pause size={16} /> : <Music size={16} />}
+            {trackName && !isPlaying && (
+              <span className="absolute bottom-1 right-1 h-1.5 w-1.5 rounded-full bg-chibangarx-primary" />
+            )}
+          </button>
           <UpdateManager />
           <div
             className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
-             title={adminStatus ? t("titlebar.admin") : t("titlebar.notAdmin")}
+            title={adminStatus ? t("titlebar.admin") : t("titlebar.notAdmin")}
           >
             {adminStatus ? (
               <Shield className="w-5 h-5 text-chibangarx-primary" />
@@ -81,19 +97,28 @@ function TitleBar({
             )}
           </div>
           <button
-            onClick={() => { playMinimize(); minimize() }}
+            onClick={() => {
+              playMinimize()
+              minimize()
+            }}
             className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
           >
             <Minus size={16} />
           </button>
           <button
-            onClick={() => { playMaximize(); toggleMaximize() }}
+            onClick={() => {
+              playMaximize()
+              toggleMaximize()
+            }}
             className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
           >
             <Square size={14} />
           </button>
           <button
-            onClick={() => { playClose(); close() }}
+            onClick={() => {
+              playClose()
+              close()
+            }}
             className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-red-600 hover:text-white transition-colors"
           >
             <X size={16} />

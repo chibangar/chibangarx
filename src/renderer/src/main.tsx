@@ -4,6 +4,7 @@ import ErrorBoundary from "./components/ErrorBoundary"
 import { HashRouter } from "react-router-dom"
 import { PostHogProvider } from "posthog-js/react"
 import "./i18n/i18n"
+import { AmbientMusicProvider } from "./components/AmbientMusicProvider"
 
 const rootElement = document.getElementById("root")
 if (rootElement) {
@@ -19,7 +20,9 @@ if (rootElement) {
     >
       <HashRouter>
         <ErrorBoundary>
-          <App />
+          <AmbientMusicProvider>
+            <App />
+          </AmbientMusicProvider>
         </ErrorBoundary>
       </HashRouter>
     </PostHogProvider>,

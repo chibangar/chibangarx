@@ -29,10 +29,13 @@ import GameClips from "./pages/GameClips"
 import Updates from "./pages/Updates"
 import { playSuccess, playError, playBoot, speakWelcome } from "./lib/sound"
 import StartupSplash from "./components/StartupSplash"
+import NameOnboarding from "./components/NameOnboarding"
 import galaxyBackground from "./assets/galaxy-background.jpg"
+import { loadUserName, saveUserName } from "./lib/profile"
 
 function App() {
   const [startupComplete, setStartupComplete] = useState(false)
+  const [userName, setUserName] = useState(loadUserName)
   const welcomeSpoken = useRef(false)
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
@@ -49,11 +52,11 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (!startupComplete || welcomeSpoken.current) return
+    if (!startupComplete || !userName || welcomeSpoken.current) return
     welcomeSpoken.current = true
-    const timer = setTimeout(speakWelcome, 250)
+    const timer = setTimeout(() => speakWelcome(userName), 250)
     return () => clearTimeout(timer)
-  }, [startupComplete])
+  }, [startupComplete, userName])
 
   useEffect(() => {
     const listeners = {
@@ -171,20 +174,22 @@ function App() {
         className="pointer-events-none fixed inset-0 z-0 bg-chibangarx-bg/75"
       />
       {theme === "space" && <StarField />}
-      {startupComplete && <FirstTime />}
+      {startupComplete && userName && <FirstTime />}
       <ChangelogModal
-        open={startupComplete && changelogOpen}
+        open={startupComplete && Boolean(userName) && changelogOpen}
         onClose={() => {
           localStorage.setItem("chibangarx:changelogSeenVersion", CURRENT_VERSION)
           setChangelogOpen(false)
         }}
       />
       <NoAdmin
-        open={startupComplete && adminStatus === false}
+        open={startupComplete && Boolean(userName) && adminStatus === false}
         onClose={() => setAdminStatus(true)}
       />
       {!startupComplete ? (
         <StartupSplash />
+      ) : !userName ? (
+        <NameOnboarding onComplete={setUserName} />
       ) : (
         <>
           <TitleBar
@@ -207,7 +212,15 @@ function App() {
                 <Route path="/utilities" element={<Utilities />} />
                 <Route path="/dns" element={<DNS />} />
                 <Route path="/apps" element={<Apps />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route
+                  path="/settings"
+                  element={
+                    <Settings
+                      userName={userName}
+                      onUserNameChange={(name) => setUserName(saveUserName(name))}
+                    />
+                  }
+                />
                 <Route path="/pro-settings" element={<ProSettings />} />
                 <Route path="/clips" element={<GameClips />} />
                 <Route path="/drivers" element={<Drivers />} />

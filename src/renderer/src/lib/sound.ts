@@ -11,12 +11,12 @@ function isSoundEnabled(): boolean {
   return localStorage.getItem("chibangarx:soundEnabled") !== "false"
 }
 
-export function speakWelcome(): void {
+export function speakWelcome(name: string): void {
   if (!isSoundEnabled() || !("speechSynthesis" in window)) return
 
   const speak = () => {
     try {
-      const utterance = new SpeechSynthesisUtterance("Bem-vindo de novo")
+      const utterance = new SpeechSynthesisUtterance(`Bem-vindo de novo, ${name}`)
       utterance.lang = "pt-PT"
       utterance.rate = 0.96
       utterance.pitch = 1.08

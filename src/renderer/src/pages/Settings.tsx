@@ -11,8 +11,14 @@ import { playToggle } from "@/lib/sound"
 import Card from "@/components/ui/Card"
 import { Dropdown } from "@/components/ui/dropdown"
 import { useTranslation } from "react-i18next"
+import { isValidUserName, normalizeUserName, USER_NAME_MAX_LENGTH } from "@/lib/profile"
 
-function Settings() {
+interface SettingsProps {
+  userName: string
+  onUserNameChange: (name: string) => void
+}
+
+function Settings({ userName, onUserNameChange }: SettingsProps) {
   const { t } = useTranslation()
 
   const themes = [
@@ -49,6 +55,8 @@ function Settings() {
   const [soundEnabled, setSoundEnabled] = useState(() => {
     return localStorage.getItem("chibangarx:soundEnabled") !== "false"
   })
+  const [profileName, setProfileName] = useState(userName)
+  const [profileNameError, setProfileNameError] = useState(false)
   const [autostartEnabled, setAutostartEnabled] = useState(false)
   const [autostartLoading, setAutostartLoading] = useState(false)
   const [minimizeToTrayEnabled, setMinimizeToTrayEnabled] = useState(true)
@@ -121,7 +129,9 @@ function Settings() {
     await invoke({ channel: "rpc-enabled:set", payload: newStatus })
     setRpcEnabled(newStatus)
     setRpcLoading(false)
-    toast.success(t("settings.discordRpc") + " " + (newStatus ? t("common.enabled") : t("common.disabled")))
+    toast.success(
+      t("settings.discordRpc") + " " + (newStatus ? t("common.enabled") : t("common.disabled")),
+    )
   }
 
   const handleToggleAutostart = async () => {
@@ -130,7 +140,9 @@ function Settings() {
     await invoke({ channel: "autostart:set", payload: newStatus })
     setAutostartEnabled(newStatus)
     setAutostartLoading(false)
-    toast.success(t("settings.autostart") + " " + (newStatus ? t("common.enabled") : t("common.disabled")))
+    toast.success(
+      t("settings.autostart") + " " + (newStatus ? t("common.enabled") : t("common.disabled")),
+    )
   }
 
   const handleToggleMinimizeToTray = async () => {
@@ -139,7 +151,9 @@ function Settings() {
     await invoke({ channel: "minimizeToTray:set", payload: newStatus })
     setMinimizeToTrayEnabled(newStatus)
     setMinimizeToTrayLoading(false)
-    toast.success(t("settings.minimizeToTray") + " " + (newStatus ? t("common.enabled") : t("common.disabled")))
+    toast.success(
+      t("settings.minimizeToTray") + " " + (newStatus ? t("common.enabled") : t("common.disabled")),
+    )
   }
 
   const handleRestartExplorer = async () => {
@@ -192,23 +206,24 @@ function Settings() {
           </div>
         </div>
       </Modal>
-      <ChangelogModal
-        open={changelogOpen}
-        onClose={() => setChangelogOpen(false)}
-      />
+      <ChangelogModal open={changelogOpen} onClose={() => setChangelogOpen(false)} />
       <RootDiv>
         <div className="min-h-screen w-full pb-16 overflow-y-auto">
           <div className="space-y-8 ">
             <SettingSection title={t("settings.appearance")}>
               <SettingCard>
                 <div className="space-y-4">
-                  <h3 className="text-base font-medium text-chibangarx-text">{t("settings.theme")}</h3>
+                  <h3 className="text-base font-medium text-chibangarx-text">
+                    {t("settings.theme")}
+                  </h3>
                   <div className="grid grid-cols-6 gap-3">
                     {themes.map((t_item) => (
                       <label
                         key={t_item.value}
                         className={`flex items-center justify-center gap-2 cursor-pointer p-3 rounded-lg border transition-all duration-200 active:scale-95 ${
-                          theme === t_item.value ? "border-chibangarx-primary" : "border-chibangarx-border"
+                          theme === t_item.value
+                            ? "border-chibangarx-primary"
+                            : "border-chibangarx-border"
                         }`}
                       >
                         <input
@@ -235,46 +250,46 @@ function Settings() {
                       {t("settings.animationDesc")}
                     </p>
                   </div>
-                   <Dropdown
-                     value={t(`settings.${animationDirection}`)}
-                     options={[t("settings.up"), t("settings.left"), t("settings.off")]}
-                     onChange={(value) => {
-                       const animationMap: Record<string, "up" | "left" | "off"> = {
-                         [t("settings.up")]: "up",
-                         [t("settings.left")]: "left",
-                         [t("settings.off")]: "off",
-                       }
-                       const newValue = animationMap[value]
-                       setAnimationDirection(newValue)
-                       localStorage.setItem("pageAnimation", newValue)
-                     }}
-                   />
-                 </div>
-               </SettingCard>
-               <SettingCard>
-                 <div className="flex items-center justify-between">
-                   <div className="flex-1">
-                     <h3 className="text-base font-medium text-chibangarx-text mb-1">
-                       {t("audio.soundsEnabled")}
-                     </h3>
-                     <p className="text-sm text-chibangarx-text-secondary">
-                       {t("audio.soundsDesc")}
-                     </p>
-                   </div>
-                   <Toggle
-                     checked={soundEnabled}
-                     onChange={() => {
-                       const newValue = !soundEnabled
-                       setSoundEnabled(newValue)
-                       localStorage.setItem("chibangarx:soundEnabled", newValue.toString())
-                       if (newValue) playToggle(true)
-                     }}
-                   />
-                 </div>
-               </SettingCard>
-             </SettingSection>
+                  <Dropdown
+                    value={t(`settings.${animationDirection}`)}
+                    options={[t("settings.up"), t("settings.left"), t("settings.off")]}
+                    onChange={(value) => {
+                      const animationMap: Record<string, "up" | "left" | "off"> = {
+                        [t("settings.up")]: "up",
+                        [t("settings.left")]: "left",
+                        [t("settings.off")]: "off",
+                      }
+                      const newValue = animationMap[value]
+                      setAnimationDirection(newValue)
+                      localStorage.setItem("pageAnimation", newValue)
+                    }}
+                  />
+                </div>
+              </SettingCard>
+              <SettingCard>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
+                      {t("audio.soundsEnabled")}
+                    </h3>
+                    <p className="text-sm text-chibangarx-text-secondary">
+                      {t("audio.soundsDesc")}
+                    </p>
+                  </div>
+                  <Toggle
+                    checked={soundEnabled}
+                    onChange={() => {
+                      const newValue = !soundEnabled
+                      setSoundEnabled(newValue)
+                      localStorage.setItem("chibangarx:soundEnabled", newValue.toString())
+                      if (newValue) playToggle(true)
+                    }}
+                  />
+                </div>
+              </SettingCard>
+            </SettingSection>
 
-             <SettingSection title={t("settings.updates")}>
+            <SettingSection title={t("settings.updates")}>
               <SettingCard>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -302,15 +317,19 @@ function Settings() {
                       {t("settings.packageManagerDesc")}
                     </p>
                   </div>
-                    <Dropdown
-                     value={t(defaultPackageManager === "Chocolatey" ? "settings.chocolatey" : "settings.winget")}
-                     options={[t("settings.winget"), t("settings.chocolatey")]}
-                     onChange={(value) => {
-                       const newValue = value === t("settings.chocolatey") ? "Chocolatey" : "Winget"
-                       setDefaultPackageManager(newValue as "Chocolatey" | "Winget")
-                       localStorage.setItem("defaultPackageManager", newValue)
-                     }}
-                   />
+                  <Dropdown
+                    value={t(
+                      defaultPackageManager === "Chocolatey"
+                        ? "settings.chocolatey"
+                        : "settings.winget",
+                    )}
+                    options={[t("settings.winget"), t("settings.chocolatey")]}
+                    onChange={(value) => {
+                      const newValue = value === t("settings.chocolatey") ? "Chocolatey" : "Winget"
+                      setDefaultPackageManager(newValue as "Chocolatey" | "Winget")
+                      localStorage.setItem("defaultPackageManager", newValue)
+                    }}
+                  />
                 </div>
                 <div className="flex items-center justify-between mt-4">
                   <div className="flex-1">
@@ -327,7 +346,11 @@ function Settings() {
                       setHideAppIcons((v) => {
                         const next = !v
                         localStorage.setItem("hideAppsPageAppIcons", next.toString())
-                        toast.success(t("settings.hideAppIcons") + " " + (next ? t("common.enabled") : t("common.disabled")))
+                        toast.success(
+                          t("settings.hideAppIcons") +
+                            " " +
+                            (next ? t("common.enabled") : t("common.disabled")),
+                        )
                         return next
                       })
                     }}
@@ -348,7 +371,11 @@ function Settings() {
                       setForceLocalApps((v) => {
                         const next = !v
                         localStorage.setItem("forceLocalApps", next.toString())
-                        toast.success(t("settings.forceLocal") + " " + (next ? t("common.enabled") : t("common.disabled")))
+                        toast.success(
+                          t("settings.forceLocal") +
+                            " " +
+                            (next ? t("common.enabled") : t("common.disabled")),
+                        )
                         return next
                       })
                     }}
@@ -359,24 +386,44 @@ function Settings() {
             <SettingSection title={t("settings.profile")}>
               <SettingCard>
                 <div className="space-y-4">
-                  <h3 className="text-base font-medium text-chibangarx-text">{t("settings.userName")}</h3>
+                  <h3 className="text-base font-medium text-chibangarx-text">
+                    {t("settings.userName")}
+                  </h3>
                   <input
                     type="text"
-                    defaultValue={localStorage.getItem("chibangarx:user") || ""}
-                    onChange={(e) => localStorage.setItem("chibangarx:user", e.target.value)}
-                    className="w-full bg-chibangarx-card border border-chibangarx-border rounded-lg px-3 py-2 text-chibangarx-text focus:ring-0 focus:outline-hidden"
+                    value={profileName}
+                    maxLength={USER_NAME_MAX_LENGTH}
+                    autoComplete="name"
+                    onChange={(event) => {
+                      setProfileName(event.target.value)
+                      if (profileNameError) setProfileNameError(false)
+                    }}
+                    aria-invalid={profileNameError}
+                    className="ph-no-capture w-full bg-chibangarx-card border border-chibangarx-border rounded-lg px-3 py-2 text-chibangarx-text focus:ring-0 focus:outline-hidden"
                     placeholder={t("settings.enterYourName")}
                   />
+                  {profileNameError && (
+                    <p role="alert" className="text-sm text-red-400">
+                      {t("settings.nameInvalid")}
+                    </p>
+                  )}
+                  <p className="text-sm text-chibangarx-text-secondary">
+                    {t("settings.namePrivacy")}
+                  </p>
                   <div className="flex gap-2">
                     <Button
-                      variant="secondary"
-                      onClick={async () => {
-                        const username = await invoke({ channel: "get-user-name" })
-                        localStorage.setItem("chibangarx:user", username)
-                        toast.success(t("settings.nameReset"))
+                      onClick={() => {
+                        const normalized = normalizeUserName(profileName)
+                        if (!isValidUserName(normalized)) {
+                          setProfileNameError(true)
+                          return
+                        }
+                        onUserNameChange(normalized)
+                        setProfileName(normalized)
+                        toast.success(t("settings.nameSaved"))
                       }}
                     >
-                      {t("settings.resetToSystem")}
+                      {t("settings.saveName")}
                     </Button>
                   </div>
                 </div>
@@ -421,7 +468,9 @@ function Settings() {
               <SettingCard>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-chibangarx-text mb-1">{t("settings.legacyBackups")}</h3>
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
+                      {t("settings.legacyBackups")}
+                    </h3>
                     <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.legacyBackupsDesc")}
                     </p>
@@ -467,11 +516,7 @@ function Settings() {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Toggle
-                      checked={rpcEnabled}
-                      onChange={handleToggleRpc}
-                      disabled={rpcLoading}
-                    />
+                    <Toggle checked={rpcEnabled} onChange={handleToggleRpc} disabled={rpcLoading} />
                     <span
                       className={`text-xs font-medium px-2 py-1 rounded-full ${
                         rpcEnabled
@@ -627,7 +672,9 @@ function Settings() {
                 </div>
                 <div className="flex items-center justify-between mt-4">
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-chibangarx-text mb-1">{t("settings.openDevtools")}</h3>
+                    <h3 className="text-base font-medium text-chibangarx-text mb-1">
+                      {t("settings.openDevtools")}
+                    </h3>
                     <p className="text-sm text-chibangarx-text-secondary">
                       {t("settings.openDevtoolsDesc")}
                     </p>

@@ -3,7 +3,6 @@ import { autoUpdater } from "electron-updater"
 import log from "electron-log"
 import { join } from "path"
 import { createWriteStream } from "fs"
-import { execFile } from "child_process"
 
 autoUpdater.logger = log
 ;(autoUpdater.logger as any).transports.file.level = "info"
@@ -364,21 +363,13 @@ export function initAutoUpdater(): void {
   })
 
   ipcMain.handle("updater:install", () => {
-    log.info("[ChibangaRx] User requested to install update")
+    log.info("[ChibangaRx] User requested restart to apply update")
     updateInfo.newState = "installing"
     sendUpdateToRenderer()
 
-    const installerPath = (updateInfo as any).installerPath
-    if (installerPath) {
-      log.info("[ChibangaRx] Running installer:", installerPath)
-      // Run the NSIS installer silently, then quit
-      execFile(installerPath, ["/S"], () => {
-        app.quit()
-      })
-    } else {
-      // Fallback to electron-updater
-      autoUpdater.quitAndInstall(false, true)
-    }
+    // NSIS still applies the update underneath, but electron-updater runs it
+    // silently and relaunches the app without exposing an installer wizard.
+    autoUpdater.quitAndInstall(true, true)
     return { ok: true }
   })
 

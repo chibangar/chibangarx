@@ -5,6 +5,7 @@ import { playCheckbox } from "@/lib/sound"
 interface CheckboxProps {
   label?: string
   checked: boolean
+  disabled?: boolean
   onChange?: (checked: boolean) => void
   onClick?: () => void
 }
@@ -12,6 +13,7 @@ interface CheckboxProps {
 export default function Checkbox({
   label,
   checked,
+  disabled,
   onChange,
   onClick,
 }: CheckboxProps): React.ReactElement {
@@ -21,12 +23,13 @@ export default function Checkbox({
     <label
       htmlFor={id}
       onClick={onClick}
-      className="flex items-center gap-2 cursor-pointer select-none text-slate-200"
+      className={`flex items-center gap-2 cursor-pointer select-none text-slate-200 ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       <input
         id={id}
         type="checkbox"
         checked={checked}
+        disabled={disabled}
         onChange={(e) => {
           playCheckbox()
           onChange?.(e.target.checked)

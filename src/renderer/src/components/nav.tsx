@@ -8,7 +8,6 @@ import {
   Home,
   Icon,
   LayoutGrid,
-  Package,
   RotateCw,
   Settings,
   Trophy,
@@ -17,6 +16,8 @@ import {
   Bubbles,
   Video,
   Cpu,
+  CloudDownload,
+  Sparkles,
 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -32,6 +33,7 @@ import { playNavigate } from "@/lib/sound"
 
 const tabIcons = {
   home: <Home size={20} />,
+  smart: <Sparkles size={20} />,
   tweaks: <Wrench size={20} />,
   debloat: <Bubbles size={20} />,
   clean: <Icon iconNode={broom} size={20} />,
@@ -42,7 +44,7 @@ const tabIcons = {
   drivers: <Cpu size={20} />,
   proSettings: <Trophy size={20} />,
   clips: <Video size={20} />,
-  releases: <Package size={20} />,
+  updates: <CloudDownload size={20} />,
   settings: <Settings size={20} />,
 }
 
@@ -62,6 +64,7 @@ function Nav({ collapsed }) {
 
   const tabs = {
     home: { label: t("nav.dashboard"), path: "/" },
+    smart: { label: t("nav.smart"), path: "/smart" },
     tweaks: { label: t("nav.tweaks"), path: "/tweaks" },
     debloat: { label: t("nav.debloat"), path: "/debloat" },
     utilities: { label: t("nav.utilities"), path: "/utilities" },
@@ -72,7 +75,7 @@ function Nav({ collapsed }) {
     drivers: { label: t("nav.drivers"), path: "/drivers" },
     proSettings: { label: t("nav.proSettings"), path: "/pro-settings" },
     clips: { label: t("nav.clips"), path: "/clips" },
-    releases: { label: t("nav.releases"), path: "/releases" },
+    updates: { label: t("nav.updates"), path: "/updates" },
     settings: { label: t("nav.settings"), path: "/settings" },
   }
 

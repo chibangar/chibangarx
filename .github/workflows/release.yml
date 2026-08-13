@@ -51,7 +51,7 @@ jobs:
           cat RELEASE_NOTES.md
 
       - name: Build and publish release
-        run: pnpm exec electron-builder --win nsis --publish always
+        run: pnpm exec electron-builder --win --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

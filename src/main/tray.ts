@@ -6,7 +6,7 @@ export function createTray(mainWindow: BrowserWindow): Tray {
 
   const contextMenu = Menu.buildFromTemplate([
     { label: "Abrir ChibangaRx", click: (): void => mainWindow.show() },
-    { label: "Releases", click: (): void => shell.openExternal("https://github.com/chibangar/chibangarxbolt/releases") },
+    { label: "Releases", click: (): void => shell.openExternal("https://github.com/chibangar/chibangarx/releases") },
     { label: "Encerrar", click: (): void => app.quit() },
   ])
 

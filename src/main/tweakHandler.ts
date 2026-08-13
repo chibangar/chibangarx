@@ -33,7 +33,7 @@ const getExePath = (exeName: string): string => {
   return path.join(process.resourcesPath, exeName)
 }
 
-async function loadTweaks(): Promise<Tweak[]> {
+export async function loadTweaks(): Promise<Tweak[]> {
   const entries = await fs.readdir(tweaksDir, { withFileTypes: true })
   const tweaks: Tweak[] = []
   for (const dir of entries) {

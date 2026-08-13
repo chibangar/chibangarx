@@ -167,9 +167,14 @@
                               "requestedExecutionLevel":  "requireAdministrator",
                               "icon":  "resources/chibangarx.ico",
                               "target":  [
-                                             "nsis"
+                                             "nsis",
+                                             "portable"
                                          ]
                           },
+                  "portable":  {
+                                   "artifactName":  "${name}-${version}-portable.${ext}",
+                                   "requestExecutionLevel":  "user"
+                               },
                   "nsis":  {
                                "artifactName":  "${name}-${version}-setup.${ext}",
                                "shortcutName":  "${productName}",

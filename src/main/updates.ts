@@ -47,6 +47,41 @@ let updateInfo: UpdateInfo = {
 
 let checkTimer: NodeJS.Timeout | null = null
 
+interface ReleaseHistoryEntry {
+  tagName: string
+  name: string
+  body: string
+  publishedAt: string
+  url: string
+  prerelease: boolean
+}
+
+let historyCache: { data: ReleaseHistoryEntry[]; expiresAt: number } | null = null
+
+async function fetchReleaseHistory(): Promise<ReleaseHistoryEntry[]> {
+  if (historyCache && Date.now() < historyCache.expiresAt) {
+    return historyCache.data
+  }
+
+  const response = await fetch(
+    "https://api.github.com/repos/chibangar/chibangarx/releases?per_page=10",
+  )
+  if (!response.ok) throw new Error(`GitHub API returned ${response.status}`)
+
+  const releases = await response.json()
+  const data: ReleaseHistoryEntry[] = releases.map((r: any) => ({
+    tagName: r.tag_name,
+    name: r.name,
+    body: r.body || "",
+    publishedAt: r.published_at,
+    url: r.html_url,
+    prerelease: !!r.prerelease,
+  }))
+
+  historyCache = { data, expiresAt: Date.now() + 5 * 60 * 1000 }
+  return data
+}
+
 function sendUpdateToRenderer(): void {
   const win = getMainWindow()
   if (win && !win.isDestroyed()) {
@@ -227,6 +262,15 @@ export function initAutoUpdater(): void {
 
   ipcMain.handle("updater:check", async () => {
     return await performUpdateCheck()
+  })
+
+  ipcMain.handle("updater:history", async () => {
+    try {
+      return await fetchReleaseHistory()
+    } catch (err: any) {
+      log.error("[ChibangaRx] Failed to fetch release history:", err.message)
+      throw err
+    }
   })
 
   ipcMain.handle("updater:download", async () => {

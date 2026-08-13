@@ -6,6 +6,7 @@ import StarField from "./components/StarField"
 import "./app.css"
 import { ToastContainer, Slide, toast } from "react-toastify"
 import Home from "./pages/Home"
+import Smart from "./pages/Smart"
 import Tweaks from "./pages/Tweaks"
 import Clean from "./pages/Clean"
 import Apps from "./pages/Apps"
@@ -25,7 +26,7 @@ import ProSettings from "./pages/ProSettings"
 import Clips from "./pages/Clips"
 import Drivers from "./pages/Drivers"
 import GameClips from "./pages/GameClips"
-import Releases from "./pages/Releases"
+import Updates from "./pages/Updates"
 import { playSuccess, playError, playBoot } from "./lib/sound"
 
 function App() {
@@ -165,6 +166,7 @@ function App() {
         >
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/smart" element={<Smart />} />
             <Route path="/tweaks" element={<Tweaks />} />
             <Route path="/debloat" element={<Debloat />} />
             <Route path="/clean" element={<Clean />} />
@@ -176,7 +178,7 @@ function App() {
             <Route path="/pro-settings" element={<ProSettings />} />
             <Route path="/clips" element={<GameClips />} />
             <Route path="/drivers" element={<Drivers />} />
-            <Route path="/releases" element={<Releases />} />
+            <Route path="/updates" element={<Updates />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

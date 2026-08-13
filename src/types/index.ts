@@ -108,3 +108,32 @@ export interface NavItem {
   icon: React.ComponentType
   path: string
 }
+
+export interface SmartProfile {
+  cpu: string
+  cores: number
+  threads: number
+  ramGB: number
+  gpu: string
+  vramGB: number
+  hasGPU: boolean
+  isNvidia: boolean
+  isLaptop: boolean
+  isWin11: boolean
+  isSSD: boolean
+  diskType: string
+  score: number
+  classification: "gaming" | "mid" | "low"
+}
+
+export interface SmartRecommendation {
+  tweakId: string
+  priority: "recommended" | "optional" | "caution"
+  reasonCode: string
+  reasonArgs: Record<string, string | number>
+}
+
+export interface SmartAnalysis {
+  profile: SmartProfile
+  recommendations: SmartRecommendation[]
+}

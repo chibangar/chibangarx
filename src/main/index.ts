@@ -10,6 +10,7 @@ import { setupBackupHandlers } from "@main/backup"
 import { setupDebloatHandlers } from "@main/debloat"
 import { setupDriverHandlers } from "@main/drivers"
 import { setupSegraHandlers, setSegraMainWindow } from "@main/segra"
+import { setupSmartHandlers } from "@main/smart"
 import { initAutoUpdater } from "@main/updates"
 import { setMainWindow } from "@main/windowState"
 import { createTray } from "@main/tray"
@@ -176,6 +177,7 @@ app
     setupDebloatHandlers()
     setupDriverHandlers()
     setupSegraHandlers()
+    setupSmartHandlers()
     if (store.get("rpcEnabled") !== false) {
       startDiscordRPC()
     }

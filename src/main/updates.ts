@@ -11,6 +11,14 @@ autoUpdater.logger = log
 autoUpdater.autoDownload = false
 autoUpdater.autoInstallOnAppQuit = true
 
+// Use GitHub's CDN-backed release assets directly. The built-in GitHub provider
+// queries the rate-limited REST API before reading latest.yml, which can return
+// 403 for otherwise healthy public releases.
+autoUpdater.setFeedURL({
+  provider: "generic",
+  url: "https://github.com/chibangar/chibangarx/releases/latest/download",
+})
+
 // Force dev mode to use dev-app-update.yml
 if (!app.isPackaged) {
   autoUpdater.forceDevUpdateConfig = true

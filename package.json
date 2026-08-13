@@ -1,6 +1,6 @@
 {
     "name":  "chibangarx",
-    "version":  "2.45.2",
+    "version":  "2.45.3",
     "description":  "ChibangaRx",
     "main":  "./out/main/index.js",
     "author":  "chibangar",
@@ -176,7 +176,7 @@
                                    "requestExecutionLevel":  "user"
                                },
                   "nsis":  {
-                               "artifactName":  "${name}-${version}-setup.${ext}",
+                               "artifactName":  "${name}-${version}-Setup.${ext}",
                                "shortcutName":  "${productName}",
                                "uninstallDisplayName":  "${productName}",
                                "createDesktopShortcut":  "always",

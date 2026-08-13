@@ -7,13 +7,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "react-toastify"
 
 export type UpdateState =
-  | "idle"
-  | "checking"
-  | "available"
-  | "downloading"
-  | "downloaded"
-  | "installing"
-  | "error"
+  "idle" | "checking" | "available" | "downloading" | "downloaded" | "installing" | "error"
 
 interface UpdateStatePayload {
   version: string
@@ -41,6 +35,11 @@ export default function UpdateManager(): React.ReactElement {
   const [error, setError] = useState<string | null>(null)
   const [isInstalling, setIsInstalling] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
+
+  const getErrorMessage = (code: string | null): string =>
+    code === "updateTemporarilyUnavailable"
+      ? t("updater.temporarilyUnavailable")
+      : t("updater.checkError")
 
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return "0 B"
@@ -112,7 +111,7 @@ export default function UpdateManager(): React.ReactElement {
       if (result?.found) {
         toast.success(t("updater.updateAvailable"))
       } else if (!result?.ok && result?.error) {
-        toast.error(result.error)
+        toast.error(getErrorMessage(result.error))
       } else {
         toast.success(t("updater.noUpdate"))
       }
@@ -127,7 +126,7 @@ export default function UpdateManager(): React.ReactElement {
     try {
       const result = await window.electron.ipcRenderer.invoke("updater:download")
       if (!result?.ok && result?.error) {
-        toast.error(result.error)
+        toast.error(getErrorMessage(result.error))
       }
     } catch (err: any) {
       toast.error(err?.message || t("updater.checkError"))
@@ -158,7 +157,9 @@ export default function UpdateManager(): React.ReactElement {
         ) : (
           <Bell size={16} />
         )}
-        {(updateState === "available" || updateState === "downloading" || updateState === "downloaded") && (
+        {(updateState === "available" ||
+          updateState === "downloading" ||
+          updateState === "downloaded") && (
           <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-chibangarx-bg" />
@@ -198,7 +199,7 @@ export default function UpdateManager(): React.ReactElement {
             <div className="py-6 text-center">
               {updateState === "error" && error && (
                 <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4">
-                  <p className="text-sm text-red-400">{error}</p>
+                  <p className="text-sm text-red-400">{getErrorMessage(error)}</p>
                 </div>
               )}
               {updateState === "idle" && (
@@ -206,7 +207,9 @@ export default function UpdateManager(): React.ReactElement {
               )}
               <Button onClick={handleCheckNow} disabled={isChecking}>
                 {isChecking ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> {t("updater.checking")}</>
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> {t("updater.checking")}
+                  </>
                 ) : (
                   t("updater.checkNow")
                 )}
@@ -241,7 +244,9 @@ export default function UpdateManager(): React.ReactElement {
                     />
                   </div>
                   <div className="flex justify-between text-xs text-chibangarx-text-secondary">
-                    <span>{formatBytes(downloadedBytes)} / {formatBytes(totalBytes)}</span>
+                    <span>
+                      {formatBytes(downloadedBytes)} / {formatBytes(totalBytes)}
+                    </span>
                     <span>{formatSpeed(downloadSpeed)}</span>
                   </div>
                 </div>
@@ -256,9 +261,7 @@ export default function UpdateManager(): React.ReactElement {
                   >
                     {t("updater.later")}
                   </Button>
-                  <Button onClick={handleDownload}>
-                    {t("updater.download")}
-                  </Button>
+                  <Button onClick={handleDownload}>{t("updater.download")}</Button>
                 </div>
               )}
             </div>

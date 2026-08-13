@@ -19,7 +19,8 @@ if (!app.isPackaged) {
 const CHECK_INTERVAL = 4 * 60 * 60 * 1000 // 4 hours
 const INITIAL_CHECK_DELAY = 10_000 // 10 seconds after launch
 
-type UpdateState = "idle" | "checking" | "available" | "downloading" | "downloaded" | "installing" | "error"
+type UpdateState =
+  "idle" | "checking" | "available" | "downloading" | "downloaded" | "installing" | "error"
 
 interface UpdateInfo {
   version: string
@@ -57,30 +58,50 @@ interface ReleaseHistoryEntry {
 }
 
 let historyCache: { data: ReleaseHistoryEntry[]; expiresAt: number } | null = null
+let githubApiBackoffUntil = 0
+
+const UPDATE_ERROR_TEMPORARY = "updateTemporarilyUnavailable"
+const UPDATE_ERROR_GENERIC = "updateCheckFailed"
+
+function friendlyUpdateError(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error)
+  return /403|429|rate limit|ERR_INTERNET_DISCONNECTED|ENOTFOUND|network/i.test(message)
+    ? UPDATE_ERROR_TEMPORARY
+    : UPDATE_ERROR_GENERIC
+}
+
+async function fetchGitHubJson(url: string): Promise<any> {
+  if (Date.now() < githubApiBackoffUntil) throw new Error(UPDATE_ERROR_TEMPORARY)
+  const response = await fetch(url)
+  if (response.status === 403 || response.status === 429) {
+    const retryAfter = Number(response.headers.get("retry-after")) || 15 * 60
+    githubApiBackoffUntil = Date.now() + retryAfter * 1000
+    throw new Error(UPDATE_ERROR_TEMPORARY)
+  }
+  if (!response.ok) throw new Error(UPDATE_ERROR_GENERIC)
+  return response.json()
+}
 
 function hasInstallerAsset(release: any): boolean {
-  return !!release?.assets?.some((a: any) =>
-    typeof a.name === "string" &&
-    a.name.toLowerCase().endsWith(".exe") &&
-    a.name.toLowerCase().includes("setup"),
+  return !!release?.assets?.some(
+    (a: any) =>
+      typeof a.name === "string" &&
+      a.name.toLowerCase().endsWith(".exe") &&
+      a.name.toLowerCase().includes("setup"),
   )
 }
 
 async function fetchLatestReleaseWithInstaller(): Promise<any> {
-  const response = await fetch(
+  const latest = await fetchGitHubJson(
     "https://api.github.com/repos/chibangar/chibangarx/releases/latest",
   )
-  if (!response.ok) throw new Error(`GitHub API returned ${response.status}`)
-  const latest = await response.json()
   if (hasInstallerAsset(latest)) return latest
 
-  const listResponse = await fetch(
+  const releases = await fetchGitHubJson(
     "https://api.github.com/repos/chibangar/chibangarx/releases?per_page=10",
   )
-  if (!listResponse.ok) throw new Error(`GitHub API returned ${listResponse.status}`)
-  const releases = await listResponse.json()
   const release = releases.find(hasInstallerAsset)
-  if (!release) throw new Error("No installer found in release assets")
+  if (!release) throw new Error(UPDATE_ERROR_GENERIC)
   return release
 }
 
@@ -89,12 +110,9 @@ async function fetchReleaseHistory(): Promise<ReleaseHistoryEntry[]> {
     return historyCache.data
   }
 
-  const response = await fetch(
+  const releases = await fetchGitHubJson(
     "https://api.github.com/repos/chibangar/chibangarx/releases?per_page=10",
   )
-  if (!response.ok) throw new Error(`GitHub API returned ${response.status}`)
-
-  const releases = await response.json()
   const data: ReleaseHistoryEntry[] = releases.map((r: any) => ({
     tagName: r.tag_name,
     name: r.name,
@@ -145,42 +163,6 @@ function compareVersions(a: string, b: string): number {
   return 0
 }
 
-function filterRelevantUpdates(updates: any[]): any[] {
-  if (!Array.isArray(updates)) return []
-
-  const currentVersion = app.getVersion()
-  const currentVersionNum = currentVersion.split(".").map(Number)
-
-  return updates
-    .filter(update => {
-      if (!update.version) return false
-
-      const updateVersionNum = update.version.split(".").map(Number)
-
-      for (let i = 0; i < Math.max(currentVersionNum.length, updateVersionNum.length); i++) {
-        const c = currentVersionNum[i] || 0
-        const u = updateVersionNum[i] || 0
-
-        if (u > c) return true
-        if (u < c) return false
-      }
-      return false
-    })
-    .sort((a, b) => {
-      const versionA = a.version.split(".").map(Number)
-      const versionB = b.version.split(".").map(Number)
-
-      for (let i = 0; i < Math.max(versionA.length, versionB.length); i++) {
-        const va = versionA[i] || 0
-        const vb = versionB[i] || 0
-
-        if (va !== vb) return vb - va
-      }
-      return 0
-    })
-    .slice(0, 5)
-}
-
 function isVersionNewer(remote: string, local: string): boolean {
   return compareVersions(remote, local) > 0
 }
@@ -195,7 +177,19 @@ function startPeriodicChecks(): void {
   }, CHECK_INTERVAL)
 }
 
-async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; error?: string | null; version?: string; releaseNotes?: string; currentVersion?: string; newState?: UpdateState; percent?: number; downloadedBytes?: number; totalBytes?: number; downloadSpeed?: number }> {
+async function performUpdateCheck(): Promise<{
+  ok: boolean
+  found: boolean
+  error?: string | null
+  version?: string
+  releaseNotes?: string
+  currentVersion?: string
+  newState?: UpdateState
+  percent?: number
+  downloadedBytes?: number
+  totalBytes?: number
+  downloadSpeed?: number
+}> {
   const currentVersion = app.getVersion()
 
   if (updateInfo.newState === "checking" || updateInfo.newState === "downloading") {
@@ -207,45 +201,10 @@ async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; erro
   updateInfo.newState = "checking"
   sendUpdateToRenderer()
 
-  // Always use GitHub API directly for reliable version check
+  // Read latest.yml directly through electron-updater. This endpoint is CDN-backed
+  // and does not consume the unauthenticated GitHub REST API quota.
   try {
-    log.info("[ChibangaRx] Checking GitHub releases for update... Current version:", currentVersion)
-    const response = await fetch("https://api.github.com/repos/chibangar/chibangarx/releases?per_page=10")
-    if (response.ok) {
-      const releases = await response.json()
-      const relevantReleases = filterRelevantUpdates(releases)
-
-      if (relevantReleases.length > 0) {
-        const latestRelease = relevantReleases[0]
-        const remoteVersion = latestRelease.tag_name?.replace("v", "")
-
-        log.info("[ChibangaRx] GitHub relevant releases:", relevantReleases.map(r => r.tag_name))
-        log.info("[ChibangaRx] Latest relevant release:", remoteVersion)
-
-        if (remoteVersion && isVersionNewer(remoteVersion, currentVersion)) {
-          log.info("[ChibangaRx] UPDATE AVAILABLE:", currentVersion, "->", remoteVersion)
-          updateInfo.version = remoteVersion
-          updateInfo.releaseNotes = latestRelease.body || ""
-          updateInfo.newState = "available"
-          updateInfo.error = null
-          sendUpdateToRenderer()
-          return { ok: true, found: true, ...updateInfo }
-        }
-      }
-
-      log.info("[ChibangaRx] Already up to date:", currentVersion)
-      updateInfo.newState = "idle"
-      updateInfo.error = null
-      sendUpdateToRenderer()
-      return { ok: true, found: false }
-    }
-  } catch (err: any) {
-    log.error("[ChibangaRx] GitHub API check failed:", err.message)
-  }
-
-  // Fallback to electron-updater
-  try {
-    log.info("[ChibangaRx] Trying electron-updater fallback...")
+    log.info("[ChibangaRx] Checking release metadata. Current version:", currentVersion)
     const result = await autoUpdater.checkForUpdates()
 
     if (result?.updateInfo) {
@@ -254,7 +213,8 @@ async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; erro
       if (isVersionNewer(remoteVersion, currentVersion)) {
         log.info("[ChibangaRx] electron-updater: update found:", remoteVersion)
         updateInfo.version = remoteVersion
-        updateInfo.releaseNotes = typeof result.updateInfo.releaseNotes === "string" ? result.updateInfo.releaseNotes : ""
+        updateInfo.releaseNotes =
+          typeof result.updateInfo.releaseNotes === "string" ? result.updateInfo.releaseNotes : ""
         updateInfo.newState = "available"
         updateInfo.error = null
         sendUpdateToRenderer()
@@ -268,8 +228,8 @@ async function performUpdateCheck(): Promise<{ ok: boolean; found: boolean; erro
     sendUpdateToRenderer()
     return { ok: true, found: false }
   } catch (err: any) {
-    const errMsg = err?.message ?? String(err)
-    log.error("[ChibangaRx] electron-updater error:", errMsg)
+    const errMsg = friendlyUpdateError(err)
+    log.error("[ChibangaRx] Update metadata check failed:", err)
 
     updateInfo.newState = "error"
     updateInfo.error = errMsg
@@ -384,66 +344,14 @@ export function initAutoUpdater(): void {
     sendUpdateToRenderer()
 
     try {
-      // Fetch release info from GitHub API
-      const release = await fetchLatestReleaseWithInstaller()
-      // Find the NSIS installer asset
-      const asset = release.assets?.find((a: any) =>
-        a.name?.toLowerCase().endsWith(".exe") && a.name?.toLowerCase().includes("setup"),
-      )
-      if (!asset) throw new Error("No installer found in release assets")
-
-      const downloadUrl = asset.browser_download_url
-      log.info("[ChibangaRx] Downloading from:", downloadUrl)
-
-      // Use Electron's net.fetch to download (bypasses CORS/auth issues)
-      const downloadResponse = await net.fetch(downloadUrl)
-      if (!downloadResponse.ok) throw new Error(`Download failed: ${downloadResponse.status}`)
-
-      const contentLength = Number(downloadResponse.headers.get("content-length")) || 0
-      updateInfo.totalBytes = contentLength
-
-      const tempDir = app.getPath("temp")
-      const installerPath = join(tempDir, asset.name)
-
-      // Download with progress tracking
-      const body = downloadResponse.body
-      if (!body) throw new Error("No response body")
-
-      const reader = body.getReader()
-      const writer = createWriteStream(installerPath)
-      let downloaded = 0
-      const startTime = Date.now()
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        downloaded += value.length
-        writer.write(Buffer.from(value))
-
-        updateInfo.downloadedBytes = downloaded
-        updateInfo.percent = contentLength > 0 ? Math.round((downloaded / contentLength) * 100) : 0
-        const elapsed = (Date.now() - startTime) / 1000
-        updateInfo.downloadSpeed = elapsed > 0 ? downloaded / elapsed : 0
-        sendUpdateToRenderer()
-      }
-
-      writer.end()
-      log.info("[ChibangaRx] Download complete:", installerPath)
-
-      updateInfo.newState = "downloaded"
-      updateInfo.percent = 100
-      sendUpdateToRenderer()
-
-      // Store the installer path for installation
-      ;(updateInfo as any).installerPath = installerPath
+      await autoUpdater.downloadUpdate()
       return { ok: true }
     } catch (err: any) {
-      log.error("[ChibangaRx] Download failed:", err.message)
+      log.error("[ChibangaRx] Download failed:", err)
       updateInfo.newState = "error"
-      updateInfo.error = err.message
+      updateInfo.error = friendlyUpdateError(err)
       sendUpdateToRenderer()
-      return { ok: false, error: err.message }
+      return { ok: false, error: updateInfo.error }
     }
   })
 
@@ -528,10 +436,11 @@ export function initAutoUpdater(): void {
   })
 
   autoUpdater.on("error", (err) => {
-    const errMsg = err?.message ?? String(err)
-    log.error("[ChibangaRx] Auto-updater error:", errMsg)
+    const rawMessage = err?.message ?? String(err)
+    const errMsg = friendlyUpdateError(err)
+    log.error("[ChibangaRx] Auto-updater error:", rawMessage)
 
-    if (errMsg.includes("No published state") || errMsg.includes("404") || errMsg.includes("net::ERR")) {
+    if (rawMessage.includes("No published state") || rawMessage.includes("404")) {
       log.info("[ChibangaRx] No release found or network error (normal for dev/local builds)")
       updateInfo.newState = "idle"
       updateInfo.error = null

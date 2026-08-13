@@ -21,13 +21,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 export type UpdateState =
-  | "idle"
-  | "checking"
-  | "available"
-  | "downloading"
-  | "downloaded"
-  | "installing"
-  | "error"
+  "idle" | "checking" | "available" | "downloading" | "downloaded" | "installing" | "error"
 
 interface UpdateStatePayload {
   version: string
@@ -85,6 +79,11 @@ export default function Updates() {
   const [assetDownloads, setAssetDownloads] = useState<Record<string, AssetDownload>>({})
   const [isChecking, setIsChecking] = useState(false)
   const [isInstalling, setIsInstalling] = useState(false)
+
+  const getErrorMessage = (code: string | null): string =>
+    code === "updateTemporarilyUnavailable"
+      ? t("updater.temporarilyUnavailable")
+      : t("updater.checkError")
 
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return "0 B"
@@ -153,10 +152,7 @@ export default function Updates() {
       setError(payload.error)
     }
 
-    const onAssetProgress = (
-      _event: unknown,
-      payload: { name: string; percent: number },
-    ) => {
+    const onAssetProgress = (_event: unknown, payload: { name: string; percent: number }) => {
       setAssetDownloads((prev) => {
         const current = prev[payload.name]
         if (!current || !current.downloading) return prev
@@ -180,12 +176,10 @@ export default function Updates() {
       if (result?.found) {
         toast.success(t("updatesPage.updateAvailable"))
       } else if (!result?.ok && result?.error) {
-        toast.error(result.error)
+        toast.error(getErrorMessage(result.error))
       } else {
         toast.success(t("updatesPage.upToDate"))
       }
-      await loadHistory()
-      await loadLatestAssets()
     } catch (err: any) {
       toast.error(err?.message || t("updatesPage.error"))
     } finally {
@@ -197,7 +191,7 @@ export default function Updates() {
     try {
       const result = await window.electron.ipcRenderer.invoke("updater:download")
       if (!result?.ok && result?.error) {
-        toast.error(result.error)
+        toast.error(getErrorMessage(result.error))
       }
     } catch (err: any) {
       toast.error(err?.message || t("updatesPage.error"))
@@ -254,7 +248,9 @@ export default function Updates() {
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <p className="text-xs text-chibangarx-text-muted">{t("updatesPage.currentVersion")}</p>
+              <p className="text-xs text-chibangarx-text-muted">
+                {t("updatesPage.currentVersion")}
+              </p>
               <p className="text-sm font-medium text-chibangarx-text">v{currentVersion}</p>
             </div>
             <Button onClick={handleCheckNow} disabled={isChecking || showDownloadProgress}>
@@ -274,7 +270,9 @@ export default function Updates() {
         {updateState === "checking" && (
           <Card className="p-6 flex items-center justify-center gap-3">
             <Loader2 className="w-5 h-5 animate-spin text-chibangarx-primary" />
-            <span className="text-chibangarx-text-secondary text-sm">{t("updatesPage.checking")}</span>
+            <span className="text-chibangarx-text-secondary text-sm">
+              {t("updatesPage.checking")}
+            </span>
           </Card>
         )}
 
@@ -290,12 +288,14 @@ export default function Updates() {
               </p>
             </div>
             {updateState === "error" && error && (
-              <p className="text-sm text-red-400">{error}</p>
+              <p className="text-sm text-red-400">{getErrorMessage(error)}</p>
             )}
           </Card>
         )}
 
-        {(updateState === "available" || updateState === "downloading" || updateState === "downloaded") &&
+        {(updateState === "available" ||
+          updateState === "downloading" ||
+          updateState === "downloaded") &&
           updateVersion && (
             <Card className="p-6 border-chibangarx-primary/30">
               <div className="flex items-center justify-between mb-4">
@@ -363,7 +363,11 @@ export default function Updates() {
                   </>
                 )}
                 {updateState === "downloaded" && (
-                  <Button onClick={handleRestart} disabled={isInstalling} className="bg-green-600 hover:bg-green-700">
+                  <Button
+                    onClick={handleRestart}
+                    disabled={isInstalling}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
                     {isInstalling ? t("updatesPage.installing") : t("updatesPage.restartInstall")}
                   </Button>
                 )}
@@ -376,7 +380,9 @@ export default function Updates() {
             <Download className="w-5 h-5 text-chibangarx-primary" />
             {t("updatesPage.downloads")}
           </h2>
-          <p className="text-xs text-chibangarx-text-muted mb-4">{t("updatesPage.downloadsDesc")}</p>
+          <p className="text-xs text-chibangarx-text-muted mb-4">
+            {t("updatesPage.downloadsDesc")}
+          </p>
 
           {latestRelease && latestRelease.assets.length > 0 ? (
             <Card className="p-5">
@@ -402,7 +408,9 @@ export default function Updates() {
                         >
                           {asset.name}
                         </p>
-                        {sizeMB && <p className="text-xs text-chibangarx-text-muted">{sizeMB} MB</p>}
+                        {sizeMB && (
+                          <p className="text-xs text-chibangarx-text-muted">{sizeMB} MB</p>
+                        )}
                         {dl?.downloading && (
                           <div className="w-full h-1.5 bg-chibangarx-border-secondary rounded-full overflow-hidden mt-1.5">
                             <div

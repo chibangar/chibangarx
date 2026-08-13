@@ -336,6 +336,8 @@ export const en = {
     downloaded: "Update downloaded successfully!",
     downloadError: "Download failed",
     checkError: "Failed to check for updates",
+    temporarilyUnavailable:
+      "Updates are temporarily unavailable. Check your connection and try again in a few minutes.",
     restartInfo: "The app will restart to apply the update.",
     restartInstall: "Restart and install",
     installing: "Installing...",

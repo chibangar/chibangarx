@@ -343,6 +343,8 @@ export const pt = {
     downloaded: "Actualização descarregada com sucesso!",
     downloadError: "A descarga falhou",
     checkError: "Não foi possível verificar actualizações",
+    temporarilyUnavailable:
+      "As actualizações estão temporariamente indisponíveis. Verifique a ligação e tente novamente dentro de alguns minutos.",
     restartInfo: "A aplicação vai reiniciar para aplicar a actualização.",
     restartInstall: "Reiniciar e instalar",
     installing: "A instalar...",

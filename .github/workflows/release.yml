@@ -52,12 +52,16 @@ jobs:
           cat RELEASE_NOTES.md
 
       - name: Build and publish release
-        # Publish a single Windows target. Publishing NSIS and portable in the same
-        # invocation can race and create two GitHub releases with the same tag,
-        # leaving /releases/latest without the installer required by old clients.
-        run: pnpm exec electron-builder --win nsis --publish always
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm exec electron-builder --win nsis --publish never
+
+      - name: Publish release assets together
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*-Setup.exe
+            dist/*-Setup.exe.blockmap
+            dist/latest.yml
+          fail_on_unmatched_files: true
 
       - name: Update release with notes
         uses: actions/github-script@v7

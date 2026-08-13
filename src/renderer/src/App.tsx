@@ -28,8 +28,10 @@ import Drivers from "./pages/Drivers"
 import GameClips from "./pages/GameClips"
 import Updates from "./pages/Updates"
 import { playSuccess, playError, playBoot } from "./lib/sound"
+import LoginScreen from "./components/LoginScreen"
 
 function App() {
+  const [sessionStarted, setSessionStarted] = useState(false)
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("sidebarCollapsed") === "true",
@@ -145,44 +147,53 @@ function App() {
   return (
     <div className="flex flex-col h-screen bg-chibangarx-bg text-chibangarx-text overflow-hidden">
       {theme === "space" && <StarField />}
-      <FirstTime />
+      {sessionStarted && <FirstTime />}
       <ChangelogModal
-        open={changelogOpen}
+        open={sessionStarted && changelogOpen}
         onClose={() => {
           localStorage.setItem("chibangarx:changelogSeenVersion", CURRENT_VERSION)
           setChangelogOpen(false)
         }}
       />
-      <NoAdmin open={adminStatus === false} onClose={() => setAdminStatus(true)} />
+      <NoAdmin
+        open={sessionStarted && adminStatus === false}
+        onClose={() => setAdminStatus(true)}
+      />
       <TitleBar
         onToggleSidebar={toggleSidebar}
         sidebarCollapsed={sidebarCollapsed}
         adminStatus={adminStatus}
       />
-      <Nav collapsed={sidebarCollapsed} />
-      <div className="flex flex-1 pt-[50px] relative">
-        <main
-          className={`flex-1 p-6 rounded-tl-2xl border-t border-l border-chibangarx-border transition-all duration-300 ease-in-out ${sidebarCollapsed ? "ml-16" : "ml-52"}`}
-        >
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/smart" element={<Smart />} />
-            <Route path="/tweaks" element={<Tweaks />} />
-            <Route path="/debloat" element={<Debloat />} />
-            <Route path="/clean" element={<Clean />} />
-            <Route path="/backup" element={<Backup />} />
-            <Route path="/utilities" element={<Utilities />} />
-            <Route path="/dns" element={<DNS />} />
-            <Route path="/apps" element={<Apps />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/pro-settings" element={<ProSettings />} />
-            <Route path="/clips" element={<GameClips />} />
-            <Route path="/drivers" element={<Drivers />} />
-            <Route path="/updates" element={<Updates />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </div>
+      {!sessionStarted ? (
+        <LoginScreen onContinue={() => setSessionStarted(true)} />
+      ) : (
+        <>
+          <Nav collapsed={sidebarCollapsed} />
+          <div className="flex flex-1 pt-[50px] relative">
+            <main
+              className={`flex-1 p-6 rounded-tl-2xl border-t border-l border-chibangarx-border transition-all duration-300 ease-in-out ${sidebarCollapsed ? "ml-16" : "ml-52"}`}
+            >
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/smart" element={<Smart />} />
+                <Route path="/tweaks" element={<Tweaks />} />
+                <Route path="/debloat" element={<Debloat />} />
+                <Route path="/clean" element={<Clean />} />
+                <Route path="/backup" element={<Backup />} />
+                <Route path="/utilities" element={<Utilities />} />
+                <Route path="/dns" element={<DNS />} />
+                <Route path="/apps" element={<Apps />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/pro-settings" element={<ProSettings />} />
+                <Route path="/clips" element={<GameClips />} />
+                <Route path="/drivers" element={<Drivers />} />
+                <Route path="/updates" element={<Updates />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </main>
+          </div>
+        </>
+      )}
       <ToastContainer
         stacked
         limit={5}

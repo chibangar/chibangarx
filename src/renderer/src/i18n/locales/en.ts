@@ -1,4 +1,23 @@
 export const en = {
+  login: {
+    eyebrow: "Your system, refined",
+    hero: "A faster, cleaner Windows starts here.",
+    heroDescription:
+      "Tune performance, remove clutter and keep the tools you need in one focused workspace.",
+    localOnly: "Local access — your credentials are not sent or stored",
+    title: "Welcome back",
+    subtitle: "Enter your details or continue directly in local mode.",
+    email: "Email",
+    emailPlaceholder: "you@example.com",
+    password: "Password",
+    passwordPlaceholder: "Enter your password",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
+    required: "Enter an email and password to continue.",
+    submit: "Sign in",
+    or: "or",
+    continueLocal: "Continue in local mode",
+  },
   audio: {
     play: "Play music",
     pause: "Pause music",

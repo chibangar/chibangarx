@@ -1,4 +1,23 @@
 export const pt = {
+  login: {
+    eyebrow: "O seu sistema, refinado",
+    hero: "Um Windows mais rápido e limpo começa aqui.",
+    heroDescription:
+      "Otimize o desempenho, elimine o que não precisa e reúna as ferramentas essenciais num só espaço.",
+    localOnly: "Acesso local — os dados não são enviados nem guardados",
+    title: "Bem-vindo de volta",
+    subtitle: "Introduza os seus dados ou continue diretamente em modo local.",
+    email: "Email",
+    emailPlaceholder: "nome@exemplo.com",
+    password: "Palavra-passe",
+    passwordPlaceholder: "Introduza a sua palavra-passe",
+    showPassword: "Mostrar palavra-passe",
+    hidePassword: "Ocultar palavra-passe",
+    required: "Introduza o email e a palavra-passe para continuar.",
+    submit: "Entrar",
+    or: "ou",
+    continueLocal: "Continuar em modo local",
+  },
   audio: {
     play: "Reproduzir música",
     pause: "Pausar música",

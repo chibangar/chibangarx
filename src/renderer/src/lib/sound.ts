@@ -11,7 +11,56 @@ function isSoundEnabled(): boolean {
   return localStorage.getItem("chibangarx:soundEnabled") !== "false"
 }
 
-function playTone(frequency: number, duration: number, type: OscillatorType = "sine", volume: number = 0.15): void {
+export function speakWelcome(): void {
+  if (!isSoundEnabled() || !("speechSynthesis" in window)) return
+
+  const speak = () => {
+    try {
+      const utterance = new SpeechSynthesisUtterance("Bem-vindo de novo")
+      utterance.lang = "pt-PT"
+      utterance.rate = 0.96
+      utterance.pitch = 1.08
+      utterance.volume = 0.82
+
+      const portugueseVoices = window.speechSynthesis
+        .getVoices()
+        .filter((voice) => voice.lang.toLowerCase().startsWith("pt"))
+      const preferredNames = /helia|maria|francisca|fernanda|feminina|female/i
+      utterance.voice =
+        portugueseVoices.find((voice) => preferredNames.test(voice.name)) ??
+        portugueseVoices.find((voice) => voice.lang.toLowerCase() === "pt-pt") ??
+        portugueseVoices[0] ??
+        null
+
+      window.speechSynthesis.speak(utterance)
+    } catch {
+      // Speech is an optional welcome enhancement and must never affect startup.
+    }
+  }
+
+  if (window.speechSynthesis.getVoices().length > 0) {
+    speak()
+    return
+  }
+
+  const timeout = window.setTimeout(() => {
+    window.speechSynthesis.removeEventListener("voiceschanged", handleVoicesChanged)
+    speak()
+  }, 1200)
+  const handleVoicesChanged = () => {
+    window.clearTimeout(timeout)
+    window.speechSynthesis.removeEventListener("voiceschanged", handleVoicesChanged)
+    speak()
+  }
+  window.speechSynthesis.addEventListener("voiceschanged", handleVoicesChanged)
+}
+
+function playTone(
+  frequency: number,
+  duration: number,
+  type: OscillatorType = "sine",
+  volume: number = 0.15,
+): void {
   if (!isSoundEnabled()) return
 
   const ctx = getAudioContext()
@@ -31,7 +80,12 @@ function playTone(frequency: number, duration: number, type: OscillatorType = "s
   oscillator.stop(ctx.currentTime + duration)
 }
 
-function playFrequencySweep(startFreq: number, endFreq: number, duration: number, volume: number = 0.15): void {
+function playFrequencySweep(
+  startFreq: number,
+  endFreq: number,
+  duration: number,
+  volume: number = 0.15,
+): void {
   if (!isSoundEnabled()) return
 
   const ctx = getAudioContext()

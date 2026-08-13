@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Routes, Route, Navigate } from "react-router-dom"
 import TitleBar from "./components/titlebar"
 import Nav from "./components/nav"
@@ -27,12 +27,13 @@ import Clips from "./pages/Clips"
 import Drivers from "./pages/Drivers"
 import GameClips from "./pages/GameClips"
 import Updates from "./pages/Updates"
-import { playSuccess, playError, playBoot } from "./lib/sound"
+import { playSuccess, playError, playBoot, speakWelcome } from "./lib/sound"
 import StartupSplash from "./components/StartupSplash"
 import galaxyBackground from "./assets/galaxy-background.jpg"
 
 function App() {
   const [startupComplete, setStartupComplete] = useState(false)
+  const welcomeSpoken = useRef(false)
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("sidebarCollapsed") === "true",
@@ -46,6 +47,13 @@ function App() {
     const timer = setTimeout(() => setStartupComplete(true), 1500)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (!startupComplete || welcomeSpoken.current) return
+    welcomeSpoken.current = true
+    const timer = setTimeout(speakWelcome, 250)
+    return () => clearTimeout(timer)
+  }, [startupComplete])
 
   useEffect(() => {
     const listeners = {

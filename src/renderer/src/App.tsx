@@ -29,6 +29,7 @@ import GameClips from "./pages/GameClips"
 import Updates from "./pages/Updates"
 import { playSuccess, playError, playBoot } from "./lib/sound"
 import LoginScreen from "./components/LoginScreen"
+import galaxyBackground from "./assets/galaxy-background.jpg"
 
 function App() {
   const [sessionStarted, setSessionStarted] = useState(false)
@@ -145,7 +146,17 @@ function App() {
   }, [])
 
   return (
-    <div className="flex flex-col h-screen bg-chibangarx-bg text-chibangarx-text overflow-hidden">
+    <div className="relative isolate flex h-screen flex-col overflow-hidden bg-chibangarx-bg text-chibangarx-text">
+      <img
+        src={galaxyBackground}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 h-full w-full object-cover object-center opacity-35"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 bg-chibangarx-bg/75"
+      />
       {theme === "space" && <StarField />}
       {sessionStarted && <FirstTime />}
       <ChangelogModal
@@ -169,7 +180,7 @@ function App() {
       ) : (
         <>
           <Nav collapsed={sidebarCollapsed} />
-          <div className="flex flex-1 pt-[50px] relative">
+          <div className="relative z-10 flex flex-1 pt-[50px]">
             <main
               className={`flex-1 p-6 rounded-tl-2xl border-t border-l border-chibangarx-border transition-all duration-300 ease-in-out ${sidebarCollapsed ? "ml-16" : "ml-52"}`}
             >

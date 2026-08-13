@@ -2,11 +2,17 @@ import { Tray, Menu, app, BrowserWindow, shell } from "electron"
 import path from "path"
 
 export function createTray(mainWindow: BrowserWindow): Tray {
-  const tray = new Tray(path.join(__dirname, "../../resources/chibangarx.ico"))
+  const iconPath = app.isPackaged
+    ? path.join(process.resourcesPath, "chibangarx.ico")
+    : path.join(__dirname, "../../resources/chibangarx.ico")
+  const tray = new Tray(iconPath)
 
   const contextMenu = Menu.buildFromTemplate([
     { label: "Abrir ChibangaRx", click: (): void => mainWindow.show() },
-    { label: "Releases", click: (): void => shell.openExternal("https://github.com/chibangar/chibangarx/releases") },
+    {
+      label: "Releases",
+      click: (): void => shell.openExternal("https://github.com/chibangar/chibangarx/releases"),
+    },
     { label: "Encerrar", click: (): void => app.quit() },
   ])
 

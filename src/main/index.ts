@@ -1,4 +1,12 @@
-import { app, shell, BrowserWindow, ipcMain, desktopCapturer, globalShortcut, session } from "electron"
+import {
+  app,
+  shell,
+  BrowserWindow,
+  ipcMain,
+  desktopCapturer,
+  globalShortcut,
+  session,
+} from "electron"
 import { promises as fs } from "fs"
 import path, { join } from "path"
 import log from "electron-log"
@@ -82,9 +90,12 @@ if (!gotTheLock) {
 let mainWindow: BrowserWindow | null = null
 
 function createWindow(): void {
+  const iconPath = app.isPackaged
+    ? path.join(process.resourcesPath, "chibangarx.ico")
+    : path.join(__dirname, "../../resources/chibangarx.ico")
   console.log("[ChibangaRx]: createWindow called")
   console.log("[ChibangaRx]: __dirname =", __dirname)
-   console.log("[ChibangaRx]: icon path =", path.join(__dirname, "../../resources/chibangarx.ico"))
+  console.log("[ChibangaRx]: icon path =", iconPath)
   console.log("[ChibangaRx]: preload path =", join(__dirname, "../preload/index.js"))
   console.log("[ChibangaRx]: renderer path =", join(__dirname, "../renderer/index.html"))
 
@@ -100,7 +111,7 @@ function createWindow(): void {
       frame: false,
       show: false,
       autoHideMenuBar: true,
-       icon: path.join(__dirname, "../../resources/chibangarx.ico"),
+      icon: iconPath,
       webPreferences: {
         preload: join(__dirname, "../preload/index.js"),
         devTools: app.isPackaged ? false : true,
@@ -112,7 +123,12 @@ function createWindow(): void {
     console.log("[ChibangaRx]: BrowserWindow created")
     setMainWindow(mainWindow)
     setSegraMainWindow(mainWindow)
-    createTray(mainWindow)
+    try {
+      createTray(mainWindow)
+    } catch (err) {
+      // The tray is optional; never leave the application running without a window.
+      console.error("[ChibangaRx]: Tray creation failed:", err)
+    }
   } catch (err: any) {
     console.error("[ChibangaRx]: BrowserWindow creation failed:", err)
     throw err
@@ -227,10 +243,13 @@ app
       return store.get("minimizeToTray") !== false
     })
 
-    ipcMain.handle("minimizeToTray:set", (_event: Electron.IpcMainInvokeEvent, enabled: boolean) => {
-      store.set("minimizeToTray", enabled)
-      return enabled
-    })
+    ipcMain.handle(
+      "minimizeToTray:set",
+      (_event: Electron.IpcMainInvokeEvent, enabled: boolean) => {
+        store.set("minimizeToTray", enabled)
+        return enabled
+      },
+    )
 
     ipcMain.handle("get-resources-path", () => {
       if (app.isPackaged) {

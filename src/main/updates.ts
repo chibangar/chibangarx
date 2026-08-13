@@ -58,6 +58,32 @@ interface ReleaseHistoryEntry {
 
 let historyCache: { data: ReleaseHistoryEntry[]; expiresAt: number } | null = null
 
+function hasInstallerAsset(release: any): boolean {
+  return !!release?.assets?.some((a: any) =>
+    typeof a.name === "string" &&
+    a.name.toLowerCase().endsWith(".exe") &&
+    a.name.toLowerCase().includes("setup"),
+  )
+}
+
+async function fetchLatestReleaseWithInstaller(): Promise<any> {
+  const response = await fetch(
+    "https://api.github.com/repos/chibangar/chibangarx/releases/latest",
+  )
+  if (!response.ok) throw new Error(`GitHub API returned ${response.status}`)
+  const latest = await response.json()
+  if (hasInstallerAsset(latest)) return latest
+
+  const listResponse = await fetch(
+    "https://api.github.com/repos/chibangar/chibangarx/releases?per_page=10",
+  )
+  if (!listResponse.ok) throw new Error(`GitHub API returned ${listResponse.status}`)
+  const releases = await listResponse.json()
+  const release = releases.find(hasInstallerAsset)
+  if (!release) throw new Error("No installer found in release assets")
+  return release
+}
+
 async function fetchReleaseHistory(): Promise<ReleaseHistoryEntry[]> {
   if (historyCache && Date.now() < historyCache.expiresAt) {
     return historyCache.data
@@ -275,11 +301,7 @@ export function initAutoUpdater(): void {
 
   ipcMain.handle("updater:latest-assets", async () => {
     try {
-      const response = await fetch(
-        "https://api.github.com/repos/chibangar/chibangarx/releases/latest",
-      )
-      if (!response.ok) throw new Error(`GitHub API returned ${response.status}`)
-      const release = await response.json()
+      const release = await fetchLatestReleaseWithInstaller()
       const assets = (release.assets || [])
         .filter((a: any) => a.name?.endsWith(".exe") || a.name?.endsWith(".zip"))
         .map((a: any) => ({
@@ -363,13 +385,10 @@ export function initAutoUpdater(): void {
 
     try {
       // Fetch release info from GitHub API
-      const response = await fetch("https://api.github.com/repos/chibangar/chibangarx/releases/latest")
-      if (!response.ok) throw new Error(`GitHub API returned ${response.status}`)
-
-      const release = await response.json()
+      const release = await fetchLatestReleaseWithInstaller()
       // Find the NSIS installer asset
       const asset = release.assets?.find((a: any) =>
-        a.name?.endsWith(".exe") && a.name?.includes("Setup")
+        a.name?.toLowerCase().endsWith(".exe") && a.name?.toLowerCase().includes("setup"),
       )
       if (!asset) throw new Error("No installer found in release assets")
 

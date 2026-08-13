@@ -1,6 +1,6 @@
 {
     "name":  "chibangarx",
-    "version":  "2.45.0",
+    "version":  "2.45.1",
     "description":  "ChibangaRx",
     "main":  "./out/main/index.js",
     "author":  "chibangar",

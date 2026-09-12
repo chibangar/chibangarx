@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import RootDiv from "@/components/rootdiv"
-import { Cpu, HardDrive, Zap, MemoryStick, Gpu } from "lucide-react"
+import { Cpu, HardDrive, Zap, MemoryStick, Gpu, CircuitBoard, Network, Monitor, BatteryCharging } from "lucide-react"
 import InfoCard from "@/components/infocard"
 import { invoke } from "@/lib/electron"
 import Button from "@/components/ui/button"
@@ -197,6 +197,8 @@ function Home() {
             items={[
               { label: t("home.model"), value: systemInfo?.cpu_model || t("home.unknown") },
               { label: t("home.cores"), value: `${systemInfo?.cpu_cores || "0"} ${t("home.cores").toLowerCase()}` },
+              { label: t("home.threads"), value: `${systemInfo?.cpu_threads || "0"}` },
+              { label: t("home.speed"), value: systemInfo?.cpu_speed || t("home.unknown") },
             ]}
           />
 
@@ -228,6 +230,8 @@ function Home() {
             items={[
               { label: t("home.totalMemory"), value: formatBytes(systemInfo?.memory_total) },
               { label: t("home.type"), value: systemInfo?.memory_type || t("home.unknown") },
+              { label: t("home.speed"), value: systemInfo?.memory_speed || t("home.unknown") },
+              { label: t("home.slots"), value: systemInfo?.memory_slots || t("home.unknown") },
             ]}
           />
 
@@ -240,6 +244,13 @@ function Home() {
             items={[
               { label: t("home.os"), value: systemInfo?.os || t("home.unknown") },
               { label: t("home.version"), value: systemInfo?.os_version || t("home.unknown") },
+              {
+                label: t("home.pcModel"),
+                value:
+                  systemInfo?.pc_vendor && systemInfo?.pc_vendor !== "Unknown"
+                    ? `${systemInfo.pc_vendor} ${systemInfo?.pc_model || ""}`.trim()
+                    : systemInfo?.pc_model || t("home.unknown"),
+              },
             ]}
           />
 
@@ -252,8 +263,74 @@ function Home() {
             items={[
               { label: t("home.primaryDisk"), value: systemInfo?.disk_model || t("home.loading") },
               { label: t("home.totalSpace"), value: systemInfo?.disk_size || t("home.loading") },
+              ...(Array.isArray(systemInfo?.disks) && systemInfo.disks.length > 1
+                ? [
+                    {
+                      label: t("home.allDisks"),
+                      value: `${systemInfo.disks.length} — ${systemInfo.disks.map((d) => `${d.model} (${d.size})`).join(" • ")}`,
+                    },
+                  ]
+                : []),
             ]}
           />
+
+          <InfoCard
+            icon={CircuitBoard}
+            iconBgColor="bg-yellow-500/10"
+            iconColor="text-yellow-500"
+            title={t("home.motherboard")}
+            subtitle={t("home.motherboardSubtitle")}
+            items={[
+              {
+                label: t("home.board"),
+                value:
+                  systemInfo?.board_vendor && systemInfo?.board_vendor !== "Unknown"
+                    ? `${systemInfo.board_vendor} ${systemInfo?.board_model || ""}`.trim()
+                    : systemInfo?.board_model || t("home.unknown"),
+              },
+              { label: t("home.bios"), value: systemInfo?.bios_version || t("home.unknown") },
+            ]}
+          />
+
+          <InfoCard
+            icon={Network}
+            iconBgColor="bg-sky-500/10"
+            iconColor="text-sky-500"
+            title={t("home.network")}
+            subtitle={t("home.networkSubtitle")}
+            items={[
+              { label: t("home.adapter"), value: systemInfo?.network_adapter || t("home.loading") },
+              { label: t("home.ip"), value: systemInfo?.network_ip || t("home.loading") },
+            ]}
+          />
+
+          <InfoCard
+            icon={Monitor}
+            iconBgColor="bg-indigo-500/10"
+            iconColor="text-indigo-500"
+            title={t("home.display")}
+            subtitle={t("home.displaySubtitle")}
+            items={[
+              { label: t("home.model"), value: systemInfo?.display_model || t("home.loading") },
+              { label: t("home.resolution"), value: systemInfo?.display_resolution || t("home.loading") },
+              ...(systemInfo?.display_count > 1
+                ? [{ label: t("home.displays"), value: `${systemInfo.display_count}` }]
+                : []),
+            ]}
+          />
+
+          {systemInfo?.hasBattery ? (
+            <InfoCard
+              icon={BatteryCharging}
+              iconBgColor="bg-lime-500/10"
+              iconColor="text-lime-500"
+              title={t("home.battery")}
+              subtitle={t("home.batterySubtitle")}
+              items={[
+                { label: t("home.charge"), value: systemInfo?.battery_percent || t("home.loading") },
+              ]}
+            />
+          ) : null}
 
           <InfoCard
             icon={Wrench}

@@ -37,14 +37,26 @@ async function getSystemInfo(): Promise<SystemInfo> {
   if (cached) return cached
 
   try {
-    const [cpuData, osInfo, memLayout] = await Promise.all([
+    const [cpuData, osInfo, memLayout, mem, pcSystem, baseboard, bios] = await Promise.all([
       si.cpu(),
       si.osInfo(),
       si.memLayout(),
+      si.mem(),
+      si.system(),
+      si.baseboard(),
+      si.bios(),
     ])
 
-    const totalMemory = os.totalmem()
-    const memoryType = (memLayout as any).length > 0 ? (memLayout as any)[0].type : "Unknown"
+    const totalMemory = os.totalmem() || (mem as any).total || 0
+    const sticks = Array.isArray(memLayout) ? (memLayout as any[]) : []
+    const memoryType = sticks.length > 0 ? sticks[0].type || "Unknown" : "Unknown"
+    const maxClock = sticks.reduce(
+      (max: number, s: any) => Math.max(max, s.clockSpeed || 0),
+      0,
+    )
+    const sticksSize = sticks.map((s: any) =>
+      s.size ? `${Math.round(s.size / 1024 / 1024 / 1024)} GB` : null,
+    )
 
     const versionScript = `(Get-ItemProperty -Path "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion").DisplayVersion`
     const versionPsResult = await executePowerShell(null, {
@@ -57,10 +69,21 @@ async function getSystemInfo(): Promise<SystemInfo> {
       cpu_model: (cpuData as any).brand,
       cpu_cores: (cpuData as any).physicalCores,
       cpu_threads: (cpuData as any).threads || (cpuData as any).physicalCores,
+      cpu_speed: (cpuData as any).speed ? `${(cpuData as any).speed} GHz` : "Unknown",
+      cpu_socket: (cpuData as any).socket || "Unknown",
+      cpu_vendor: (cpuData as any).manufacturer || "Unknown",
       memory_total: totalMemory,
       memory_type: memoryType,
+      memory_speed: maxClock ? `${maxClock} MHz` : "Unknown",
+      memory_slots:
+        sticks.length > 0 ? `${sticks.length} (${sticksSize.filter(Boolean).join(" + ")})` : "Unknown",
       os: osInfo.distro || "Windows",
       os_version: windowsVersion || "Unknown",
+      pc_vendor: (pcSystem as any).manufacturer || "Unknown",
+      pc_model: (pcSystem as any).model || "Unknown",
+      board_vendor: (baseboard as any).manufacturer || "Unknown",
+      board_model: (baseboard as any).model || "Unknown",
+      bios_version: (bios as any).version || (bios as any).releaseDate || "Unknown",
     }
 
     setImmediate(async () => {
@@ -105,14 +128,59 @@ async function getSystemInfo(): Promise<SystemInfo> {
           }
         }
 
+        const allDisks = ((diskLayout as any) || []).map((d: any) => ({
+          model: d.name || d.device || "Unknown disk",
+          size: d.size ? `${(d.size / 1024 / 1024 / 1024).toFixed(1)} GB` : "Unknown",
+          type: d.type || d.interfaceType || "Unknown",
+        }))
+
         mainWindow?.webContents.send("system-info-extra", {
           disk_model: primaryDisk?.name || primaryDisk?.device || "Unknown Storage",
           disk_size: cDrive?.size
             ? `${Math.round(cDrive.size / 1024 / 1024 / 1024).toFixed(1)} GB`
             : "Unknown",
+          disks: allDisks,
         })
       } catch (error) {
         console.error("Failed to fetch disk info:", error)
+      }
+
+      try {
+        const [graphicsData, netIfaces, battery] = await Promise.all([
+          si.graphics(),
+          si.networkInterfaces(),
+          si.battery(),
+        ])
+
+        const displays = ((graphicsData as any).displays || []) as any[]
+        const mainDisplay = displays.find((d) => d.main) || displays[0]
+        const candidates = (((netIfaces as any[]) || []).filter(
+          (n) => !n.internal && n.ip4,
+        ))
+        const isVirtualIface = (name: string): boolean =>
+          /vethernet|virtual|vmware|virtualbox|vpn|tun|tap|docker|hyper-v|bluetooth/i.test(name || "")
+        const primaryNet =
+          candidates.find((n) => !isVirtualIface(n.iface)) || candidates[0]
+
+        mainWindow?.webContents.send("system-info-extra", {
+          display_model: mainDisplay?.model || "Unknown display",
+          display_resolution:
+            mainDisplay?.resolutionX && mainDisplay?.resolutionY
+              ? `${mainDisplay.resolutionX}x${mainDisplay.resolutionY}`
+              : "Unknown",
+          display_count: displays.length,
+          network_adapter: primaryNet
+            ? `${primaryNet.iface}${primaryNet.type ? ` (${primaryNet.type})` : ""}`
+            : "Unknown",
+          network_ip: primaryNet?.ip4 || "Unknown",
+          hasBattery: !!(battery as any).hasBattery,
+          battery_percent:
+            (battery as any).hasBattery && (battery as any).percent != null
+              ? `${(battery as any).percent}%`
+              : "N/A",
+        })
+      } catch (error) {
+        console.error("Failed to fetch network/display/battery info:", error)
       }
     })
 

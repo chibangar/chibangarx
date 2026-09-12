@@ -12,6 +12,9 @@ export interface SystemInfo {
   cpu_model?: string
   cpu_cores?: number
   cpu_threads?: number
+  cpu_speed?: string
+  cpu_socket?: string
+  cpu_vendor?: string
   gpu_model?: string
   vram?: string
   hasGPU?: boolean
@@ -20,10 +23,25 @@ export interface SystemInfo {
   hasIntegratedGPU?: boolean
   memory_total?: number
   memory_type?: string
+  memory_speed?: string
+  memory_slots?: string
   os?: string
   os_version?: string
   disk_model?: string
   disk_size?: string
+  disks?: { model: string; size: string; type: string }[]
+  board_vendor?: string
+  board_model?: string
+  bios_version?: string
+  pc_vendor?: string
+  pc_model?: string
+  network_adapter?: string
+  network_ip?: string
+  display_model?: string
+  display_resolution?: string
+  display_count?: number
+  hasBattery?: boolean
+  battery_percent?: string
 }
 
 export interface Tweak {

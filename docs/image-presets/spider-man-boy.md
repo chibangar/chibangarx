@@ -1,0 +1,7 @@
+# Spider-Man Boy — NYC Rooftop (preset)
+
+Prompt pronto a colar num gerador com imagem de referência (Midjourney, DALL-E, Stable Diffusion, Firefly, etc.):
+
+> Use the reference image to preserve the boy's exact identity and recognizable appearance: same face, eyes, hairstyle, skin tone, age, height and body proportions. Transform only his clothing into a highly detailed classic red-and-blue Spider-Man superhero suit, child-sized and perfectly fitted to his body, with realistic web patterns, spider emblem on the chest, textured fabric and cinematic detail. Keep his face completely uncovered and clearly visible, no mask covering his head. The boy stands confidently on the rooftop of a tall skyscraper in New York City, heroic but natural pose, Manhattan skyline behind him, dramatic sunset, warm golden light reflecting from the buildings, subtle wind moving his hair, realistic shadows, cinematic depth of field, photorealistic skin, realistic fabric textures, blockbuster superhero movie cinematography, ultra-detailed, natural proportions, 8K cinematic realism, 16:9. No other people, no duplicate child, no distorted hands, no extra fingers, no text, no logos, preserve the exact facial identity from the reference photo.
+
+Ficheiro JSON: [`spider-man-boy.json`](./spider-man-boy.json)

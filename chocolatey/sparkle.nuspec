@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>chibangarx</id>
+    <version>2.22.0</version>
+    <packageSourceUrl>https://github.com/chibangar/chibangarx</packageSourceUrl>
+
+    <title>ChibangaRx</title>
+    <authors>chibangar</authors>
+    <owners>chibangar</owners>
+    <projectUrl>https://github.com/chibangar/chibangarx</projectUrl>
+    <projectSourceUrl>https://github.com/chibangar/chibangarx</projectSourceUrl>
+    <bugTrackerUrl>https://github.com/chibangar/chibangarx/issues</bugTrackerUrl>
+    <licenseUrl>https://github.com/chibangar/chibangarx/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>chibangarx tweak windows optimization</tags>
+    <summary>Windows debloat and optimization tool</summary>
+    <description>ChibangaRx is a modern Windows debloat and optimization tool that allows you to apply and manage various system tweaks and improvements.</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

@@ -1,0 +1,14 @@
+{
+  "title": "Disable Notifications",
+  "name": "disable-notifications",
+  "risk": "safe",
+  "category": ["Privacy", "Performance"],
+  "description": "Disables Windows toast notifications",
+  "deepDescription": "Disables all toast notifications to reduce distractions and potential performance impact from notifications popping up during gaming or work.",
+  "links": [
+    {
+      "name": "Winhance",
+      "url": "https://winhance.net"
+    }
+  ]
+}

@@ -1,0 +1,764 @@
+import { app, ipcMain, BrowserWindow, desktopCapturer, globalShortcut, Notification } from 'electron'
+import { promises as fs } from 'fs'
+import { exec } from 'child_process'
+import { promisify } from 'util'
+import path, { join } from 'path'
+import os from 'os'
+
+const execAsync = promisify(exec)
+
+let mainWindow: BrowserWindow | null = null
+
+interface GameListEntry {
+  name: string
+  executables: string[]
+  igdbId?: number | null
+  icon?: string
+}
+
+const KNOWN_GAMES: GameListEntry[] = [
+  { name: 'Counter-Strike 2', executables: ['cs2.exe'], igdbId: 22834 },
+  { name: 'Valorant', executables: ['VALORANT-Win64-Shipping.exe'], igdbId: 122940 },
+  { name: 'Fortnite', executables: ['FortniteClient-Win64-Shipping.exe'], igdbId: 19604 },
+  { name: 'League of Legends', executables: ['League of Legends.exe'], igdbId: 11526 },
+  { name: 'Apex Legends', executables: ['r5apex.exe'], igdbId: 118932 },
+  { name: 'Overwatch 2', executables: ['Overwatch.exe'], igdbId: 10341 },
+  { name: 'Call of Duty: Warzone', executables: ['cod.exe', 'Warzone.exe'], igdbId: 130583 },
+  { name: 'Call of Duty: Modern Warfare II', executables: ['cod.exe'], igdbId: 134593 },
+  { name: 'GTA V', executables: ['GTA5.exe', 'GTA5_Enhanced.exe'], igdbId: 1020 },
+  { name: 'Red Dead Redemption 2', executables: ['RDR2.exe'], igdbId: 183813 },
+  { name: 'Minecraft', executables: ['Minecraft.Windows.exe'], igdbId: 12128 },
+  { name: 'PUBG: Battlegrounds', executables: ['TslGame.exe'], igdbId: 16918 },
+  { name: 'Rocket League', executables: ['RocketLeague.exe'], igdbId: 21987 },
+  { name: 'Dota 2', executables: ['dota2.exe'], igdbId: 1475 },
+  { name: 'Rust', executables: ['RustClient.exe'], igdbId: 22838 },
+  { name: 'Rainbow Six Siege', executables: ['RainbowSix.exe'], igdbId: 11283 },
+  { name: 'Hogwarts Legacy', executables: ['HogwartsLegacy.exe'], igdbId: 85744 },
+  { name: 'Elden Ring', executables: ['eldenring.exe'], igdbId: 107574 },
+  { name: 'Cyberpunk 2077', executables: ['Cypunk2077.exe'], igdbId: 4797 },
+  { name: 'Baldur\'s Gate 3', executables: ['bg3.exe'], igdbId: 70644 },
+  { name: 'Palworld', executables: ['Palworld-Win64-Shipping.exe'], igdbId: 195930 },
+  { name: 'The Finals', executables: ['Discovery.exe'], igdbId: 173268 },
+  { name: 'War Thunder', executables: ['aces.exe'], igdbId: 10500 },
+  { name: 'World of Warcraft', executables: ['Wow.exe'], igdbId: 2984 },
+  { name: 'StarCraft II', executables: ['SC2Switcher.exe', 'SC2_x64.exe'], igdbId: 2151 },
+  { name: 'Hearthstone', executables: ['Hearthstone.exe'], igdbId: 5447 },
+  { name: 'Diablo IV', executables: ['DiabloIV.exe'], igdbId: 127255 },
+  { name: 'Destiny 2', executables: ['destiny2.exe'], igdbId: 32769 },
+  { name: 'Tom Clancy\'s The Division 2', executables: ['TheDivision2.exe'], igdbId: 34761 },
+  { name: ' Battlefield 2042', executables: ['BF2042.exe'], igdbId: 130614 },
+  { name: 'Fall Guys', executables: ['FallGuys_client.exe'], igdbId: 101714 },
+  { name: 'Genshin Impact', executables: ['GenshinImpact.exe'], igdbId: 116044 },
+  { name: 'Naraka: Bladepoint', executables: ['NarakaBladepoint.exe'], igdbId: 139355 },
+  { name: 'Dead by Daylight', executables: ['DeadByDaylight-Win64-Shipping.exe'], igdbId: 63948 },
+  { name: 'FC 25', executables: ['FC25.exe', 'FIFA25.exe'], igdbId: 189800 },
+  { name: 'EA Sports FC 24', executables: ['FC24.exe', 'FIFA24.exe'], igdbId: 182857 },
+  { name: 'Sea of Thieves', executables: ['SoTGame.exe'], igdbId: 50361 },
+  { name: 'Forza Horizon 5', executables: ['ForzaHorizon5.exe'], igdbId: 81764 },
+  { name: 'Call of Duty: Black Ops 6', executables: ['cod.exe'], igdbId: 241525 },
+]
+
+let gameDetectionTimer: NodeJS.Timeout | null = null
+
+async function detectRunningGames(): Promise<GameListEntry[]> {
+  try {
+    const { stdout } = await execAsync('tasklist /FO CSV /NH', { timeout: 5000 })
+    const lines = stdout.split('\n').filter(Boolean)
+    const runningExecutables = new Set<string>()
+
+    for (const line of lines) {
+      const match = line.match(/^"([^"]+)"/)
+      if (match) {
+        runningExecutables.add(match[1].toLowerCase())
+      }
+    }
+
+    const detected: GameListEntry[] = []
+    for (const game of KNOWN_GAMES) {
+      const found = game.executables.some((exe) => runningExecutables.has(exe.toLowerCase()))
+      if (found) {
+        detected.push(game)
+      }
+    }
+
+    return detected
+  } catch (err) {
+    console.error('[Segra] Game detection error:', err)
+    return []
+  }
+}
+
+function startGameDetection(intervalMs: number = 5000): void {
+  if (gameDetectionTimer) clearInterval(gameDetectionTimer)
+
+  const check = async () => {
+    const games = await detectRunningGames()
+    sendToRenderer('segra:state-update', { method: 'GameList', content: games })
+  }
+
+  // Initial check after 2 seconds
+  setTimeout(check, 2000)
+  gameDetectionTimer = setInterval(check, intervalMs)
+}
+
+function stopGameDetection(): void {
+  if (gameDetectionTimer) {
+    clearInterval(gameDetectionTimer)
+    gameDetectionTimer = null
+  }
+}
+
+interface SegraContent {
+  id: string
+  type: string
+  title: string
+  game: string
+  bookmarks: any[]
+  fileName: string
+  filePath: string
+  fileSize: string
+  fileSizeKb: number
+  duration: string
+  createdAt: string
+  isImported: boolean
+  compressed: boolean
+}
+
+interface RecordingState {
+  startTime: Date | null
+  endTime: Date | null
+  game: string
+  isUsingGameHook: boolean
+}
+
+let isRecording = false
+let recordingStartTime: Date | null = null
+let currentRecordingPath: string | null = null
+let currentReplayHotkey = 'F8'
+
+function normalizeHotkey(hotkey: string): string | null {
+  const trimmed = (hotkey || '').trim()
+  if (!trimmed) return null
+  // Electron globalShortcut format: e.g. "F8", "CommandOrControl+Shift+F10", "Alt+F10"
+  // Accept single function keys F1-F24 directly, otherwise pass through.
+  if (/^F\d{1,2}$/i.test(trimmed)) return trimmed.toUpperCase()
+  return trimmed
+}
+
+function registerReplayHotkey(hotkey: string): boolean {
+  const normalized = normalizeHotkey(hotkey)
+  if (!normalized) return false
+  try {
+    if (currentReplayHotkey && currentReplayHotkey !== normalized) {
+      try { globalShortcut.unregister(currentReplayHotkey) } catch { /* ignore */ }
+    }
+    // Avoid double-registering the legacy shortcut handled in index.ts
+    if (globalShortcut.isRegistered(normalized)) return true
+    const ok = globalShortcut.register(normalized, () => {
+      sendToRenderer('segra:save-replay-buffer', { source: 'hotkey', hotkey: normalized })
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('clips:save-request')
+      }
+    })
+    if (ok) currentReplayHotkey = normalized
+    return ok
+  } catch (err) {
+    console.error('[Segra] Failed to register replay hotkey:', err)
+    return false
+  }
+}
+
+function getContentFolder(): string {
+  return join(app.getPath('videos'), 'ChibangaRx')
+}
+
+function getCacheFolder(): string {
+  return join(app.getPath('userData'), 'cache')
+}
+
+function getSettingsPath(): string {
+  return join(app.getPath('userData'), 'segra-settings.json')
+}
+
+function getStatePath(): string {
+  return join(app.getPath('userData'), 'segra-state.json')
+}
+
+async function ensureFolders(): Promise<void> {
+  await fs.mkdir(getContentFolder(), { recursive: true })
+  await fs.mkdir(getCacheFolder(), { recursive: true })
+  await fs.mkdir(join(getContentFolder(), 'Sessions'), { recursive: true })
+  await fs.mkdir(join(getContentFolder(), 'Clips'), { recursive: true })
+  await fs.mkdir(join(getContentFolder(), 'Highlights'), { recursive: true })
+  await fs.mkdir(join(getContentFolder(), 'Replay Buffer'), { recursive: true })
+}
+
+async function loadContent(): Promise<SegraContent[]> {
+  const content: SegraContent[] = []
+  const contentFolder = getContentFolder()
+
+  const types = ['Sessions', 'Clips', 'Highlights', 'Replay Buffer']
+  const typeMap: Record<string, string> = {
+    'Sessions': 'Session',
+    'Clips': 'Clip',
+    'Highlights': 'Highlight',
+    'Replay Buffer': 'Buffer',
+  }
+
+  for (const folder of types) {
+    const folderPath = join(contentFolder, folder)
+    try {
+      const files = await fs.readdir(folderPath)
+      for (const file of files) {
+        if (!file.endsWith('.webm') && !file.endsWith('.mp4') && !file.endsWith('.mkv')) continue
+        const filePath = join(folderPath, file)
+        try {
+          const stat = await fs.stat(filePath)
+          const id = Buffer.from(filePath).toString('base64url')
+          content.push({
+            id,
+            type: typeMap[folder],
+            title: file.replace(/\.[^/.]+$/, ''),
+            game: 'Unknown',
+            bookmarks: [],
+            fileName: file,
+            filePath,
+            fileSize: formatFileSize(stat.size),
+            fileSizeKb: Math.round(stat.size / 1024),
+            duration: '0:00',
+            createdAt: stat.birthtime.toISOString(),
+            isImported: false,
+            compressed: false,
+          })
+        } catch { /* skip unreadable files */ }
+      }
+    } catch { /* folder doesn't exist */ }
+  }
+
+  return content
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
+}
+
+function sendToRenderer(channel: string, data: any): void {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send(channel, data)
+  }
+}
+
+function pushState(): void {
+  sendToRenderer('segra:state-update', { method: 'State', content: {} })
+}
+
+async function loadSettings(): Promise<Record<string, any>> {
+  try {
+    const data = await fs.readFile(getSettingsPath(), 'utf-8')
+    return JSON.parse(data)
+  } catch {
+    return {}
+  }
+}
+
+async function saveSettings(settings: Record<string, any>): Promise<void> {
+  await fs.writeFile(getSettingsPath(), JSON.stringify(settings, null, 2))
+}
+
+export function setSegraMainWindow(window: BrowserWindow): void {
+  mainWindow = window
+}
+
+export function setupSegraHandlers(): void {
+  console.log('[Segra] Setting up IPC handlers...')
+
+  ensureFolders().catch(console.error)
+
+  // Start game detection
+  startGameDetection(5000)
+
+  // Medal-style: global hotkey for instant replay (default F8)
+  loadSettings()
+    .then((saved) => {
+      const initialHotkey = typeof saved?.replayHotkey === 'string' ? saved.replayHotkey : 'F8'
+      registerReplayHotkey(initialHotkey)
+    })
+    .catch(() => registerReplayHotkey('F8'))
+
+  ipcMain.handle('segra:SetReplayHotkey', async (_event, payload: { hotkey?: string }) => {
+    const hotkey = payload?.hotkey || 'F8'
+    const ok = registerReplayHotkey(hotkey)
+    if (ok) {
+      const current = await loadSettings()
+      await saveSettings({ ...current, replayHotkey: hotkey.toUpperCase() })
+    }
+    return { success: ok, hotkey: currentReplayHotkey }
+  })
+
+  ipcMain.handle(
+    'segra:SaveReplayClip',
+    async (_event, payload: { data: ArrayBuffer; game?: string; durationSec?: number }) => {
+      try {
+        await ensureFolders()
+        const settings = await loadSettings()
+        const useBufferFolder = settings.replaySaveToBufferFolder === true
+        const targetDir = join(
+          getContentFolder(),
+          useBufferFolder ? 'Replay Buffer' : 'Clips',
+        )
+        await fs.mkdir(targetDir, { recursive: true })
+        const game = (payload?.game || 'Replay').replace(/[\\/:*?"<>|]/g, '').slice(0, 60) || 'Replay'
+        const timestamp = new Date().toISOString().replace(/[.:]/g, '-')
+        const duration = payload?.durationSec ? `-${payload.durationSec}s` : ''
+        const fileName = `${game} Replay${duration} ${timestamp}.webm`
+        const filePath = join(targetDir, fileName)
+        await fs.writeFile(filePath, Buffer.from(payload.data))
+
+        const content = await loadContent()
+        sendToRenderer('segra:state-update', { method: 'State', content: { content } })
+
+        // Medal-style native notification
+        try {
+          if (settings.replayNotifications !== false && Notification.isSupported()) {
+            const n = new Notification({
+              title: 'Clip guardado!',
+              body: `${fileName} — prime para abrir a pasta.`,
+            })
+            n.on('click', async () => {
+              const { shell } = await import('electron')
+              shell.showItemInFolder(filePath)
+            })
+            n.show()
+          }
+        } catch { /* notifications are best-effort */ }
+
+        return { success: true, filePath, fileName }
+      } catch (err: any) {
+        console.error('[Segra] SaveReplayClip failed:', err)
+        return { success: false, error: err?.message || 'save failed' }
+      }
+    },
+  )
+
+  ipcMain.handle('segra:get-state', async () => {
+    const content = await loadContent()
+    const cacheFolder = getCacheFolder()
+    const contentFolder = getContentFolder()
+    const gameList = await detectRunningGames()
+
+    let currentFolderSizeGb = 0
+    try {
+      const files = await fs.readdir(contentFolder, { recursive: true, withFileTypes: true })
+      for (const file of files) {
+        if (file.isFile()) {
+          try {
+            const stat = await fs.stat(join(file.parentPath ?? file.path, file.name))
+            currentFolderSizeGb += stat.size
+          } catch { /* skip */ }
+        }
+      }
+    } catch { /* ignore */ }
+
+    return {
+      gpuVendor: 'Unknown',
+      recording: isRecording && recordingStartTime
+        ? { startTime: recordingStartTime, endTime: null, game: 'Unknown', isUsingGameHook: false }
+        : undefined,
+      preRecording: undefined,
+      hasLoadedObs: true,
+      content,
+      inputDevices: [],
+      outputDevices: [],
+      displays: [],
+      codecs: [],
+      availableOBSVersions: [],
+      isCheckingForUpdates: false,
+      gameList,
+      maxDisplayHeight: 1080,
+      currentFolderSizeGb: Math.round(currentFolderSizeGb / (1024 * 1024 * 1024) * 100) / 100,
+      recordingDriveUsedGb: null,
+      recordingDriveFreeGb: null,
+      cacheFolder,
+    }
+  })
+
+  ipcMain.handle('segra:get-settings', async () => {
+    const saved = await loadSettings()
+    return {
+      resolution: '1080p',
+      frameRate: 60,
+      stretch4By3: false,
+      enableHdr: false,
+      rateControl: 'VBR',
+      crfValue: 23,
+      cqLevel: 20,
+      bitrate: 50,
+      minBitrate: 35,
+      maxBitrate: 70,
+      encoder: 'gpu',
+      codec: null,
+      storageLimit: 100,
+      contentFolder: getContentFolder(),
+      cacheFolder: getCacheFolder(),
+      inputDevices: [],
+      outputDevices: [],
+      forceMonoInputSources: false,
+      inputNoiseSuppression: true,
+      selectedDisplay: null,
+      displayCaptureMethod: 'Auto',
+      selectedOBSVersion: null,
+      enableAi: true,
+      autoGenerateHighlights: true,
+      runOnStartup: false,
+      startupWindowMode: 'Minimized',
+      closeButtonAction: 'Minimize',
+      receiveBetaUpdates: false,
+      airplaneMode: false,
+      recordingMode: 'Hybrid',
+      replayBufferDuration: 30,
+      replayBufferMaxSize: 1000,
+      replayHotkey: 'F8',
+      replayAutoBuffer: false,
+      replayNotifications: true,
+      replaySound: true,
+      replaySaveToBufferFolder: false,
+      highlightPaddingBefore: 4,
+      highlightPaddingAfter: 4,
+      clipClearSegmentsAfterCreatingClip: false,
+      clipShowInBrowserAfterUpload: false,
+      clipEncoder: 'cpu',
+      clipQualityCpu: 23,
+      clipQualityGpu: 23,
+      clipCodec: 'h264',
+      clipFps: 60,
+      clipAudioQuality: '128k',
+      clipPreset: 'veryfast',
+      clipKeepSeparateAudioTracks: false,
+      soundEffectsVolume: 1,
+      showNewBadgeOnVideos: false,
+      showGameBackground: true,
+      showAudioWaveformInTimeline: true,
+      enableSeparateAudioTracks: false,
+      audioOutputMode: 'All',
+      videoQualityPreset: 'high',
+      clipQualityPreset: 'standard',
+      confirmBeforeDeleting: false,
+      removeOriginalAfterCompression: false,
+      discardSessionsWithoutBookmarks: false,
+      disableWindowsGameMode: false,
+      menuItems: [
+        { id: 'Full Sessions', visible: true },
+        { id: 'Replay Buffer', visible: true },
+        { id: 'Clips', visible: true },
+        { id: 'Highlights', visible: true },
+        { id: 'Settings', visible: true },
+      ],
+      defaultMenuItem: 'Full Sessions',
+      keybindings: [],
+      games: [],
+      gameIntegrations: {},
+      ...saved,
+    }
+  })
+
+  ipcMain.handle('segra:UpdateSettings', async (_event, payload: Record<string, any>) => {
+    const current = await loadSettings()
+    const updated = { ...current, ...payload }
+    await saveSettings(updated)
+    sendToRenderer('segra:state-update', { method: 'Settings', content: updated })
+  })
+
+  ipcMain.handle('segra:StartRecording', async (_event, payload?: { game?: string }) => {
+    if (isRecording) return { success: false, error: 'Already recording' }
+
+    isRecording = true
+    recordingStartTime = new Date()
+
+    // Auto-detect game if not specified
+    let game = payload?.game || 'Unknown'
+    if (game === 'Unknown') {
+      const detectedGames = await detectRunningGames()
+      if (detectedGames.length > 0) {
+        game = detectedGames[0].name
+      }
+    }
+
+    const timestamp = recordingStartTime.toISOString().replace(/[.:]/g, '-')
+    const fileName = `${game} ${timestamp}.webm`
+    currentRecordingPath = join(getContentFolder(), 'Sessions', fileName)
+
+    await ensureFolders()
+
+    sendToRenderer('segra:state-update', {
+      method: 'State',
+      content: {
+        recording: {
+          startTime: recordingStartTime,
+          endTime: null,
+          game,
+          isUsingGameHook: false,
+        },
+      },
+    })
+
+    console.log('[Segra] Recording started:', currentRecordingPath)
+    return { success: true }
+  })
+
+  ipcMain.handle('segra:StopRecording', async () => {
+    if (!isRecording) return { success: false, error: 'Not recording' }
+
+    isRecording = false
+    const endTime = new Date()
+
+    sendToRenderer('segra:state-update', {
+      method: 'State',
+      content: {
+        recording: {
+          startTime: recordingStartTime,
+          endTime,
+          game: 'Unknown',
+          isUsingGameHook: false,
+        },
+      },
+    })
+
+    // Clear recording state after a short delay so the UI can show the finishing state
+    setTimeout(() => {
+      sendToRenderer('segra:state-update', {
+        method: 'State',
+        content: { recording: undefined },
+      })
+      // Refresh content list
+      loadContent().then((content) => {
+        sendToRenderer('segra:state-update', { method: 'State', content: { content } })
+      })
+    }, 2000)
+
+    console.log('[Segra] Recording stopped')
+    recordingStartTime = null
+    return { success: true }
+  })
+
+  ipcMain.handle('segra:CreateClip', async (_event, payload: { contentId: string; segments: any[]; title?: string }) => {
+    console.log('[Segra] CreateClip:', payload.contentId, 'segments:', payload.segments?.length)
+    const id = Date.now().toString()
+    sendToRenderer('segra:state-update', {
+      method: 'ClipProgress',
+      content: { id, progress: 0, segments: payload.segments || [], error: undefined },
+    })
+
+    // Simulate clip creation progress
+    for (let p = 0; p <= 100; p += 10) {
+      await new Promise((r) => setTimeout(r, 100))
+      sendToRenderer('segra:state-update', {
+        method: 'ClipProgress',
+        content: { id, progress: p, segments: payload.segments || [] },
+      })
+    }
+
+    return { success: true, id }
+  })
+
+  ipcMain.handle('segra:CreateHighlight', async (_event, payload: { contentId: string; title?: string }) => {
+    console.log('[Segra] CreateHighlight:', payload.contentId)
+    return { success: true }
+  })
+
+  ipcMain.handle('segra:CreateBookmark', async (_event, payload: { contentId: string; bookmark: any }) => {
+    console.log('[Segra] CreateBookmark:', payload.contentId, payload.bookmark)
+    return { success: true }
+  })
+
+  ipcMain.handle('segra:DeleteBookmark', async (_event, payload: { contentId: string; bookmarkId: number }) => {
+    console.log('[Segra] DeleteBookmark:', payload.contentId, payload.bookmarkId)
+    return { success: true }
+  })
+
+  ipcMain.handle('segra:DeleteContent', async (_event, payload: { id: string }) => {
+    try {
+      const filePath = Buffer.from(payload.id, 'base64url').toString('utf-8')
+      await fs.unlink(filePath)
+      console.log('[Segra] Deleted content:', filePath)
+      return { success: true }
+    } catch (err: any) {
+      console.error('[Segra] DeleteContent failed:', err)
+      return { success: false, error: err.message }
+    }
+  })
+
+  ipcMain.handle('segra:DeleteMultipleContent', async (_event, payload: { ids: string[] }) => {
+    const results = []
+    for (const id of payload.ids) {
+      try {
+        const filePath = Buffer.from(id, 'base64url').toString('utf-8')
+        await fs.unlink(filePath)
+        results.push({ id, success: true })
+      } catch (err: any) {
+        results.push({ id, success: false, error: err.message })
+      }
+    }
+    return results
+  })
+
+  ipcMain.handle('segra:RenameContent', async (_event, payload: { id: string; newTitle: string }) => {
+    try {
+      const oldPath = Buffer.from(payload.id, 'base64url').toString('utf-8')
+      const dir = path.dirname(oldPath)
+      const ext = path.extname(oldPath)
+      const newPath = join(dir, `${payload.newTitle}${ext}`)
+      await fs.rename(oldPath, newPath)
+      console.log('[Segra] Renamed:', oldPath, '->', newPath)
+      return { success: true }
+    } catch (err: any) {
+      console.error('[Segra] RenameContent failed:', err)
+      return { success: false, error: err.message }
+    }
+  })
+
+  ipcMain.handle('segra:ImportFile', async (_event, payload?: { type?: string }) => {
+    const { dialog } = await import('electron')
+    if (!mainWindow) return { success: false, error: 'No window' }
+
+    const result = await dialog.showOpenDialog(mainWindow, {
+      title: 'Import Video',
+      filters: [
+        { name: 'Video Files', extensions: ['webm', 'mp4', 'mkv', 'avi', 'mov'] },
+      ],
+      properties: ['openFile', 'multiSelections'],
+    })
+
+    if (result.canceled || !result.filePaths.length) return { success: false, error: 'Cancelled' }
+
+    const type = payload?.type || 'Session'
+    const folderMap: Record<string, string> = {
+      Session: 'Sessions',
+      Clip: 'Clips',
+      Highlight: 'Highlights',
+      Buffer: 'Replay Buffer',
+    }
+    const targetFolder = join(getContentFolder(), folderMap[type] || 'Sessions')
+    await fs.mkdir(targetFolder, { recursive: true })
+
+    const imported = []
+    for (const filePath of result.filePaths) {
+      const fileName = path.basename(filePath)
+      const destPath = join(targetFolder, fileName)
+      try {
+        await fs.copyFile(filePath, destPath)
+        imported.push({ success: true, path: destPath })
+        console.log('[Segra] Imported:', filePath, '->', destPath)
+      } catch (err: any) {
+        imported.push({ success: false, error: err.message })
+      }
+    }
+
+    // Refresh content list
+    const content = await loadContent()
+    sendToRenderer('segra:state-update', { method: 'State', content: { content } })
+
+    return { success: true, imported }
+  })
+
+  ipcMain.handle('segra:CreateAiClip', async (_event, payload: { contentId: string }) => {
+    console.log('[Segra] CreateAiClip:', payload.contentId)
+    const id = `ai-${Date.now()}`
+
+    // Simulate AI processing
+    for (let p = 0; p <= 100; p += 5) {
+      await new Promise((r) => setTimeout(r, 200))
+      sendToRenderer('segra:state-update', {
+        method: 'AiProgress',
+        content: {
+          id,
+          progress: p,
+          status: p >= 100 ? 'done' : 'processing',
+          message: p >= 100 ? 'Complete' : `Processing... ${p}%`,
+          content: { id: payload.contentId },
+        },
+      })
+    }
+
+    return { success: true, id }
+  })
+
+  ipcMain.handle('segra:CancelClip', async (_event, payload: { id: number }) => {
+    console.log('[Segra] CancelClip:', payload.id)
+    return { success: true }
+  })
+
+  ipcMain.handle('segra:CreateAutoClip', async (_event, payload: { duration?: number }) => {
+    const duration = payload?.duration || 30
+    console.log('[Segra] CreateAutoClip: last', duration, 'seconds')
+    const id = `autoclip-${Date.now()}`
+    const timestamp = new Date().toISOString().replace(/[.:]/g, '-')
+    const fileName = `AutoClip ${timestamp}.webm`
+    const filePath = join(getContentFolder(), 'Clips', fileName)
+
+    await ensureFolders()
+
+    sendToRenderer('segra:state-update', {
+      method: 'ClipProgress',
+      content: { id, progress: 0, segments: [], error: undefined },
+    })
+
+    // Simulate autoclip creation (in real implementation, this would use ffmpeg to trim the recording)
+    for (let p = 0; p <= 100; p += 20) {
+      await new Promise((r) => setTimeout(r, 150))
+      sendToRenderer('segra:state-update', {
+        method: 'ClipProgress',
+        content: { id, progress: p, segments: [] },
+      })
+    }
+
+    // Refresh content list
+    const content = await loadContent()
+    sendToRenderer('segra:state-update', { method: 'State', content: { content } })
+
+    return { success: true, id, filePath }
+  })
+
+  // Get available capture sources for recording
+  ipcMain.handle('segra:get-sources', async () => {
+    const sources = await desktopCapturer.getSources({
+      types: ['window', 'screen'],
+      thumbnailSize: { width: 320, height: 180 },
+    })
+    return sources.map((source) => ({
+      id: source.id,
+      name: source.name,
+      thumbnail: source.thumbnail.toDataURL(),
+    }))
+  })
+
+  // Open directory dialog
+  ipcMain.handle('dialog:openDirectory', async () => {
+    if (!mainWindow) return { canceled: true, filePaths: [] }
+    const result = await mainWindow.webContents.session.dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    })
+    return result
+  })
+
+  // Get app version
+  ipcMain.handle('app:getVersion', () => {
+    return app.getVersion()
+  })
+
+  // Open log file in default editor
+  ipcMain.handle('openLogFile', async () => {
+    const logPath = join(app.getPath('userData'), 'logs', 'main.log')
+    try {
+      await fs.access(logPath)
+      const { shell } = await import('electron')
+      shell.openPath(logPath)
+    } catch {
+      console.log('[Segra] Log file not found:', logPath)
+    }
+  })
+
+  console.log('[Segra] IPC handlers registered')
+}

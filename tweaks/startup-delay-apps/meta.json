@@ -1,0 +1,14 @@
+{
+  "title": "Startup Delay Apps",
+  "name": "startup-delay-apps",
+  "risk": "safe",
+  "category": ["General", "Performance"],
+  "description": "Delays startup applications to improve boot performance",
+  "deepDescription": "Adds a 2-minute delay before launching startup applications, allowing the system to finish booting first for improved startup performance.",
+  "links": [
+    {
+      "name": "Winhance",
+      "url": "https://winhance.net"
+    }
+  ]
+}

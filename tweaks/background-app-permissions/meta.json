@@ -1,0 +1,14 @@
+{
+  "title": "Background App Permissions",
+  "name": "background-app-permissions",
+  "risk": "safe",
+  "category": ["Privacy", "Performance"],
+  "description": "Prevents apps from running in the background",
+  "deepDescription": "Forces background apps to be denied, preventing unnecessary resource consumption from apps running when not in use.",
+  "links": [
+    {
+      "name": "Winhance",
+      "url": "https://winhance.net"
+    }
+  ]
+}

@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { PreRecording, Recording, GameSetting } from '../models/types';
-import { Gamepad2, Monitor, Ellipsis, Ban } from 'lucide-react';
+import { Gamepad2, Monitor, Ban } from 'lucide-react';
 import { useSettings, useSettingsUpdater } from '../context/SettingsContext';
 import { useAppState } from '../context/AppStateContext';
 import { sendMessageToBackend } from '../utils/MessageUtils';
-import Button from './Button';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 

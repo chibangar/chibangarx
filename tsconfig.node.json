@@ -9,11 +9,10 @@
   "compilerOptions": {
     "composite": true,
     "types": ["electron-vite/node"],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/renderer/src/*"],
-      "@/types/*": ["src/types/*"],
-      "@main/*": ["src/main/*"]
+      "@/*": ["./src/renderer/src/*"],
+      "@/types/*": ["./src/types/*"],
+      "@main/*": ["./src/main/*"]
     },
     "strict": true,
     "moduleResolution": "bundler",

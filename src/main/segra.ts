@@ -3,7 +3,6 @@ import { promises as fs } from 'fs'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import path, { join } from 'path'
-import os from 'os'
 
 const execAsync = promisify(exec)
 
@@ -101,13 +100,6 @@ function startGameDetection(intervalMs: number = 5000): void {
   gameDetectionTimer = setInterval(check, intervalMs)
 }
 
-function stopGameDetection(): void {
-  if (gameDetectionTimer) {
-    clearInterval(gameDetectionTimer)
-    gameDetectionTimer = null
-  }
-}
-
 interface SegraContent {
   id: string
   type: string
@@ -124,13 +116,6 @@ interface SegraContent {
   compressed: boolean
 }
 
-interface RecordingState {
-  startTime: Date | null
-  endTime: Date | null
-  game: string
-  isUsingGameHook: boolean
-}
-
 let isRecording = false
 let recordingStartTime: Date | null = null
 let currentRecordingPath: string | null = null
@@ -145,10 +130,6 @@ function getCacheFolder(): string {
 
 function getSettingsPath(): string {
   return join(app.getPath('userData'), 'segra-settings.json')
-}
-
-function getStatePath(): string {
-  return join(app.getPath('userData'), 'segra-state.json')
 }
 
 async function ensureFolders(): Promise<void> {
@@ -218,10 +199,6 @@ function sendToRenderer(channel: string, data: any): void {
   }
 }
 
-function pushState(): void {
-  sendToRenderer('segra:state-update', { method: 'State', content: {} })
-}
-
 async function loadSettings(): Promise<Record<string, any>> {
   try {
     const data = await fs.readFile(getSettingsPath(), 'utf-8')
@@ -259,7 +236,7 @@ export function setupSegraHandlers(): void {
       for (const file of files) {
         if (file.isFile()) {
           try {
-            const stat = await fs.stat(join(file.parentPath ?? file.path, file.name))
+            const stat = await fs.stat(join(file.parentPath, file.name))
             currentFolderSizeGb += stat.size
           } catch { /* skip */ }
         }
@@ -490,7 +467,7 @@ export function setupSegraHandlers(): void {
   })
 
   ipcMain.handle('segra:DeleteMultipleContent', async (_event, payload: { ids: string[] }) => {
-    const results = []
+    const results: { id: string; success: boolean; error?: string }[] = []
     for (const id of payload.ids) {
       try {
         const filePath = Buffer.from(id, 'base64url').toString('utf-8')
@@ -542,7 +519,7 @@ export function setupSegraHandlers(): void {
     const targetFolder = join(getContentFolder(), folderMap[type] || 'Sessions')
     await fs.mkdir(targetFolder, { recursive: true })
 
-    const imported = []
+    const imported: { success: boolean; path?: string; error?: string }[] = []
     for (const filePath of result.filePaths) {
       const fileName = path.basename(filePath)
       const destPath = join(targetFolder, fileName)
@@ -636,7 +613,8 @@ export function setupSegraHandlers(): void {
   // Open directory dialog
   ipcMain.handle('dialog:openDirectory', async () => {
     if (!mainWindow) return { canceled: true, filePaths: [] }
-    const result = await mainWindow.webContents.session.dialog.showOpenDialog(mainWindow, {
+    const { dialog } = await import('electron')
+    const result = await dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory'],
     })
     return result

@@ -7,7 +7,7 @@ export default function StorageSettingsSection() {
   const updateSettings = useSettingsUpdater();
 
   const handleBrowse = async (type: 'content' | 'cache') => {
-    const result = await invoke<{ canceled: boolean; filePaths: string[] }>({ channel: 'dialog:openDirectory' });
+    const result: { canceled: boolean; filePaths: string[] } = await invoke({ channel: 'dialog:openDirectory' });
     if (result && !result.canceled && result.filePaths.length > 0) {
       if (type === 'content') {
         updateSettings({ contentFolder: result.filePaths[0] });

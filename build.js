@@ -49,7 +49,7 @@ async function buildRegistry() {
         reversible: meta.reversible !== false,
         addedversion: meta.addedversion,
         updatedversion: meta.updatedversion,
-        docsurl: `https://docs.getsparkle.net/tweaks/${folder}`,
+        docsurl: `https://github.com/chibangar/chibangarx/tree/main/tweaks/${folder}`,
         source: `https://github.com/chibangar/chibangarx/blob/main/tweaks/${folder}/meta.json`,
       }
 

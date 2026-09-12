@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/renderer/src/*"],
-      "@/types/*": ["src/types/*"],
-      "@main/*": ["src/main/*"]
+      "@/*": ["./src/renderer/src/*"],
+      "@/types/*": ["./src/types/*"],
+      "@main/*": ["./src/main/*"]
     },
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "target": "ESNext",
     "module": "ESNext",
     "jsx": "preserve",

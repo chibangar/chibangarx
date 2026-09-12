@@ -20,7 +20,7 @@ interface DropdownSelectProps {
 }
 
 export default function DropdownSelect({
-  items, value, onChange, placeholder = 'Select', buttonClassName, menuClassName,
+  items, value, onChange, placeholder = 'Select', buttonClassName,
   itemClassName = 'justify-start text-sm font-medium hover:bg-chibangarx-border-secondary rounded-lg transition-all',
   disabled = false, align = 'end', size = 'md',
 }: DropdownSelectProps) {

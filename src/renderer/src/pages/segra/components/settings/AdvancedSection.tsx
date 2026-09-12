@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSettings, useSettingsUpdater } from '../../context/SettingsContext';
 import { invoke } from '@/lib/electron';
 import { FileText, Plane, Info } from 'lucide-react';
@@ -9,11 +9,11 @@ export default function AdvancedSection() {
   const [version, setVersion] = useState('');
 
   const getVersion = async () => {
-    const v = await invoke<string>({ channel: 'app:getVersion' });
+    const v: string = await invoke({ channel: 'app:getVersion' });
     if (v) setVersion(v);
   };
 
-  useState(() => { getVersion(); }, []);
+  useEffect(() => { getVersion(); }, []);
 
   return (
     <div className="space-y-4">
@@ -55,7 +55,7 @@ export default function AdvancedSection() {
 
       <div className="p-4 bg-chibangarx-card border border-chibangarx-border rounded-xl space-y-3">
         <button
-          onClick={() => sendMessageToBackend('openLogFile')}
+          onClick={() => void invoke({ channel: 'openLogFile' })}
           className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-chibangarx-border-secondary transition-colors text-left"
         >
           <FileText className="w-5 h-5 text-chibangarx-text-secondary" />

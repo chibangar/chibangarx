@@ -3,7 +3,6 @@ import { sendMessageToBackend } from '../utils/MessageUtils';
 import { useSegments } from './SegmentsContext';
 import { useSettings } from './SettingsContext';
 import { Segment } from '../models/types';
-import { invoke } from '@/lib/electron';
 
 export interface ClippingProgress {
   id: number;

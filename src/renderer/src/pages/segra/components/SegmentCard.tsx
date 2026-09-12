@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { SegmentCardProps } from '../models/types';
 import { Trash2 } from 'lucide-react';
 
 const SegmentCard: React.FC<SegmentCardProps> = React.memo(({
-  segment, index, formatTime, isHovered, setHoveredSegmentId, removeSegment,
+  segment, formatTime, isHovered, setHoveredSegmentId, removeSegment,
 }) => {
   const { startTime, endTime, thumbnailDataUrl, isLoading } = segment;
 

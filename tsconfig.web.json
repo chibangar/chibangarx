@@ -9,13 +9,12 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/renderer/src/*"],
-      "@/types/*": ["src/types/*"]
+      "@/*": ["./src/renderer/src/*"],
+      "@/types/*": ["./src/types/*"]
     },
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

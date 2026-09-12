@@ -1,6 +1,6 @@
 import { forwardRef, ButtonHTMLAttributes, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'ghost' | 'nav' | 'menu' | 'menuPrimary' | 'menuDanger' | 'menuPurple' | 'danger' | 'success';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'nav' | 'menu' | 'menuPrimary' | 'menuDanger' | 'menuPurple' | 'danger' | 'success';
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,6 +14,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-chibangarx-card border border-chibangarx-border hover:border-chibangarx-primary hover:text-chibangarx-primary text-chibangarx-text-secondary',
+  secondary: 'bg-chibangarx-border-secondary border border-chibangarx-border hover:bg-chibangarx-border text-chibangarx-text',
   ghost: 'bg-transparent text-chibangarx-text-secondary hover:bg-chibangarx-border-secondary',
   nav: 'bg-chibangarx-card border border-chibangarx-border hover:border-chibangarx-primary hover:text-chibangarx-primary text-chibangarx-text-secondary w-full justify-start py-3',
   menu: 'w-full flex items-center gap-2 px-4 py-3 text-chibangarx-text rounded-lg hover:bg-chibangarx-border-secondary transition-all',

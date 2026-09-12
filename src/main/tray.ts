@@ -11,7 +11,9 @@ export function createTray(mainWindow: BrowserWindow): Tray {
     { label: "Abrir ChibangaRx", click: (): void => mainWindow.show() },
     {
       label: "Releases",
-      click: (): void => shell.openExternal("https://github.com/chibangar/chibangarx/releases"),
+      click: (): void => {
+        void shell.openExternal("https://github.com/chibangar/chibangarx/releases")
+      },
     },
     { label: "Encerrar", click: (): void => app.quit() },
   ])

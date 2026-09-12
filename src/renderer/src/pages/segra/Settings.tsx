@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { useSettings } from './context/SettingsContext';
 import CaptureModeSection from './components/settings/CaptureModeSection';
 import VideoSettingsSection from './components/settings/VideoSettingsSection';
 import AudioDevicesSection from './components/settings/AudioDevicesSection';
@@ -23,7 +22,6 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export default function Settings() {
-  const settings = useSettings();
   const [activeNav, setActiveNav] = useState('recording');
   const contentRef = useRef<HTMLDivElement>(null);
 

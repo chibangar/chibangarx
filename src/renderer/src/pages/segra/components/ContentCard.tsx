@@ -3,9 +3,7 @@ import { useSettings } from '../context/SettingsContext';
 import { useAppState, usePatchContent } from '../context/AppStateContext';
 import { BookmarkType, Content, includeInHighlight } from '../models/types';
 import { sendMessageToBackend } from '../utils/MessageUtils';
-import { useModal } from '../context/ModalContext';
-import { useDeleteConfirmation } from '../hooks/useDeleteConfirmation';
-import { Upload, FolderOpen, PenLine, Trash2, Link, Check, Ellipsis, Minimize2, Crown, Copy, Bookmark } from 'lucide-react';
+import { Ellipsis, Crown, Bookmark } from 'lucide-react';
 
 type VideoType = 'Session' | 'Buffer' | 'Clip' | 'Highlight';
 
@@ -29,8 +27,6 @@ export default function ContentCard({
   const { enableAi, showNewBadgeOnVideos } = useSettings();
   const { cacheFolder, content: allContent } = useAppState();
   const patchContent = usePatchContent();
-  const { openModal, closeModal } = useModal();
-  const confirmDelete = useDeleteConfirmation();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isRenaming, setIsRenaming] = useState(false);
@@ -108,14 +104,6 @@ export default function ContentCard({
     const viewedContentObj = JSON.parse(viewedContent);
     viewedContentObj[content.id] = true;
     localStorage.setItem('viewed-content', JSON.stringify(viewedContentObj));
-  };
-
-  const handleDelete = () => {
-    confirmDelete({
-      title: `Delete ${type.toLowerCase()}?`,
-      description: <>Are you sure you want to permanently delete <strong>{content!.title || content!.game || content!.fileName}</strong>?<br /><span className="text-sm text-chibangarx-text-secondary">This action cannot be undone.</span></>,
-      onConfirm: () => sendMessageToBackend('DeleteContent', { Id: content!.id }),
-    });
   };
 
   const startRenaming = () => { setRenameValue(content!.title || ''); setIsRenaming(true); setTimeout(() => { renameInputRef.current?.focus(); renameInputRef.current?.select(); }, 0); };

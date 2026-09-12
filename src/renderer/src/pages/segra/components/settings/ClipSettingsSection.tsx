@@ -13,8 +13,6 @@ const AUDIO_QUALITY = ['96k', '128k', '192k', '256k', '320k'] as const;
 
 const CPU_PRESETS = ['ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow'];
 const NVIDIA_PRESETS = ['slow', 'medium', 'fast', 'hp', 'hq', 'bd', 'll', 'llhq', 'llhp', 'lossless', 'losslesshp'];
-const AMD_PRESETS = ['quality', 'transcoding', 'lowlatency', 'ultralowlatency'];
-const INTEL_PRESETS = ['fast', 'medium', 'slow'];
 
 export default function ClipSettingsSection() {
   const settings = useSettings();

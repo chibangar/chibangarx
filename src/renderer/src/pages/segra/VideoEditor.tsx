@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSelectedVideo } from './context/SelectedVideoContext';
 import { useSegments } from './context/SegmentsContext';
 import { BookmarkType, includeInHighlight, Segment } from './models/types';
@@ -22,13 +22,12 @@ function formatTimeHMS(seconds: number): string {
 
 export default function VideoEditor() {
   const { selectedVideo, setSelectedVideo } = useSelectedVideo();
-  const { segments, addSegment, updateSegment, removeSegment, clearAllSegments } = useSegments();
+  const { segments, addSegment, removeSegment, clearAllSegments } = useSegments();
   const videoRef = useRef<HTMLVideoElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [hoveredSegmentId, setHoveredSegmentId] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
 
   useEffect(() => {

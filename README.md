@@ -4,7 +4,7 @@
   </a>
 
   <h3>ChibangaRx</h3>
-  <p>A Windows app to debloat and optimize your PC</p>
+  <p>Aplicação Windows para limpar e otimizar o seu PC</p>
 
   <p>
 <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/React.svg?variant=secondary&amp;logo=react&amp;size=xs&amp;mode=dark"><img alt="badge" src="https://shieldcn.dev/badge/React.svg?variant=secondary&amp;logo=react&amp;size=xs&amp;mode=light"></picture>
@@ -13,82 +13,82 @@
 <picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Powershell.svg?variant=secondary&amp;logo=ri%3ATbBrandPowershell&amp;size=xs&amp;mode=dark"><img alt="badge" src="https://shieldcn.dev/badge/Powershell.svg?variant=secondary&amp;logo=ri%3ATbBrandPowershell&amp;size=xs&amp;mode=light"></picture>
   </p>
 
-## Quick Start
+## Início Rápido
 
-Install with Powershell (non admin), choose Setup or Portable :
+Instalar via PowerShell (sem administrador), escolher Instalação ou Portátil:
 
 ```powershell
 irm https://raw.githubusercontent.com/chibangar/chibangarx/main/get.ps1 | iex
 ```
 
-<a href="https://github.com/chibangar/chibangarx/releases/latest">Download Installer/Portable</a>
+<a href="https://github.com/chibangar/chibangarx/releases/latest">Baixar Instalador/Portátil</a>
 
   <br/>
   <br/>
 
-  <img src="./images/appshowcase.png" alt="ChibangaRx App Screenshot" width="90%">
+  <img src="./images/appshowcase.png" alt="Captura de Ecrã do ChibangaRx" width="90%">
 
 </div>
 
-  > [!WARNING]
-  > ChibangaRx is currently in beta. While we've tested it extensively, you may encounter some bugs. Please back up your system before applying tweaks and report any issues you find.
+  > [!AVISO]
+  > O ChibangaRx está atualmente em versão beta. Embora tenhamos testado extensivamente, poderá encontrar alguns bugs. Por favor, faça backup do seu sistema antes de aplicar alterações e reporte quaisquer problemas que encontrar.
 
-  <h3 align="left">Features</h3>
+  <h3 align="left">Funcionalidades</h3>
 
-| Feature         | Description                                                                                                                                                                                                      |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Apply Tweaks    | 40 tweaks across 7 categories with reversible toggles, recommended presets, GPU compatibility detection, and a built-in debloater with 2 methods                                                                 |
-| System Cleaner  | Clean 6 categories of junk files: temp files, prefetch, recycle bin, Windows Update cache, thumbnail cache, and error reports with per-category size detection                                                   |
-| Utilities       | 15 system utilities including SFC, DISM, Check Disk, GPU driver restart, network reset, power plan manager, Storage Sense, and more                                                                              |
-| DNS Manager     | Switch DNS with 5 preset providers, custom DNS, a "Find Fastest DNS" ping test, current DNS viewer, and cache flushing                                                                                           |
-| App Installer   | Browse and batch install/uninstall 156 apps across 10 categories with <a href="https://learn.microsoft.com/en-us/windows/package-manager/winget/">Winget</a> or <a href="https://chocolatey.org/">Chocolatey</a> |
-| Backup & Revert | Create and restore Windows restore points, plus undo individual or all applied tweaks via unapply scripts                                                                                                        |
-| System Stats    | Dashboard showing CPU, GPU, RAM, OS version, disk info, and active tweak count                                                                                                                                   |
+| Funcionalidade     | Descrição                                                                                                                                                                                                      |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Aplicar Alterações | 40 alterações em 7 categorias com interruptores reversíveis, presets recomendados, deteção de compatibilidade GPU e um limpador embutido com 2 métodos                    |
+| Limpeza do Sistema | Limpar 6 categorias de ficheiros inúteis: ficheiros temporários, prefetch, lixeira, cache do Windows Update, cache de miniaturas e relatórios de erros                        |
+| Utilitários        | 15 utilitários de sistema incluindo SFC, DISM, Verificar Disco, reiniciar condutor GPU, resetar rede, gestor de plano de alimentação, Storage Sense e mais                      |
+| Gestor DNS         | Alterar DNS com 5 provedores predefinidos, DNS personalizado, teste de ping "Encontrar o DNS mais rápido", visualizador do DNS atual e limpar cache                            |
+| Instalador de Apps | Navegar e instalar/desinstalar em lote 156 aplicativos em 10 categorias com <a href="https://learn.microsoft.com/en-us/windows/package-manager/winget/">Winget</a> ou <a href="https://chocolatey.org/">Chocolatey</a> |
+| Backup e Reverter  | Criar e restaurar pontos de restauração do Windows, além de desfazer alterações individuais ou todas aplicadas via scripts unapply                                                                              |
+| Estatísticas do Sistema | Painel mostrando CPU, GPU, RAM, versão do SO, informações de disco e número ativo de alterações modificadas                                                            |
 
-<h3>What is ChibangaRx?</h3>
+<h3>O que é o ChibangaRx?</h3>
 
-The current state of Windows is rough. Broken updates, preinstalled junk, background services, and telemetry that run whether you want them or not.
+O estado atual do Windows é complicado. Atualizações com defeito, lixo pré-instalado, serviços em segundo plano e telemetria que funcionam quer queira ou não.
 
-ChibangaRx can't fix all of Windows problems, but it can help you debloat your PC, improve performance, and reduce latency.
+O ChibangaRx não pode resolver todos os problemas do Windows, mas pode ajudar a limpar o seu PC, melhorar o desempenho e reduzir a latência.
 
-<h3>Why Should I Optimize Windows?</h3>
+<h3>Porque Devo Otimizar o Windows?</h3>
 
-A default Windows installation comes with pre installed apps you didn't ask for or that you will never use for such as telemetry running in the background and services eating up resources for features you'll never use.
+Uma instalação padrão do Windows vem com aplicativos pré-instalados que não pediu ou que nunca usará, como telemetria rodando em segundo plano e serviços consumindo recursos para funcionalidades que nunca usará.
 
-Optimizing is about cutting that unnecessary overhead so more of your PC's resources gos to what actually matters such as gaming, rendering, or just a snappier desktop experience.
+Otimizar é sobre cortar essa sobrecarga desnecessária para que mais dos recursos do seu PC sejam usados no que realmente importa, como jogos, renderização ou simplesmente uma experiência de ambiente de trabalho mais ágil.
 
-Everything ChibangaRx does can also be done manually, but that doesn't mean you should have to
+Tudo o que o ChibangaRx faz também pode ser feito manualmente, mas isso não significa que você deva ter que fazer isso
 
 # FAQ
 
-### Is ChibangaRx safe to use?
+### O ChibangaRx é seguro de usar?
 
-Yes. ChibangaRx is fully open source with the GPL-V3 licence meaning anyone can view, edit or build the code themselves. If you prefer you can clone the repo and build ChibangaRx yourself read here: <a href="#building-chibangarx">Building ChibangaRx</a>
+Sim. O ChibangaRx é totalmente open source com a licença GPL-V3, o que significa que qualquer pessoa pode visualizar, editar ou construir o código por si mesma. Se preferir, pode clonar o repositório e construir o ChibangaRx por si mesmo leia aqui: <a href="#building-chibangarx">Construir ChibangaRx</a>
 
-### Does ChibangaRx improve performance?
+### O ChibangaRx melhora o desempenho?
 
-Depends. Every tweak and utility has been tested on real hardware. None of the tweaks are AI-generated, blindly added, or untested. None of the tweaks are made up, and there are no fake registry values or anything like that. Performance improvements depend on your hardware and what you apply in ChibangaRx.
+Depende. Todas as alterações e utilitários foram testados em hardware real. Nenhuma das alterações foi gerada por IA, adicionada cegamente ou não testada. Nenhuma das alterações é inventada e não há valores falsos do registo nem coisa assim. As melhorias de desempenho dependem do seu hardware e do que aplica no ChibangaRx.
 
-### Can i undo changes made by ChibangaRx?
+### Posso desfazer alterações feitas pelo ChibangaRx?
 
-Yes, all tweaks are reversible. You can either use ChibangaRx's tweak reverse or a system restore point.
+Sim, todas as alterações são reversíveis. Pode usar a inversão da alteração do ChibangaRx ou um ponto de restauração do sistema.
 
-### Why does ChibangaRx ask for admin permissions?
+### Por que o ChibangaRx pede permissões de administrador?
 
-Admin permissions are required to apply system-level tweaks and optimizations and using/creating restore points.
+Permissões de administrador são necessárias para aplicar alterações e otimizações ao nível do sistema e utilizar/criar pontos de restauração.
 
-### Why does Windows Defender/Smartscreen Block ChibangaRx
+### Por que o Windows Defender/Smartscreen Bloqueia o ChibangaRx
 
-ChibangaRx is not currently signed since it costs a lot for an open source project. When you run an unsigned exe on Windows it automatically assumes it's unsafe and blocks it.
+O ChibangaRx atualmente não tem assinatura, já que custa muito para um projeto open source. Quando executa um exe sem assinatura no Windows, ele automaticamente assume que é inseguro e bloqueia-o.
 
-You can get around it by:
+Pode contornar isso clicando em:
 
-Click "More info" → "Run anyway".
+Clique "Mais informações" → "Executar de qualquer forma".
 
 <div>
-  <h2>📃 Docs</h2>
-  <p>You can find the docs on the <a href="https://github.com/chibangar/chibangarx">GitHub repository</a></p>
-  The docs cover all the tweaks, how they work what they do and all of ChibangaRx's Pages and tools.
+  <h2>📃 Documentação</h2>
+  <p>Pode encontrar a documentação no <a href="https://github.com/chibangar/chibangarx">repositório GitHub</a></p>
+  A documentação cobre todas as alterações, como funcionam, o que fazem e todas as Páginas e Ferramentas do ChibangaRx.
 </div>
 
 <div>
@@ -105,50 +105,50 @@ Cinco temas adicionais para personalizar a sua experiência visual:
 Total de temas: **13 opções**!
 
 <div>
-  <h3>💖 Credits</h3>
+  <h3>💖 Créditos</h3>
   <ul>
     <li>
-      <a href="https://github.com/ChrisTitusTech/winutil">CTT's WinUtil (Some of the tweaks & <b>Part</b> of the inspo for making this v2 of this project)</a>
+      <a href="https://github.com/ChrisTitusTech/winutil">CTT's WinUtil (Algumas das alterações & <b>Parte</b> da inspiração para criar esta v2 do projeto)</a>
     </li>
     <li>
-      <a href="https://github.com/Raphire/Win11Debloat">Raphire Win11Debloat (Secondary Debloat script offered in ChibangaRx debloat script)</a>
+      <a href="https://github.com/Raphire/Win11Debloat">Raphire Win11Debloat (Script secundário de desinstalação oferecido no script de desinstalação ChibangaRx)</a>
     </li>
   </ul>
 
-  <h3>👥 Contributing</h3>
+  <h3>👥 Contribuir</h3>
 
-  <h4>Adding New Tweaks</h4>
+  <h4>Adicionar Novas Alterações</h4>
   <ul>
-    <li>Tweaks are located in <code>/tweaks</code></li>
+    <li>As alterações estão localizadas em <code>/tweaks</code></li>
   </ul>
 
-Refer to the <a href="https://github.com/chibangar/chibangarx">docs</a> for more info on how to add new tweaks
+Consulte o <a href="https://github.com/chibangar/chibangarx">docs</a> para mais informações sobre como adicionar novas alterações
 
-  <h4>Other Ways to Contribute</h4>
+  <h4-Outras Formas de Contribuir</h4>
   <ul>
-    <li>🐛 Report bugs and issues</li>
-    <li>💡 Suggest new features or improvements</li>
-    <li>📝 Improve documentation</li>
-    <li>🎨 Enhance the UI/UX</li>
-    <li>🧪 Improve code quality</li>
+    <li>🐛 Reportar bugs e problemas</li>
+    <li>💡 Sugerir novas funcionalidades ou melhorias</li>
+    <li>📝 Melhorar a documentação</li>
+    <li>🎨 Melhorar a Interface Utilizador/Experiência de Utilizador</li>
+    <li>🧪 Melhorar a qualidade do código</li>
   </ul>
 
   <details>
-  <summary><h3>What if I'm allergic to Electron?</h3></summary>
+  <summary><h3>O que se passar se eu for alérgico ao Electron?</h3></summary>
 
-That's totally fine, this project probably isn't for you.
- You might want to check out [CTT WinUtil](https://github.com/ChrisTitusTech/winutil),
- A PowerShell based alternative that keeps things nice and lightweight.
+Isso está completamente bem, este projeto provavelmente não é para si.
+ Poderá querer verificar o [CTT WinUtil](https://github.com/ChrisTitusTech/winutil),
+ Uma alternativa baseada em PowerShell que mantém as coisas agradáveis e leves.
 
-this message is inspired by [this](https://github.com/nukeop/nuclear/blob/legacy/electron/docs/electron.md)
+Esta mensagem foi inspirada por [esta](https://github.com/nukeop/nuclear/blob/legacy/electron/docs/electron.md)
 
 </details>
 
-<h2>Building ChibangaRx</h4>
+<h2>Construir ChibangaRx</h2>
 
-<p>To build ChibangaRx you will need the following</p>
+<p>Para construir o ChibangaRx, precisará do seguinte:</p>
 <ul>
-  <li><b>Node.js</b> v22 or higher (v24 recommended)</li>
+  <li><b>Node.js</b> v22 ou superior (v24 recomendado)</li>
   <li><b>pnpm</b></li>
   <li><b>Windows 10/11</b></li>
 </ul>
@@ -157,49 +157,49 @@ this message is inspired by [this](https://github.com/nukeop/nuclear/blob/legacy
 
 </div>
 
-> [!IMPORTANT]
-> The version of ChibangaRx in the repo is most likely newer than the latest release. expect bugs and unreleased features
+> [!IMPORTANTE]
+> A versão do ChibangaRx no repositório é provavelmente mais recente que a última release. Espere bugs e funcionalidades não lançadas
 
 <ol>
   <li>
-    <b>Clone the repository:</b>
+    <b>Clonar o repositório:</b>
     <pre><code>git clone https://github.com/chibangar/chibangarx
 cd chibangarx</code></pre>
   </li>
   <li>
-    <b>Install dependencies:</b>
+    <b>Instalar dependências:</b>
     <pre><code>pnpm i</code></pre>
   </li>
   <li>
-    <b>Start the app in development mode:</b>
+    <b>Lançar o app em modo de desenvolvimento:</b>
     <pre><code>pnpm dev</code></pre>
-    <i>This will launch ChibangaRx with hot reload for both the Electron main and renderer processes.</i>
+    <i>Isto irá lançar o ChibangaRx com recarregamento quente para tanto o processo principal do Electron quanto os processos de renderização.</i>
   </li>
   <br/>
   <li>
-    <b>Build for production:</b>
+    <b>Compilar para produção:</b>
     <pre><code>pnpm build</code></pre>
-    <i>This will compile ChibangaRx, Builds are located in <code>dist/</code> folder. you may be prompted if you want to update the tweak registry. This is only for production builds</i>
+    <i>Isto irá compilar o ChibangaRx. As compilações estão localizadas no diretório <code>dist/</code>. Poderá ser solicitado se deseja atualizar o registo das alterações. Isto apenas é para compilações de produção</i>
   </li>
 </ol>
-## Deploy & Updates
+## Distribuição e Atualizações
 
-### For Users
-- Updates are downloaded automatically from GitHub Releases
-- The app checks for updates every 30 seconds
-- Notifications appear in-app when updates are available
+### Para Utilizadores
+- As atualizações são baixadas automaticamente das GitHub Releases
+- O app verifica por atualizações a cada 30 segundos
+- Notificações aparecem no app quando as atualizações estão disponíveis
 
-### For Developers
-- Push code to `main` branch
-- CI runs automatically (lint, typecheck, tests)
-- To release a new version:
+### Para Desenvolvedores
+- Empurrar código para o branch `main`
+- O CI roda automaticamente (lint, typecheck, testes)
+- Para lançar uma nova versão:
   ```powershell
   .\scripts\deploy.ps1 -Version "2.39.0"
   ```
-- GitHub Actions builds and publishes the release
-- Users receive the update automatically
+- GitHub Actions compila e publica a release
+- Os utilizadores recebem a atualização automaticamente
 
-See [DEPLOY.md](DEPLOY.md) for detailed instructions.
+Veja [DEPLOY.md](DEPLOY.md) para instruções detalhadas.
 
 <br/>
-  <p align="center">Made with ❤️ by chibangar</p>
+  <p align="center">Criado com ❤️ por chibangar</p>

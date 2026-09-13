@@ -1,7 +1,7 @@
 {
     "name": "chibangarx",
     "version": "2.45.15",
-    "description": "ChibangaRx",
+    "description": "🇵🇹 ChibangaRx - Ferramenta de Otimização Windows em Português! Aplica 40+ tweaks para limpar Windows, remover telemetria e otimizar CPU/GPU. Limpador automático recupera +2GB espaço. Inclui utilitários SFC/DISM, reset DNS com 5 provedores, instalador de apps (+156) e backup reversível via pontos de restauração. Feito em PT pelo chibangar team © GPL-V3 Open Source - Código auditável publicamente para utilizadores do Portugal!",
     "main": "./out/main/index.js",
     "author": "chibangar",
     "homepage": "https://github.com/chibangar/chibangarx",

@@ -1,0 +1,40 @@
+{
+  "apps": [
+    {
+      "name": "DirectX End-User Runtime (June 2010)",
+      "id": "Microsoft.DirectXEndUser",
+      "chocolatey": "directx-june-2010",
+      "category": "graphics",
+      "info": "The latest DirectX runtime for gaming and multimedia applications. Required for many Windows games.",
+      "link": "https://www.microsoft.com/en-us/download/details.aspx?id=36?ref=sparkle",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Microsoft_DirectX_logo.svg/826px-Microsoft_DirectX_logo.svg.png"
+    },
+    {
+      "name": "Visual C++ 2015-2022 Redistributable (x64)",
+      "id": "Microsoft.VCRedist.2015-2022.x64",
+      "chocolatey": "visualstudio-2015-vc-redist-x64",
+      "category": "graphics",
+      "info": "Required runtime for most Windows games and modern applications. Includes all updates through 2022.",
+      "link": "https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170?ref=sparkle",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Visual_Studio_2019_logo.svg/846px-Visual_Studio_2019_logo.svg.png"
+    },
+    {
+      "name": "Visual C++ 2015-2022 Redistributable (x86)",
+      "id": "Microsoft.VCRedist.2015-2022.x86",
+      "chocolatey": "visualstudio-2015-vc-redist-x86",
+      "category": "graphics",
+      "info": "32-bit runtime for legacy applications and older games that require 32-bit compatibility.",
+      "link": "https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170?ref=sparkle",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Visual_Studio_2019_logo.svg/846px-Visual_Studio_2019_logo.svg.png"
+    },
+    {
+      "name": "Visual C++ 2015-2022 Redistributable All-in-One",
+      "id": "Microsoft.VCRedist.2015-2022.All",
+      "chocolatey": "visualstudio-2015-vc-redist-all",
+      "category": "graphics",
+      "info": "All-in-one package containing all x86 and x64 redistributables in a single installer.",
+      "link": "https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170?ref=sparkle",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Visual_Studio_2019_logo.svg/846px-Visual_Studio_2019_logo.svg.png"
+    }
+  ]
+}

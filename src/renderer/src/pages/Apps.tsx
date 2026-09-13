@@ -1,5 +1,6 @@
 import { useState, useMemo, Suspense } from "react"
 import data from "../assets/apps.json"
+import categoryIcons from "../assets/category-icons.json"
 import RootDiv from "@/components/rootdiv"
 import { Search, X } from "lucide-react"
 import Button from "@/components/ui/button"
@@ -639,7 +640,12 @@ function Apps() {
           >
             {Object.entries(appsByCategory).map(([category, apps]) => (
               <div key={category} className="space-y-4">
-                <h2 className="text-2xl text-chibangarx-primary font-bold capitalize">{category}</h2>
+                <h2 className="text-2xl text-chibangarx-primary font-bold capitalize flex items-center gap-3">
+                  {category === "graphics" && (
+                    <span>{categoryIcons.icons.graphics}</span>
+                  )}
+                  {category}
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mr-4">
                   {apps.map((app) => {
                     const appId = getAppIdForSource(app)

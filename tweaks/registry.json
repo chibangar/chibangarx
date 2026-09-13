@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-02T20:30:14.856Z",
+  "version": "2026-09-13T13:52:11.031Z",
   "tweaks": [
     {
       "id": "24-hour-clock",
@@ -11,8 +11,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/24-hour-clock",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/24-hour-clock/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/24-hour-clock",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/24-hour-clock/meta.json"
     },
     {
       "id": "align-taskbar-left",
@@ -24,13 +24,26 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/align-taskbar-left",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/align-taskbar-left/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/align-taskbar-left",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/align-taskbar-left/meta.json"
+    },
+    {
+      "id": "background-app-permissions",
+      "title": "Background App Permissions",
+      "description": "Prevents apps from running in the background",
+      "category": [
+        "Privacy",
+        "Performance"
+      ],
+      "recommended": false,
+      "reversible": true,
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/background-app-permissions",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/background-app-permissions/meta.json"
     },
     {
       "id": "debloat-windows",
       "title": "Debloat Windows",
-      "description": "Choose between Sparkle Debloat script or Raphire's Win11Debloat script to remove built-in Windows apps and bloatware.",
+      "description": "Choose between ChibangaRx Debloat script or Raphire's Win11Debloat script to remove built-in Windows apps and bloatware.",
       "category": [
         "Performance",
         "Privacy"
@@ -38,8 +51,8 @@
       "recommended": true,
       "reversible": false,
       "updatedversion": "2.14.0",
-      "docsurl": "https://docs.getsparkle.net/tweaks/debloat-windows",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/debloat-windows/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/debloat-windows",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/debloat-windows/meta.json"
     },
     {
       "id": "detailed-bsod",
@@ -51,8 +64,21 @@
       "recommended": false,
       "reversible": true,
       "updatedversion": "2.21.1",
-      "docsurl": "https://docs.getsparkle.net/tweaks/detailed-bsod",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/detailed-bsod/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/detailed-bsod",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/detailed-bsod/meta.json"
+    },
+    {
+      "id": "disable-activity-history",
+      "title": "Disable Activity History",
+      "description": "Disables Windows activity history tracking",
+      "category": [
+        "Privacy",
+        "Performance"
+      ],
+      "recommended": false,
+      "reversible": true,
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-activity-history",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-activity-history/meta.json"
     },
     {
       "id": "disable-background-ms-store-apps",
@@ -64,8 +90,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-background-ms-store-apps",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-background-ms-store-apps/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-background-ms-store-apps",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-background-ms-store-apps/meta.json"
     },
     {
       "id": "consumer-features",
@@ -77,8 +103,8 @@
       "recommended": false,
       "reversible": true,
       "addedversion": "2.14.1",
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-consumer-features",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-consumer-features/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-consumer-features",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-consumer-features/meta.json"
     },
     {
       "id": "disable-copilot",
@@ -90,8 +116,8 @@
       ],
       "recommended": true,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-copilot",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-copilot/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-copilot",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-copilot/meta.json"
     },
     {
       "id": "disable-core-isolation",
@@ -103,8 +129,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-core-isolation",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-core-isolation/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-core-isolation",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-core-isolation/meta.json"
     },
     {
       "id": "disable-defender-rtp",
@@ -116,8 +142,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-defender-rtp",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-defender-rtp/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-defender-rtp",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-defender-rtp/meta.json"
     },
     {
       "id": "disable-dynamic-ticking",
@@ -128,8 +154,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-dynamic-ticking",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-dynamic-ticking/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-dynamic-ticking",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-dynamic-ticking/meta.json"
     },
     {
       "id": "disable-fast-startup",
@@ -141,8 +167,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-fast-startup",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-fast-startup/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-fast-startup",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-fast-startup/meta.json"
     },
     {
       "id": "disable-gamebar",
@@ -153,8 +179,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-gamebar",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-gamebar/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-gamebar",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-gamebar/meta.json"
     },
     {
       "id": "disable-hibernation",
@@ -166,8 +192,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-hibernation",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-hibernation/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-hibernation",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-hibernation/meta.json"
     },
     {
       "id": "disable-location-tracking",
@@ -179,8 +205,8 @@
       "recommended": true,
       "reversible": true,
       "updatedversion": "2.21.1",
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-location-tracking",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-location-tracking/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-location-tracking",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-location-tracking/meta.json"
     },
     {
       "id": "disable-lockscreen-tips",
@@ -191,8 +217,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-lockscreen-tips",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-lockscreen-tips/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-lockscreen-tips",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-lockscreen-tips/meta.json"
     },
     {
       "id": "disable-mouse-acceleration",
@@ -204,8 +230,21 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-mouse-acceleration",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-mouse-acceleration/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-mouse-acceleration",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-mouse-acceleration/meta.json"
+    },
+    {
+      "id": "disable-notifications",
+      "title": "Disable Notifications",
+      "description": "Disables Windows toast notifications",
+      "category": [
+        "Privacy",
+        "Performance"
+      ],
+      "recommended": false,
+      "reversible": true,
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-notifications",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-notifications/meta.json"
     },
     {
       "id": "disable-rdp-warnings",
@@ -218,8 +257,8 @@
       "recommended": false,
       "reversible": true,
       "addedversion": "2.19.0",
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-rdp-warnings",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-rdp-warnings/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-rdp-warnings",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-rdp-warnings/meta.json"
     },
     {
       "id": "disable-windows-recall",
@@ -231,8 +270,8 @@
       "recommended": false,
       "reversible": true,
       "addedversion": "2.14.2",
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-recall",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-recall/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-recall",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-recall/meta.json"
     },
     {
       "id": "disable-taskbar-seach",
@@ -245,8 +284,8 @@
       "recommended": false,
       "reversible": true,
       "addedversion": "2.22.0",
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-taskbar-seach",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-taskbar-seach/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-taskbar-seach",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-taskbar-seach/meta.json"
     },
     {
       "id": "disable-telemetry",
@@ -260,8 +299,8 @@
       "reversible": true,
       "addedversion": "2.14.0",
       "updatedversion": "2.21.1",
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-telemetry",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-telemetry/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-telemetry",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-telemetry/meta.json"
     },
     {
       "id": "disable-wifi-sense",
@@ -274,8 +313,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/disable-wifi-sense",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/disable-wifi-sense/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/disable-wifi-sense",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/disable-wifi-sense/meta.json"
     },
     {
       "id": "enable-dark-mode",
@@ -287,8 +326,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/enable-dark-mode",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/enable-dark-mode/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/enable-dark-mode",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/enable-dark-mode/meta.json"
     },
     {
       "id": "enable-end-task-right-click",
@@ -299,8 +338,8 @@
       ],
       "recommended": true,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/enable-end-task-right-click",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/enable-end-task-right-click/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/enable-end-task-right-click",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/enable-end-task-right-click/meta.json"
     },
     {
       "id": "enable-game-mode",
@@ -313,8 +352,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/enable-game-mode",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/enable-game-mode/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/enable-game-mode",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/enable-game-mode/meta.json"
     },
     {
       "id": "enable-hags",
@@ -327,8 +366,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/enable-hags",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/enable-hags/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/enable-hags",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/enable-hags/meta.json"
     },
     {
       "id": "enable-optimization-for-windowed-games",
@@ -341,8 +380,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/enable-optimization-for-windowed-games",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/enable-optimization-for-windowed-games/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/enable-optimization-for-windowed-games",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/enable-optimization-for-windowed-games/meta.json"
     },
     {
       "id": "hide-taskview-and-widgets",
@@ -354,8 +393,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/hide-taskview-and-widgets",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/hide-taskview-and-widgets/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/hide-taskview-and-widgets",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/hide-taskview-and-widgets/meta.json"
     },
     {
       "id": "menu-show-delay-zero",
@@ -367,8 +406,21 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/menu-show-delay-zero",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/menu-show-delay-zero/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/menu-show-delay-zero",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/menu-show-delay-zero/meta.json"
+    },
+    {
+      "id": "mouse-hover-time",
+      "title": "Mouse Hover Time",
+      "description": "Reduces mouse hover time for faster UI interactions",
+      "category": [
+        "General",
+        "Input"
+      ],
+      "recommended": false,
+      "reversible": true,
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/mouse-hover-time",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/mouse-hover-time/meta.json"
     },
     {
       "id": "optimize-network-settings",
@@ -381,8 +433,8 @@
       "recommended": false,
       "reversible": true,
       "updatedversion": "2.9.0",
-      "docsurl": "https://docs.getsparkle.net/tweaks/optimize-network-settings",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/optimize-network-settings/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/optimize-network-settings",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/optimize-network-settings/meta.json"
     },
     {
       "id": "optimize-nvidia-settings",
@@ -395,8 +447,8 @@
       ],
       "recommended": false,
       "reversible": false,
-      "docsurl": "https://docs.getsparkle.net/tweaks/optimize-nvidia-settings",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/optimize-nvidia-settings/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/optimize-nvidia-settings",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/optimize-nvidia-settings/meta.json"
     },
     {
       "id": "remove-edge",
@@ -409,8 +461,8 @@
       "recommended": true,
       "reversible": true,
       "addedversion": "2.22.0",
-      "docsurl": "https://docs.getsparkle.net/tweaks/remove-edge",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/remove-edge/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/remove-edge",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/remove-edge/meta.json"
     },
     {
       "id": "remove-gaming-apps",
@@ -422,8 +474,8 @@
       ],
       "recommended": false,
       "reversible": false,
-      "docsurl": "https://docs.getsparkle.net/tweaks/remove-gaming-apps",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/remove-gaming-apps/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/remove-gaming-apps",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/remove-gaming-apps/meta.json"
     },
     {
       "id": "remove-ms-bing-integration",
@@ -435,8 +487,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/remove-ms-bing-integration",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/remove-ms-bing-integration/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/remove-ms-bing-integration",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/remove-ms-bing-integration/meta.json"
     },
     {
       "id": "remove-onedrive",
@@ -449,8 +501,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/remove-onedrive",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/remove-onedrive/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/remove-onedrive",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/remove-onedrive/meta.json"
     },
     {
       "id": "revert-context-menu",
@@ -462,8 +514,8 @@
       ],
       "recommended": true,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/revert-context-menu",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/revert-context-menu/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/revert-context-menu",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/revert-context-menu/meta.json"
     },
     {
       "id": "set-powershell7-default",
@@ -474,8 +526,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/set-powershell7-default",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/set-powershell7-default/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/set-powershell7-default",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/set-powershell7-default/meta.json"
     },
     {
       "id": "set-services-to-manual",
@@ -488,8 +540,8 @@
       "recommended": true,
       "reversible": true,
       "updatedversion": "2.21.1",
-      "docsurl": "https://docs.getsparkle.net/tweaks/set-services-to-manual",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/set-services-to-manual/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/set-services-to-manual",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/set-services-to-manual/meta.json"
     },
     {
       "id": "set-time-utc",
@@ -500,8 +552,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/set-time-utc",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/set-time-utc/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/set-time-utc",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/set-time-utc/meta.json"
     },
     {
       "id": "set-win32-priority-separation",
@@ -512,8 +564,8 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/set-win32-priority-separation",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/set-win32-priority-separation/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/set-win32-priority-separation",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/set-win32-priority-separation/meta.json"
     },
     {
       "id": "show-seconds-in-taskbar-clock",
@@ -525,8 +577,21 @@
       ],
       "recommended": false,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/show-seconds-in-system-clock",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/show-seconds-in-system-clock/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/show-seconds-in-system-clock",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/show-seconds-in-system-clock/meta.json"
+    },
+    {
+      "id": "startup-delay-apps",
+      "title": "Startup Delay Apps",
+      "description": "Delays startup applications to improve boot performance",
+      "category": [
+        "General",
+        "Performance"
+      ],
+      "recommended": false,
+      "reversible": true,
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/startup-delay-apps",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/startup-delay-apps/meta.json"
     },
     {
       "id": "ultimate-performance-plan",
@@ -538,8 +603,8 @@
       ],
       "recommended": true,
       "reversible": true,
-      "docsurl": "https://docs.getsparkle.net/tweaks/ultimate-performance-plan",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/ultimate-performance-plan/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/ultimate-performance-plan",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/ultimate-performance-plan/meta.json"
     },
     {
       "id": "wpbt",
@@ -551,8 +616,8 @@
       "recommended": false,
       "reversible": true,
       "addedversion": "2.14.1",
-      "docsurl": "https://docs.getsparkle.net/tweaks/wpbt",
-      "source": "https://github.com/Parcoil/Sparkle/blob/v2/tweaks/wpbt/meta.json"
+      "docsurl": "https://github.com/chibangar/chibangarx/tree/main/tweaks/wpbt",
+      "source": "https://github.com/chibangar/chibangarx/blob/main/tweaks/wpbt/meta.json"
     }
   ]
 }

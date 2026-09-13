@@ -1,216 +1,143 @@
-import { useEffect, useRef, useState } from "react"
-import { CircleStop, FolderOpen, RefreshCw, Save, Video } from "lucide-react"
+import { useEffect, useState, useCallback } from "react"
+import { FolderOpen, Search, Filter, Gamepad2, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import RootDiv from "@/components/rootdiv"
 import Button from "@/components/ui/button"
 import Card from "@/components/ui/Card"
 import { invoke } from "@/lib/electron"
+import ClipGrid from "@/components/clip-grid"
 
 interface CaptureSource {
   id: string
   name: string
   thumbnail: string
+  gameId?: string | null
+  isGame?: boolean
 }
 
-interface ClipChunk {
-  blob: Blob
-  timestamp: number
-}
-
-export default function Clips(): React.ReactElement {
+export default function Clips() {
   const { t } = useTranslation()
-  const [sources, setSources] = useState<CaptureSource[]>([])
-  const [selectedSource, setSelectedSource] = useState("")
-  const [clipDuration, setClipDuration] = useState(60)
-  const [recording, setRecording] = useState(false)
-  const [loadingSources, setLoadingSources] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [selectedSource, setSelectedSource] = useState<string | undefined>()
   const [message, setMessage] = useState("")
-  const recorderRef = useRef<MediaRecorder | null>(null)
-  const streamRef = useRef<MediaStream | null>(null)
-  const chunksRef = useRef<ClipChunk[]>([])
-  const durationRef = useRef(clipDuration)
-  const saveClipRef = useRef<() => Promise<void>>(async () => undefined)
+  const [filter, setFilter] = useState({
+    type: "all" as "all" | "today" | "week" | "month" | "favorites" | "game",
+    gameId: undefined as string | undefined,
+    searchQuery: "",
+    sortOrder: "newest" as "newest" | "oldest" | "duration" | "size",
+  })
 
-  useEffect(() => {
-    durationRef.current = clipDuration
-  }, [clipDuration])
-
-  const loadSources = async () => {
-    setLoadingSources(true)
+  const handleGlobalSave = useCallback(async () => {
     try {
-      const available = (await invoke({ channel: "clips:get-sources" })) as CaptureSource[]
-      setSources(available)
-      if (!selectedSource && available.length > 0) setSelectedSource(available[0].id)
-    } catch {
-      setMessage(t("clips.sourcesError"))
-    } finally {
-      setLoadingSources(false)
+      await invoke({ channel: "clips:list" })
+      setMessage(t("clips.saved"))
+    } catch (error) {
+      console.error("[Clips] Save request failed:", error)
     }
-  }
+  }, [t])
 
   useEffect(() => {
-    loadSources()
+    const loadSources = async () => {
+      try {
+        const available = await invoke({ channel: "clips:get-sources" }) as CaptureSource[]
+        if (!selectedSource && available.length > 0) setSelectedSource(available[0].id)
+      } catch (error) {
+        console.error("[Clips] Failed to load sources:", error)
+        setMessage(t("clips.sourcesError"))
+      }
+    }
 
     const handleShortcut = () => {
-      void saveClipRef.current()
+      void handleGlobalSave()
     }
+
     window.electron.ipcRenderer.on("clips:save-request", handleShortcut)
+    loadSources()
+
     return () => {
       window.electron.ipcRenderer.removeListener("clips:save-request", handleShortcut)
-      recorderRef.current?.stop()
-      streamRef.current?.getTracks().forEach((track) => track.stop())
     }
-  }, [])
+  }, [handleGlobalSave, t])
 
-  const startRecording = async () => {
-    if (!selectedSource) return
-
-    try {
-      await invoke({ channel: "clips:set-source", payload: selectedSource })
-      let stream: MediaStream
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: {
-            mandatory: {
-              chromeMediaSource: "desktop",
-              chromeMediaSourceId: selectedSource,
-            },
-          } as MediaTrackConstraints,
-        })
-      } catch {
-        stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false })
-      }
-      const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
-        ? "video/webm;codecs=vp9"
-        : "video/webm"
-      const recorder = new MediaRecorder(stream, { mimeType })
-      chunksRef.current = []
-      recorder.onerror = () => {
-        console.error("[Clips] MediaRecorder error")
-        setMessage(t("clips.captureError"))
-        stopRecording()
-      }
-      recorder.ondataavailable = (event) => {
-        if (event.data.size === 0) return
-        const now = Date.now()
-        chunksRef.current.push({ blob: event.data, timestamp: now })
-        const keepFrom = now - Math.max(durationRef.current * 1000, 300_000)
-        chunksRef.current = chunksRef.current.filter((chunk) => chunk.timestamp >= keepFrom)
-      }
-      recorder.start(1000)
-      recorderRef.current = recorder
-      streamRef.current = stream
-      setRecording(true)
-      setMessage(t("clips.recordingStarted"))
-    } catch (error) {
-      console.error("[Clips] Capture failed:", error)
-      setMessage(t("clips.captureError"))
-    }
+  const openClipFolder = async () => {
+    await invoke({ channel: "open-clips-folder" })
   }
-
-  const stopRecording = () => {
-    recorderRef.current?.stop()
-    streamRef.current?.getTracks().forEach((track) => track.stop())
-    recorderRef.current = null
-    streamRef.current = null
-    setRecording(false)
-    setMessage(t("clips.recordingStopped"))
-  }
-
-  const saveClip = async () => {
-    if (saving || chunksRef.current.length === 0) return
-    setSaving(true)
-    const cutoff = Date.now() - durationRef.current * 1000
-    const recentChunks = chunksRef.current.filter((chunk) => chunk.timestamp >= cutoff)
-    const firstChunk = chunksRef.current[0]
-    const blobs = firstChunk && recentChunks[0] !== firstChunk ? [firstChunk.blob, ...recentChunks.map((chunk) => chunk.blob)] : recentChunks.map((chunk) => chunk.blob)
-
-    try {
-      const data = await new Blob(blobs, { type: "video/webm" }).arrayBuffer()
-      const filePath = await invoke({ channel: "clips:save", payload: { data } })
-      setMessage(t("clips.saved", { path: filePath }))
-    } catch {
-      setMessage(t("clips.saveError"))
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  saveClipRef.current = saveClip
 
   return (
     <RootDiv>
-      <div className="mx-auto max-w-5xl space-y-5">
-        <div>
-          <h1 className="text-2xl font-bold text-chibangarx-text">{t("clips.title")}</h1>
-          <p className="text-sm text-chibangarx-text-secondary">{t("clips.description")}</p>
-        </div>
-
-        <Card className="p-5">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-chibangarx-primary/15 p-3 text-chibangarx-primary">
-              <Video size={24} />
-            </div>
-            <div>
-              <h2 className="font-semibold text-chibangarx-text">{t("clips.captureTitle")}</h2>
-              <p className="text-sm text-chibangarx-text-secondary">{t("clips.captureDescription")}</p>
-            </div>
+      <div className="mx-auto max-w-7xl space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-chibangarx-text flex items-center gap-3">
+              <Gamepad2 size={32} className="text-chibangarx-primary" />
+              {t("clips.title")}
+            </h1>
+            <p className="text-sm text-chibangarx-text-secondary mt-1">{t("clips.description")}</p>
           </div>
 
-          <div className="mt-5 grid gap-4 md:grid-cols-[1fr_260px]">
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <label className="text-sm font-medium text-chibangarx-text">{t("clips.window")}</label>
-                <button type="button" onClick={loadSources} className="text-chibangarx-primary" title={t("clips.refresh")}>
-                  <RefreshCw size={16} className={loadingSources ? "animate-spin" : ""} />
-                </button>
-              </div>
+          <div className="flex items-center gap-3">
+            <Button variant="secondary" onClick={openClipFolder}>
+              <FolderOpen size={16} className="mr-2" />
+              {t("clips.openFolder")}
+            </Button>
+            <Button variant="primary" onClick={() => invoke({ channel: "settings:open" })}>
+              <Settings size={16} className="mr-2" />
+              {t("clips.settings")}
+            </Button>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <Card className="p-4">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            {/* Game filter */}
+            <div className="flex items-center gap-2">
+              <Filter size={16} />
               <select
-                value={selectedSource}
-                onChange={(event) => setSelectedSource(event.target.value)}
-                disabled={recording || loadingSources}
-                className="w-full rounded-lg border border-chibangarx-border bg-chibangarx-bg px-3 py-2 text-sm text-chibangarx-text"
+                value={filter.gameId || ""}
+                onChange={(e) => setFilter({ ...filter, gameId: e.target.value || undefined })}
+                className="rounded-lg border border-chibangarx-border bg-chibangarx-bg px-3 py-2 text-sm"
               >
-                {sources.length === 0 && <option value="">{t("clips.noWindows")}</option>}
-                {sources.map((source) => <option key={source.id} value={source.id}>{source.name}</option>)}
+                <option value="">Todos os jogos</option>
               </select>
             </div>
 
-            <div>
-              <div className="mb-2 flex justify-between text-sm">
-                <label htmlFor="clip-duration" className="font-medium text-chibangarx-text">{t("clips.duration")}</label>
-                <span className="text-chibangarx-primary">{clipDuration}s</span>
-              </div>
+            {/* Search */}
+            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+              <Search size={16} />
               <input
-                id="clip-duration"
-                type="range"
-                min="10"
-                max="300"
-                step="10"
-                value={clipDuration}
-                onChange={(event) => setClipDuration(Number(event.target.value))}
-                disabled={recording}
-                className="w-full accent-chibangarx-primary"
+                type="text"
+                placeholder="Pesquisar clips..."
+                value={filter.searchQuery}
+                onChange={(e) => setFilter({ ...filter, searchQuery: e.target.value })}
+                className="flex-1 rounded-lg border border-chibangarx-border bg-chibangarx-bg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-chibangarx-primary"
               />
-              <div className="mt-1 flex justify-between text-xs text-chibangarx-text-muted"><span>10s</span><span>300s</span></div>
             </div>
-          </div>
 
-          <div className="mt-5 flex flex-wrap gap-3">
-            {!recording ? (
-              <Button onClick={startRecording} disabled={!selectedSource || loadingSources}><Video size={16} className="mr-2" />{t("clips.start")}</Button>
-            ) : (
-              <Button variant="danger" onClick={stopRecording}><CircleStop size={16} className="mr-2" />{t("clips.stop")}</Button>
-            )}
-            <Button variant="secondary" onClick={saveClip} disabled={!recording || saving}><Save size={16} className="mr-2" />{t("clips.save")}</Button>
-            <Button variant="secondary" onClick={() => invoke({ channel: "open-clips-folder" })}><FolderOpen size={16} className="mr-2" />{t("clips.openFolder")}</Button>
+            {/* Sort */}
+            <select
+              value={filter.sortOrder}
+              onChange={(e) => setFilter({ ...filter, sortOrder: e.target.value as any })}
+              className="rounded-lg border border-chibangarx-border bg-chibangarx-bg px-3 py-2 text-sm"
+            >
+              <option value="newest">{t("clips.sortNewest")}</option>
+              <option value="oldest">{t("clips.sortOldest")}</option>
+              <option value="duration">{t("clips.sortDuration")}</option>
+              <option value="size">{t("clips.sortSize")}</option>
+            </select>
           </div>
-
-          <p className="mt-4 text-sm text-chibangarx-text-secondary">{t("clips.shortcut")}</p>
-          {message && <p className="mt-2 text-sm text-chibangarx-primary">{message}</p>}
         </Card>
+
+        {/* Clips Grid */}
+        <ClipGrid clips={[]} loading={false} onOpenClip={() => {}} />
+
+        {/* Message notification */}
+        {message && (
+          <Card className="p-4 bg-chibangarx-primary/10 border-l-4 border-l-chibangarx-primary animate-in fade-in slide-in-from-bottom-2">
+            <p className="text-chibangarx-primary">{message}</p>
+          </Card>
+        )}
+
       </div>
     </RootDiv>
   )

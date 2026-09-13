@@ -21,6 +21,7 @@ import { setupDebloatHandlers } from "@main/debloat"
 import { setupDriverHandlers } from "@main/drivers"
 import { setupSegraHandlers, setSegraMainWindow } from "@main/segra"
 import { setupSmartHandlers } from "@main/smart"
+import { setupClipsHandlers, initClipBufferSystem } from "./clips"
 import { initAutoUpdater } from "@main/updates"
 import { setMainWindow } from "@main/windowState"
 import { createTray } from "@main/tray"
@@ -201,9 +202,17 @@ app
     }
     console.log("[ChibangaRx]: Handlers setup complete")
 
-    globalShortcut.register("CommandOrControl+Shift+F10", () => {
+    // Hotkey global para salvar clip (Configurável nas Settings)
+    const defaultHotkey = "CommandOrControl+Shift+S"
+    globalShortcut.register(defaultHotkey, () => {
       mainWindow?.webContents.send("clips:save-request")
     })
+
+    // Setup handlers de clips com buffer circular + metadados
+    setupClipsHandlers()
+
+    // Iniciar buffer circular por defeito (60 segundos)
+    initClipBufferSystem({ enabled: true, duration: 60 })
 
     ipcMain.on("window-minimize", () => {
       if (mainWindow) mainWindow.minimize()

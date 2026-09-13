@@ -1,0 +1,25 @@
+{
+  "clips": {
+    "title": "Clips",
+    "description": "Grave, visualize e edite os teus melhores momentos do jogo.",
+    "openFolder": "Abrir pasta de clips",
+    "settings": "Definições",
+    "sourcesError": "Não foi possível carregar fontes de captura",
+    "saved": "Clip guardado: {path}",
+    "window": "Janela",
+    "noWindows": "Sem janelas disponíveis",
+    "duration": "Duração",
+    "start": "Gravar",
+    "stop": "Parar",
+    "save": "Guardar clip",
+    "openFolder": "Abrir pasta de clips",
+    "shortcut": "Atalho: Ctrl+Alt+S para guardar clip automaticamente",
+    "recordingStarted": "Gravação iniciada",
+    "recordingStopped": "Gravação interrompida",
+    "captureError": "Erro na captura. Verifica a configuração.",
+    "sortNewest": "Mais recentes",
+    "sortOldest": "Mais antigos",
+    "sortDuration": "Por duração",
+    "sortSize": "Por tamanho"
+  }
+}

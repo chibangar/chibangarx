@@ -235,6 +235,28 @@ app
       }
     })
 
+    // Handlers para eventos da aba Clips
+    ipcMain.on("clips:minimize-request", () => {
+      if (mainWindow) mainWindow.minimize()
+    })
+
+    ipcMain.on("clips:maximize-request", () => {
+      if (mainWindow) {
+        if (mainWindow.isMaximized()) {
+          mainWindow.unmaximize()
+        } else {
+          mainWindow.maximize()
+        }
+      }
+    })
+
+    ipcMain.on("clips:close-request", () => {
+      if (mainWindow) {
+        shouldQuit = true
+        app.quit()
+      }
+    })
+
     ipcMain.handle("ambient-music:choose-file", async () => {
       if (!mainWindow) return null
       const result = await dialog.showOpenDialog(mainWindow, {

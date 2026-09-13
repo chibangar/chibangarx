@@ -58,6 +58,26 @@ export default function Clips() {
     }
   }, [handleGlobalSave, t])
 
+  useEffect(() => {
+    // Handlers para botões de janela
+    const handlers: Record<string, (e?: any) => void> = {
+      minimize: () => window.electron.ipcRenderer.send("window-minimize"),
+      maximize: () => window.electron.ipcRenderer.send("window-toggle-maximize"),
+      close: () => window.electron.ipcRenderer.send("window-close"),
+    }
+
+    Object.entries(handlers).forEach(([event, handler]) => {
+      const channel = `clips:${event}-request`
+      window.electron.ipcRenderer.on(channel as any, handler)
+    })
+
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners("clips:minimize-request")
+      window.electron.ipcRenderer.removeAllListeners("clips:maximize-request")
+      window.electron.ipcRenderer.removeAllListeners("clips:close-request")
+    }
+  }, [])
+
   const openClipFolder = async () => {
     await invoke({ channel: "open-clips-folder" })
   }

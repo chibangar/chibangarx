@@ -164,7 +164,7 @@
         ],
         "win": {
             "executableName": "chibangarx",
-            "requestedExecutionLevel": "requireAdministrator",
+            "requestedExecutionLevel": "asInvoker",
             "icon": "resources/chibangarx.ico",
             "target": [
                 "nsis",

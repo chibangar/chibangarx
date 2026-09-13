@@ -3,6 +3,7 @@ import { autoUpdater } from "electron-updater"
 import log from "electron-log"
 import { join } from "path"
 import { createWriteStream } from "fs"
+import { isTrustedDownloadUrl, safeDownloadFilename } from "@main/security"
 
 autoUpdater.logger = log
 ;(autoUpdater.logger as any).transports.file.level = "info"
@@ -294,12 +295,12 @@ export function initAutoUpdater(): void {
       options: { url: string; name: string },
     ): Promise<{ ok: boolean; path: string }> => {
       const { url, name } = options || {}
-      if (!url || !/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/releases\/download\//.test(url)) {
+      if (!url || !isTrustedDownloadUrl(url)) {
         throw new Error("Invalid download URL")
       }
 
       const downloadsDir = app.getPath("downloads")
-      const filePath = join(downloadsDir, name)
+      const filePath = join(downloadsDir, safeDownloadFilename(name))
       const response = await net.fetch(url)
       if (!response.ok) throw new Error(`Download failed: ${response.status}`)
 

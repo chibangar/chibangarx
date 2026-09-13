@@ -4,9 +4,9 @@ import { promises as fs } from "fs"
 import path from "path"
 import log from "electron-log"
 import https from "https"
-import http from "http"
-import { URL } from "url"
+import type { IncomingMessage } from "http"
 import { mainWindow } from "@main/windowState"
+import { isTrustedAmdDriverUrl } from "@main/security"
 
 console.log = log.log
 console.error = log.error
@@ -541,6 +541,14 @@ async function fetchAMDLatestVersion(): Promise<{
 }
 
 let amdDownloadAbort: (() => void) | null = null
+const MAX_AMD_INSTALLER_BYTES = 1024 * 1024 * 1024
+
+function trustedAmdVersion(value: string): string {
+  if (!/^\d+\.\d+\.\d+\.\d+$/.test(value)) {
+    throw new Error("Invalid AMD driver version")
+  }
+  return value
+}
 
 function downloadFile(
   url: string,
@@ -548,8 +556,10 @@ function downloadFile(
   onProgress: (percent: number, transferred: number, total: number) => void,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const parsedUrl = new URL(url)
-    const client = parsedUrl.protocol === "https:" ? https : http
+    if (!isTrustedAmdDriverUrl(url)) {
+      reject(new Error("Untrusted AMD driver URL"))
+      return
+    }
 
     const headers = {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
@@ -557,12 +567,14 @@ function downloadFile(
       "Accept": "*/*",
     }
 
-    function follow(redirectUrl: string) {
-      const parsed = new URL(redirectUrl)
-      const cli = parsed.protocol === "https:" ? https : http
-      const req = cli.get(redirectUrl, { headers }, (res) => {
+    function follow(redirectUrl: string, redirects = 0) {
+      if (redirects >= 3 || !isTrustedAmdDriverUrl(redirectUrl)) {
+        reject(new Error("Untrusted AMD driver redirect"))
+        return
+      }
+      const req = https.get(redirectUrl, { headers }, (res) => {
         if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          follow(res.headers.location)
+          follow(new URL(res.headers.location, redirectUrl).toString(), redirects + 1)
           return
         }
         handleResponse(res)
@@ -571,9 +583,9 @@ function downloadFile(
       amdDownloadAbort = () => req.destroy()
     }
 
-    function handleResponse(res: http.IncomingMessage) {
+    function handleResponse(res: IncomingMessage) {
       if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        follow(res.headers.location)
+        follow(new URL(res.headers.location, url).toString(), 1)
         return
       }
 
@@ -583,12 +595,21 @@ function downloadFile(
       }
 
       const totalBytes = parseInt(res.headers["content-length"] || "0", 10)
+      if (totalBytes < 1 || totalBytes > MAX_AMD_INSTALLER_BYTES) {
+        reject(new Error("Invalid AMD driver size"))
+        res.destroy()
+        return
+      }
       let receivedBytes = 0
       const chunks: Buffer[] = []
 
       res.on("data", (chunk: Buffer) => {
         chunks.push(chunk)
         receivedBytes += chunk.length
+        if (receivedBytes > MAX_AMD_INSTALLER_BYTES) {
+          res.destroy(new Error("AMD driver exceeds size limit"))
+          return
+        }
         const percent = totalBytes > 0 ? Math.round((receivedBytes / totalBytes) * 100) : 0
         onProgress(percent, receivedBytes, totalBytes)
       })
@@ -596,6 +617,9 @@ function downloadFile(
       res.on("end", async () => {
         try {
           const buffer = Buffer.concat(chunks)
+          if (buffer.length < 2 || buffer[0] !== 0x4d || buffer[1] !== 0x5a) {
+            throw new Error("Downloaded AMD driver is not a Windows executable")
+          }
           await fs.writeFile(filePath, buffer)
           resolve()
         } catch (err) {
@@ -607,9 +631,9 @@ function downloadFile(
       amdDownloadAbort = () => res.destroy()
     }
 
-    const req = client.get(url, { headers }, (res) => {
+    const req = https.get(url, { headers }, (res) => {
       if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        follow(res.headers.location)
+        follow(new URL(res.headers.location, url).toString(), 1)
         return
       }
       handleResponse(res)
@@ -628,16 +652,17 @@ async function downloadAMDChipset(
   const win = mainWindow
 
   // Validate URL - use fallback if empty/invalid
+  const safeVersion = trustedAmdVersion(version === "latest" ? "8.05.04.516" : version)
   let finalUrl = downloadUrl
-  if (!finalUrl || !finalUrl.startsWith("http")) {
-    const fallbackVersion = version && version !== "latest" ? version : "8.05.04.516"
+  if (!isTrustedAmdDriverUrl(finalUrl)) {
+    const fallbackVersion = safeVersion
     finalUrl = `https://drivers.amd.com/drivers/amd_chipset_software_${fallbackVersion}.exe`
     console.log("[ChibangaRx] AMD download URL was invalid, using fallback:", finalUrl)
   }
 
   try {
     const installDir = app.getPath("userData")
-    const filePath = path.join(installDir, `AMDChipsetSoftware-${version}.exe`)
+    const filePath = path.join(installDir, `AMDChipsetSoftware-${safeVersion}.exe`)
 
     win?.webContents.send("amd:download-progress", { percent: 0, status: "starting" })
 
@@ -695,16 +720,17 @@ async function downloadAndInstallAMDChipset(
   const win = mainWindow
 
   // Validate URL - use fallback if empty/invalid
+  const safeVersion = trustedAmdVersion(version === "latest" ? "8.05.04.516" : version)
   let finalUrl = downloadUrl
-  if (!finalUrl || !finalUrl.startsWith("http")) {
-    const fallbackVersion = version && version !== "latest" ? version : "8.05.04.516"
+  if (!isTrustedAmdDriverUrl(finalUrl)) {
+    const fallbackVersion = safeVersion
     finalUrl = `https://drivers.amd.com/drivers/amd_chipset_software_${fallbackVersion}.exe`
     console.log("[ChibangaRx] AMD download URL was invalid, using fallback:", finalUrl)
   }
 
   try {
     const installDir = app.getPath("userData")
-    const filePath = path.join(installDir, `AMDChipsetSoftware-${version}.exe`)
+    const filePath = path.join(installDir, `AMDChipsetSoftware-${safeVersion}.exe`)
 
     win?.webContents.send("amd:download-progress", { percent: 0, status: "starting" })
 

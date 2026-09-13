@@ -88,13 +88,7 @@ function Debloat() {
       const selectedApps = Array.from(selected)
         .map((id) => apps.find((a) => a.id === id))
         .filter((a): a is InstalledApp => !!a)
-        .map((a) => ({
-          name: a.name,
-          uninstallString: a.uninstallString,
-          quietUninstallString: a.quietUninstallString,
-          isStoreApp: a.isStoreApp,
-          packageName: a.packageName,
-        }))
+        .map((a) => ({ id: a.id }))
 
       const result = await invoke({
         channel: "uninstall-apps",

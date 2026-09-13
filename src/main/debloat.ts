@@ -5,6 +5,7 @@ import log from "electron-log"
 import fs from "fs"
 import path from "path"
 import crypto from "crypto"
+import { resolveInstalledApps } from "@main/uninstall-policy"
 
 console.log = log.log
 console.error = log.error
@@ -183,18 +184,13 @@ async function getInstalledApps(): Promise<InstalledApp[]> {
 
 async function uninstallApps(
   _event: Electron.IpcMainInvokeEvent,
-  apps: Array<{
-    name: string
-    uninstallString: string
-    quietUninstallString: string
-    isStoreApp: boolean
-    packageName: string
-  }>,
+  requests: unknown,
 ): Promise<{
   success: boolean
   results: Array<{ name: string; success: boolean; error?: string }>
 }> {
   const results: Array<{ name: string; success: boolean; error?: string }> = []
+  const apps = resolveInstalledApps(cache ?? (await getInstalledApps()), requests)
 
   for (const { name, uninstallString, quietUninstallString, isStoreApp, packageName } of apps) {
     if (!mainWindow) {

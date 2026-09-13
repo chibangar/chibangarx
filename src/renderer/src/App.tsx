@@ -21,7 +21,6 @@ import useOnlineStore from "./store/online"
 import { CURRENT_VERSION } from "./lib/version"
 import { useTranslation } from "react-i18next"
 import Debloat from "./pages/Debloat"
-import NoAdmin from "./components/noAdmin"
 import ProSettings from "./pages/ProSettings"
 import Drivers from "./pages/Drivers"
 import GameClips from "./pages/GameClips"
@@ -40,7 +39,9 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     localStorage.getItem("sidebarCollapsed") === "true",
   )
-  const [adminStatus, setAdminStatus] = useState<boolean | null>(null)
+  // The shell intentionally starts at normal user integrity. Privileged actions
+  // request UAC only at the operation boundary.
+  const [adminStatus] = useState<boolean | null>(false)
   const { setAppStatus, clearApps } = useAppInstallStore()
   const { setOnline } = useOnlineStore()
   const { t } = useTranslation()
@@ -167,9 +168,6 @@ function App() {
   }, [])
 
   useEffect(() => {
-    window.electron.ipcRenderer.invoke("get-admin-status").then((isAdmin: boolean) => {
-      setAdminStatus(isAdmin)
-    })
     playBoot()
   }, [])
 
@@ -193,10 +191,6 @@ function App() {
           localStorage.setItem("chibangarx:changelogSeenVersion", CURRENT_VERSION)
           setChangelogOpen(false)
         }}
-      />
-      <NoAdmin
-        open={startupComplete && Boolean(userName) && adminStatus === false}
-        onClose={() => setAdminStatus(true)}
       />
       {!startupComplete ? (
         <StartupSplash />

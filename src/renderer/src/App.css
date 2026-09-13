@@ -188,7 +188,115 @@ layer(base);
   .Toastify__close-button {
     color: var(--color-chibangarx-text-secondary) !important;
   }
-}
+
+  /* 🌸 Sakura Theme - Pink/Floral */
+  .sakura {
+    --color-chibangarx-bg: #fff0f3;
+    --color-chibangarx-text: #5d2e4b;
+    --color-chibangarx-text-dark: #8b4a6a;
+    --color-chibangarx-text-darker: #b87a9a;
+    --color-chibangarx-text-secondary: #d8a8c0;
+    --color-chibangarx-text-muted: #e8c0d0;
+    --color-chibangarx-card: #fff5f7;
+    --color-chibangarx-border: #f8e1e7;
+    --color-chibangarx-border-secondary: #f9cce6;
+    --color-chibangarx-primary: #ec4899;
+    --color-chibangarx-secondary: #f472b6;
+    --color-chibangarx-accent: #fce7f3;
+  }
+
+  /* 🍃 Forest Theme - Green/Nature */
+  .forest {
+    --color-chibangarx-bg: #0d3318;
+    --color-chibangarx-text: #d4eac8;
+    --color-chibangarx-text-dark: #b6dcc2;
+    --color-chibangarx-text-darker: #95cfa6;
+    --color-chibangarx-text-secondary: #7daea0;
+    --color-chibangarx-text-muted: #4a6e5a;
+    --color-chibangarx-card: #132d16;
+    --color-chibangarx-border: #1e4d28;
+    --color-chibangarx-border-secondary: #1f552a;
+    --color-chibangarx-primary: #34d399;
+    --color-chibangarx-secondary: #6ee7b8;
+    --color-chibangarx-accent: #022c22;
+  }
+
+  /* 🔥 Cyberpunk Theme - Neon Vibrant */
+  .cyberpunk {
+    --color-chibangarx-bg: #050a14;
+    --color-chibangarx-text: #e0f0ff;
+    --color-chibangarx-text-dark: #b8d8f0;
+    --color-chibangarx-text-darker: #8acfe0;
+    --color-chibangarx-text-secondary: #6aa8cc;
+    --color-chibangarx-text-muted: #3a5a7a;
+    --color-chibangarx-card: #0a1424;
+    --color-chibangarx-border: #1a2d44;
+    --color-chibangarx-border-secondary: #142236;
+    --color-chibangarx-primary: #00f5ff;
+    --color-chibangarx-secondary: #ff00aa;
+    --color-chibangarx-accent: #1a0a2e;
+  }
+
+  .cyberpunk .bg-chibangarx-card,
+  .cyberpunk [class*="bg-chibangarx-card"] {
+    box-shadow: 0 0 15px rgba(0, 245, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* ❄️ Ice Theme - Cool Blue */
+  .ice {
+    --color-chibangarx-bg: #e8f4f8;
+    --color-chibangarx-text: #1a3a52;
+    --color-chibangarx-text-dark: #2d4a6a;
+    --color-chibangarx-text-darker: #4c6a8a;
+    --color-chibangarx-text-secondary: #7aa0b8;
+    --color-chibangarx-text-muted: #aab0ba;
+    --color-chibangarx-card: #f5fbfc;
+    --color-chibangarx-border: #dbe8ef;
+    --color-chibangarx-border-secondary: #c4dce7;
+    --color-chibangarx-primary: #06b6d4;
+    --color-chibangarx-secondary: #22d3ee;
+    --color-chibangarx-accent: #e0f2fe;
+  }
+
+  .ice [class*="bg-chibangarx-card"] {
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  /* ⚡ Energy Theme - Yellow/Dark */
+  .energy {
+    --color-chibangarx-bg: #1a1608;
+    --color-chibangarx-text: #fef9c3;
+    --color-chibangarx-text-dark: #eab308;
+    --color-chibangarx-text-darker: #ca8a04;
+    --color-chibangarx-text-secondary: #a16207;
+    --color-chibangarx-text-muted: #78350f;
+    --color-chibangarx-card: #2d260a;
+    --color-chibangarx-border: #42200a;
+    --color-chibangarx-border-secondary: #5c2e0c;
+    --color-chibangarx-primary: #fbbf24;
+    --color-chibangarx-secondary: #fcd34d;
+    --color-chibangarx-accent: #451a03;
+  }
+
+  /* 🎨 Sunset Theme - Orange/Pink Gradient */
+  .sunset {
+    --color-chibangarx-bg: #2d1b4e;
+    --color-chibangarx-text: #ffedd8;
+    --color-chibangarx-text-dark: #fecdd3;
+    --color-chibangarx-text-darker: #f9a8d4;
+    --color-chibangarx-text-secondary: #fb7185;
+    --color-chibangarx-text-muted: #e11d48;
+    --color-chibangarx-card: #3d2c5e;
+    --color-chibangarx-border: #4c3d6a;
+    --color-chibangarx-border-secondary: #5c4a7a;
+    --color-chibangarx-primary: #fb923c;
+    --color-chibangarx-secondary: #f43f5e;
+    --color-chibangarx-accent: #1f2937;
+  }
+
+  .sunset [class*="bg-chibangarx-card"] {
+    box-shadow: 0 0 15px rgba(251, 146, 60, 0.2);
+  }
 
 @layer base {
   html {

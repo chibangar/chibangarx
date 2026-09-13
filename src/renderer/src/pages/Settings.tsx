@@ -31,6 +31,12 @@ function Settings({ userName, onUserNameChange }: SettingsProps) {
     { label: t("settings.gray"), value: "gray" },
     { label: t("settings.classic"), value: "classic" },
     { label: t("settings.space"), value: "space" },
+    { label: "🌸 Sakura", value: "sakura" },
+    { label: "🍃 Forest", value: "forest" },
+    { label: "🔥 Cyberpunk", value: "cyberpunk" },
+    { label: "❄️ Ice", value: "ice" },
+    { label: "⚡ Energy", value: "energy" },
+    { label: "🎨 Sunset", value: "sunset" },
   ]
 
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system")
@@ -83,7 +89,20 @@ function Settings({ userName, onUserNameChange }: SettingsProps) {
   }
 
   useEffect(() => {
-    document.body.classList.remove("light", "purple", "dark", "gray", "classic", "space")
+    document.body.classList.remove(
+      "light",
+      "purple",
+      "dark",
+      "gray",
+      "classic",
+      "space",
+      "sakura",
+      "forest",
+      "cyberpunk",
+      "ice",
+      "energy",
+      "sunset"
+    )
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"

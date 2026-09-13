@@ -87,7 +87,20 @@ function App() {
 
   useEffect(() => {
     const applyTheme = (theme) => {
-      document.body.classList.remove("light", "purple", "dark", "gray", "classic", "space")
+      document.body.classList.remove(
+        "light",
+        "purple",
+        "dark",
+        "gray",
+        "classic",
+        "space",
+        "sakura",
+        "forest",
+        "cyberpunk",
+        "ice",
+        "energy",
+        "sunset"
+      )
       if (theme === "system" || !theme) {
         const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
           ? "dark"

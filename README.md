@@ -92,6 +92,19 @@ Click "More info" → "Run anyway".
 </div>
 
 <div>
+  <h3>🎨 Novos Temas! (v0.35.0+)</h3>
+
+Cinco temas adicionais para personalizar sua experiência visual:
+
+- 🌸 **Sakura** - Rosa floral suave, delicado e feminino  
+- 🍃 **Forest** - Verde floresta relaxante, reduz fadiga ocular  
+- 🔥 **Cyberpunk** - Neon vibrante estilo Cyberpunk 2077 (gama alta)  
+- ❄️ **Ice** - Azul gelo translúcido refrescante  
+- ⚡ **Energy** - Amarelo dourado energético para criativos
+
+Total de temas: **13 opções**!
+
+<div>
   <h3>💖 Credits</h3>
   <ul>
     <li>

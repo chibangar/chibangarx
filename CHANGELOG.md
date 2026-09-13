@@ -14,7 +14,7 @@ Cinco temas adicionais à sua experiência visual:
 Um tema delicado e feminino com tons de rosa suave, perfeito para quem gosta de uma estética mais floral e feminina.
 - **Cor primária:** Rosa vibrante (#ec4899)
 - **Fundo:** Rosa pálido suave (#fff0f3)
-- **Ideal para:** Usuárias que querem um toque delicado
+- **Ideal para:** Utilizadoras que querem um toque delicado
 
 ---
 
@@ -22,7 +22,7 @@ Um tema delicado e feminino com tons de rosa suave, perfeito para quem gosta de 
 Um tema inspirado na natureza com tons de verde profundo e relaxante.
 - **Cor primária:** Verde vibrante (#34d399)
 - **Fundo:** Verde escuro profundo (#0d3318)
-- **Ideal para:** Ambiente calmo, reduzindo a fadiga ocular
+- **Ideal para:** Ambiente calmo, reduzindo a fadiga ocular - Perfeito para ambiente tranquilo, reduzindo o cansaço visual
 
 ---
 
@@ -48,7 +48,7 @@ Um tema refrescante com tons de azul gelo translúcido.
 Um tema energético com tons dourados e pretos.
 - **Cor primária:** Amarelo brilhante (#fbbf24)
 - **Fundo:** Preto quente (#1a1608)
-- **Ideal para:** Criativos, designers, mode energetic
+- **Ideal para:** Perfeito para criativos, designers, modo energetic
 
 ---
 
@@ -57,27 +57,27 @@ Um tema vibrante com tons de laranja e rosa simulando um pôr do sol.
 - **Cor primária:** Laranja quente (#fb923c)
 - **Fundo:** Roxo profundo (#2d1b4e)
 - **Detalhes:** Efeitos de gradiente suave
-- **Ideal para:** Criatividade noturna, atmosfera
+- **Ideal para:** Perfeito para criatividade noturna, atmosfera
 
 ---
 
 ### ✨ Total de Temas Disponíveis
 
-Agora você tem **13 temas** para escolher:
+Agora você tem os seus **13 temas** para escolher:
 
-1. 🌐 **System** - Segue suas preferências do sistema
+1. 🌐 **System** - Segue as suas preferências do sistema
 2. 🌙 **Dark** - Escuro padrão
 3. ☀️ **Light** - Claro padrão  
 4. 🟣 **Purple** - Roxo (original)
 5. ⚫ **Gray** - Cinza (original)
 6. 🔵 **Classic** - Clássico (original)
 7. 🌌 **Space** - Espaço com estrelas (original)
-8. 🌸 **Sakura** - Rosa Floral *(NOVO)*
-9. 🍃 **Forest** - Verde Natureza *(NOVO)*
-10. 🔥 **Cyberpunk** - Neon Vibrante *(NOVO)*
-11. ❄️ **Ice** - Azul Gelado *(NOVO)*
-12. ⚡ **Energy** - Amarelo Energético *(NOVO)*
-13. 🎨 **Sunset** - Pôr do Sol *(NOVO)*
+8. 🌸 **Sakura** - Rosa Floral *(NOVO)* - Perfeito para um toque delicado e feminino  
+9. 🍃 **Forest** - Verde Natureza *(NOVO)* - Perfeito para ambiente calmo  
+10. 🔥 **Cyberpunk** - Neon Vibrante *(NOVO)* - Perfeito para gama alta, jogadores  
+11. ❄️ **Ice** - Azul Gelado *(NOVO)* - Perfeito para clima frio  
+12. ⚡ **Energy** - Amarelo Energético *(NOVO)* - Perfeito para criativos e designers  
+13. 🎨 **Sunset** - Pôr do Sol *(NOVO)* - Perfeito para criatividade noturna
 
 ---
 
@@ -89,8 +89,8 @@ pnpm install
 pnpm dev
 ```
 
-Ou no **ChibangaRx Settings**:
-- Vá em **Configurações → Aparência → Tema**
+Ou no **ChibangaRx Definições**:
+- Vá em **Definições → Aparência → Tema**
 - Selecione um dos 6 novos temas!
 
 ---

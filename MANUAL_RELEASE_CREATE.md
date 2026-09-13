@@ -23,23 +23,23 @@ v0.35.1 - Novas Aplicações Gráficas 🎨🎮
 
 ### 🎮 DirectX e Visual C++ Redistributables Adicionados!
 
-Esta versão traz uma melhoria importante para usuários de jogos:
+Esta versão traz uma melhoria importante para utilizadores de jogos:
 
 ---
 
 #### 📦 **DirectX End-User Runtime (June 2010)**
 - **ID:** `Microsoft.DirectXEndUser`
-- **Finalidade:** O runtime mais recente para jogos e aplicações multimídia no Windows
+- **Finalidade:** O runtime mais recente para jogos e aplicações multimédia no Windows
 - **O que resolve:** Erros de "DirectX não instalado" em muitos jogos
-- **Recomendado para:** Gamers, usuários de aplicações gráficas
+- **Recomendado para:** Gamer, utilizadores de aplicações gráficas
 
 ---
 
 #### 🛠️ **Visual C++ 2015-2022 Redistributable (x64)**
 - **ID:** `Microsoft.VCRedist.2015-2022.x64`
 - **Finalidade:** Runtime necessário para a maioria dos jogos Windows modernos
-- **Versão:** Inclui todos os atualizações até 2022
-- **Recomendado para:** Usuários de PC gaming, desenvolvedores
+- **Versão:** Inclui todas as actualizações até 2022
+- **Recomendado para:** Utilizadores de PC gaming, desenvolvedores
 
 ---
 
@@ -47,7 +47,7 @@ Esta versão traz uma melhoria importante para usuários de jogos:
 - **ID:** `Microsoft.VCRedist.2015-2022.x86`
 - **Finalidade:** Runtime 32-bit para aplicações antigas e jogos legados
 - **Quando usar:** Jogos de 32-bit, aplicações mais antigas
-- **Recomendado para:** Usuários que precisam de compatibilidade
+- **Recomendado para:** Utilizadores que precisam de compatibilidade
 
 ---
 
@@ -55,7 +55,7 @@ Esta versão traz uma melhoria importante para usuários de jogos:
 - **ID:** `Microsoft.VCRedist.2015-2022.All`
 - **Finalidade:** Pacote completo contendo x86 e x64 em um único instalador
 - **Vantagem:** Instala ambos os runtimes com um clique
-- **Recomendado para:** Usuários que querem tudo de uma vez
+- **Recomendado para:** Utilizadores que querem tudo de uma vez
 
 ---
 
@@ -63,7 +63,7 @@ Esta versão traz uma melhoria importante para usuários de jogos:
 
 Uma nova categoria dedicada para aplicações gráficas e runtimes:
 - **Ícone:** 🎨
-- **Localização:** Página de Aplicações → Scroll até o final
+- **Localização:** Página de Aplicações → Scroll até ao final
 - **Aplicações nesta categoria:** 4 apps DirectX/Visual C++
 
 ---
@@ -142,7 +142,7 @@ pnpm dev
   <strong>Mais informações: <a href="https://github.com/chibangar/chibangarx/releases/tag/v0.35.1">GitHub Releases</a></strong>
 </div>
 
-🎨✨ *Todos os temas e funcionalidades foram criados com ❤️ pela equipe Chibanga*
+🎨✨ *Todos os temas e funcionalidades foram criados com ❤️ pela equipa Chibanga*
 
 
 ---

@@ -94,7 +94,7 @@ Click "More info" → "Run anyway".
 <div>
   <h3>🎨 Novos Temas! (v0.35.0+)</h3>
 
-Cinco temas adicionais para personalizar sua experiência visual:
+Cinco temas adicionais para personalizar a sua experiência visual:
 
 - 🌸 **Sakura** - Rosa floral suave, delicado e feminino  
 - 🍃 **Forest** - Verde floresta relaxante, reduz fadiga ocular  

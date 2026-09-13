@@ -297,6 +297,7 @@ layer(base);
   .sunset [class*="bg-chibangarx-card"] {
     box-shadow: 0 0 15px rgba(251, 146, 60, 0.2);
   }
+}
 
 @layer base {
   html {

@@ -1,40 +1,91 @@
 name: Release
 
 on:
-  workflow_dispatch:
   push:
     tags:
-      - "v*"
+      - "v*.*.*"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   release:
     runs-on: windows-latest
+    timeout-minutes: 45
+    environment: release
+    permissions:
+      actions: read
+      attestations: write
+      contents: write
+      id-token: write
+    env:
+      NPM_CONFIG_IGNORE_SCRIPTS: "true"
+      TAG_SIGNING_PUBLIC_KEY: ${{ secrets.RELEASE_TAG_SIGNING_PUBLIC_KEY }}
+      WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
+      WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
         with:
           version: 10.29.3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Run security and quality gates
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm test
+          pnpm audit --audit-level=high
+
+      - name: Verify signed release tag and release commit
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ([string]::IsNullOrWhiteSpace($env:TAG_SIGNING_PUBLIC_KEY)) {
+            throw 'RELEASE_TAG_SIGNING_PUBLIC_KEY is required in the protected release environment.'
+          }
+          $keyPath = Join-Path $env:RUNNER_TEMP 'release-tag-signing-key.asc'
+          [IO.File]::WriteAllText($keyPath, $env:TAG_SIGNING_PUBLIC_KEY)
+          gpg --batch --import $keyPath
+          if ($LASTEXITCODE -ne 0) { throw 'Could not import the trusted release tag public key.' }
+
+          git fetch --no-tags origin '+refs/heads/main:refs/remotes/origin/main'
+          $tagRef = "refs/tags/$env:GITHUB_REF_NAME"
+          $tagObjectId = (git rev-parse $tagRef).Trim()
+          $tagObjectType = (git cat-file -t $tagObjectId).Trim()
+          if ($LASTEXITCODE -ne 0) { throw 'GitHub did not provide an inspectable tag object.' }
+          git verify-tag --raw $tagRef
+          $signatureValid = $LASTEXITCODE -eq 0
+          $tagCommit = (git rev-parse "$tagRef^{commit}").Trim()
+          $mainCommit = (git rev-parse 'refs/remotes/origin/main').Trim()
+          $packageVersion = (node -p "require('./package.json').version").Trim()
+
+          . .github/scripts/Validate-Release.ps1
+          Assert-ReleaseContext -Tag $env:GITHUB_REF_NAME -PackageVersion $packageVersion -TagObjectType $tagObjectType -TagCommit $tagCommit -MainCommit $mainCommit -SignatureValid $signatureValid
 
       - name: Build application bundles
         run: pnpm run build:vite
+
+      - name: Build unpacked app for smoke test
+        run: pnpm exec electron-builder --dir --publish never
+
+      - name: Smoke test unpacked app
+        run: pnpm test:smoke
 
       - name: Generate release notes
         id: release_notes
@@ -48,32 +99,80 @@ jobs:
           cp "$NOTES_FILE" RELEASE_NOTES.md
           cat RELEASE_NOTES.md
 
-      - name: Build and publish release
+      - name: Require code-signing certificate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_BASE64) -or [string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_PASSWORD)) {
+            throw 'WINDOWS_CERTIFICATE_BASE64 and WINDOWS_CERTIFICATE_PASSWORD are required in the protected release environment.'
+          }
+          $certificatePath = Join-Path $env:RUNNER_TEMP 'chibangarx-release-signing.pfx'
+          [IO.File]::WriteAllBytes($certificatePath, [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE_BASE64))
+          "CSC_LINK=$certificatePath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "CSC_KEY_PASSWORD=$env:WINDOWS_CERTIFICATE_PASSWORD" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          'CSC_IDENTITY_AUTO_DISCOVERY=false' | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Build signed release assets
         run: pnpm exec electron-builder --win nsis portable --publish never
 
-      - name: Publish release assets together
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            dist/*-Setup.exe
-            dist/*-Setup.exe.blockmap
-            dist/*-portable.exe
-            dist/latest.yml
-          fail_on_unmatched_files: true
-
-      - name: Update release with notes
-        uses: actions/github-script@v7
-        if: always()
-        with:
-          script: |
-            const fs = require('fs');
-            let notes = '';
-            try { notes = fs.readFileSync('RELEASE_NOTES.md', 'utf8'); } catch (err) { core.warning('No RELEASE_NOTES.md found: ' + err.message); }
-            const tag = context.ref.replace('refs/tags/', '');
-            const { data: releases } = await github.rest.repos.listReleases({ owner: context.repo.owner, repo: context.repo.repo, per_page: 100 });
-            const matches = releases.filter((r) => r.tag_name === tag);
-            if (matches.length === 0) { core.warning('No release found for tag ' + tag); }
-            for (const release of matches) {
-              await github.rest.repos.updateRelease({ owner: context.repo.owner, repo: context.repo.repo, release_id: release.id, body: notes });
+      - name: Verify required signed assets
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $requiredPatterns = @('*-Setup.exe', '*-Setup.exe.blockmap', '*-portable.exe', 'latest.yml')
+          foreach ($pattern in $requiredPatterns) {
+            if (@(Get-ChildItem -Path (Join-Path 'dist' $pattern) -File -ErrorAction SilentlyContinue).Count -eq 0) {
+              throw "Required release asset matching '$pattern' was not generated."
             }
-            core.info('Updated ' + matches.length + ' release(s) with notes');
+          }
+          Get-ChildItem -Path dist -File -Filter '*.exe' | ForEach-Object {
+            $signature = Get-AuthenticodeSignature -FilePath $_.FullName
+            if ($signature.Status -ne 'Valid') {
+              throw "Authenticode validation failed for $($_.Name): $($signature.Status)"
+            }
+          }
+
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: dist/chibangarx-${{ github.ref_name }}.cdx.json
+          artifact-name: chibangarx-${{ github.ref_name }}-sbom
+          upload-release-assets: false
+
+      - name: Generate SHA-256 manifest
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Get-ChildItem -Path dist -File | Sort-Object Name | ForEach-Object {
+            $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant()
+            "$hash *$($_.Name)"
+          } | Set-Content -Path dist/SHA256SUMS -Encoding ascii
+          if ((Get-Item dist/SHA256SUMS).Length -eq 0) { throw 'SHA256SUMS must not be empty.' }
+
+      - name: Attest release artifacts
+        id: attest
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-checksums: dist/SHA256SUMS
+
+      - name: Export provenance bundle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $bundle = '${{ steps.attest.outputs.bundle-path }}'
+          if ([string]::IsNullOrWhiteSpace($bundle) -or -not (Test-Path -LiteralPath $bundle)) {
+            throw 'The provenance attestation bundle was not created.'
+          }
+          Copy-Item -LiteralPath $bundle -Destination "dist/chibangarx-$env:GITHUB_REF_NAME.intoto.json"
+
+      - name: Publish the complete GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $assets = @(Get-ChildItem -Path dist -File | ForEach-Object { $_.FullName })
+          if ($assets.Count -lt 5) { throw 'The release asset set is incomplete.' }
+          gh release create $env:GITHUB_REF_NAME @assets --title $env:GITHUB_REF_NAME --notes-file RELEASE_NOTES.md --verify-tag --latest

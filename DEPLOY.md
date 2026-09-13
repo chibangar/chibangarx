@@ -2,37 +2,23 @@
 
 ## How to Release a New Version
 
-### Option 1: Using the Deploy Script (Recommended)
+### Processo obrigatório
 
-1. Run the deploy script with the new version:
-   ```powershell
-   .\scripts\deploy.ps1 -Version "2.40.0"
-   ```
-
-2. The script will:
-   - Update `package.json` with the new version
-   - Create a commit
-   - Create a git tag
-   - Push to GitHub
-   - Trigger GitHub Actions to build and publish the release
-
-### Option 2: Manual Release
-
-1. Update the version in `package.json`
-2. Commit changes:
+1. Update the version em `package.json`, crie as notas obrigatórias em `release-notes/pt-PT/vX.Y.Z.md` e faça merge para `main` depois de CI e CodeQL passarem.
+2. A partir do commit atual de `origin/main`, crie uma tag **anotada e assinada**:
    ```bash
-   git add package.json
-   git commit -m "Release v2.40.0"
+   git fetch origin main
+   git switch main
+   git pull --ff-only origin main
+   git tag -s v2.40.0 -m "Release v2.40.0"
    ```
-3. Create a tag:
+3. Verifique a tag localmente e envie apenas a tag:
    ```bash
-   git tag -a v2.40.0 -m "Release v2.40.0"
-   ```
-4. Push:
-   ```bash
-   git push origin main
+   git verify-tag v2.40.0
    git push origin v2.40.0
    ```
+
+Não use `workflow_dispatch`, criação manual de GitHub Release, nem tags leves/sem assinatura. O workflow cria uma única release publicada depois de validar a assinatura, versão, commit, qualidade, assinatura Authenticode, hashes, SBOM e proveniência.
 
 ## How Updates Work
 

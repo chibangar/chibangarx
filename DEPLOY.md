@@ -1,13 +1,187 @@
-# Deploy Guide
+# 🇵🇹 Guia de Deployment e Publicação - ChibangaRx PT Edition! (Português de Portugal)
 
-## How to Release a New Version
+<div align="center">
 
-### Option 1: Using the Deploy Script (Recommended)
+![GitHub](https://img.shields.io/badge/GitHub-blue?style=for-the-badge)  
+![License](https://img.shields.io/badge/License-GPLV3-blue?style=for-the-badge)  
 
-1. Run the deploy script with the new version:
-   ```powershell
-   .\scripts\deploy.ps1 -Version "2.40.0"
-   ```
+## 🎯 Para Utilizadores Finais (Auto-atualizações!)
+
+Atualizações descarregadas automaticamente a cada 30 segundos desde GitHub Releases. App verifica novas versões e instala silenciosamente sem reboot obrigatório!
+
+### Vantagens:
+- ✅ Instalação automática + segura  
+- ✅ Backup automático antes update  
+- ✅ Rollback fácil se algo der erro  
+
+---
+
+## 🛠️ Para Desenvolvedores (Build Manual Completa)
+
+### 1. Requisitos Sistema Mínimos:
+
+```powershell
+# Verificar requisitos ou instalar via winget:  
+winget install -e --id "OpenJS.Nodejs.LTS"     # NodeJS v20+ ou superior  
+winget install Pnpm                              # pnpm v9+v10+  
+```
+
+### 2. Clone Repositório (Primeira vez):
+
+```powershell
+git clone https://github.com/chibangar/chibangarx.git chibangarx-pt-repo && cd chibangarx-pt-repo  
+pnpm install --frozen-lockfile   # Instala +50 pacotes via pnpm
+```
+
+### 3. Modo Desenvolvimento (Hot-Relo):
+
+```powershell
+pnpm dev                         # Inicia Electron com hot-reload visual  
+pnpm run preview                # Abre navegador para inspecionar UI
+  
+# Hot-reload permite testar alterações sem stop/start completo do app!
+```
+
+### 4. Build Produção Final:
+
+```powershell  
+pnpm build                      # Compila outputs finais → dist/win-unpacked/
+ls .\dist\win-unpacked\*.exe   # Executável pronto para instalação!
+```
+
+---
+
+### 5. Publicação Release ao GitHub (Manual se necessário):
+
+#### Opção A: Usar Script de Deploy Automático (Recomendado)
+
+```powershell
+.\scripts\deploy.ps1 -Version "2.45.16"
+# Script faz tudo: build+commit+tag+push+publish release auto-tagged!
+```
+
+#### Opção B: Publicação Manual Passo-a-Passo
+
+```powershell
+# Step 1: Atualizar versão package.json primeiro  
+$version = "2.45.16"  # Substitua pela sua próxima versão
+Write-Host "Publicando ChibangaRx v$version" -ForegroundColor Green
+  
+# Step 2: Commit mudanças (se necessário)  
+git add .  
+git commit -m "Update to v$version - Build production release candidate"
+
+# Step 3: Criar tag nova release e push ao GitHub!  
+git tag -a "v$version" -m "Release oficial ChibangaRx v$version 🇵🇹 PT Edition!"
+git push origin $version --force
+git push --tags origin
+
+# Se quiser push direto com token personalizado (HTTPS):
+git push origin master 2>&1 | Tee-Object .\push-output.txt
+  
+# Alternativa via GitHub CLI se 'gh' instalado:
+gh auth login                   # Login primeiro  
+gh repo set-default chibangar/chibangarx  
+gh release create $version \
+    .\dist\win-unpacked\*.exe \  # Instala principal  
+    --title "ChibangaRx v$version - Otimização Windows completa 🇵🇹" \
+    --notesfile RELEASE_NOTES.md
+    
+# Upload release com asset + draft=false para publish direto:
+gh release edit $version --add-assets .\assets\novo-tema.zip
+```
+
+---
+
+### 6. GitHub Actions Automático (Pipeline CI/CD)!
+
+GitHub Actions automates tudo após push commits a main/master branch!  
+
+| Gatilho | Ação Executada | Descrição |  
+|---------|----------------|-----------|
+| `master` push | Build Completo | Roda tests vitest + build Vite final + release publish auto |  
+| Tag create | Publish Release | Cria release público no GitHub Releases page + assets attachados! |  
+
+**Arquivos CI/CD:**
+- `.github/workflows/ci.yml` → Pipeline principal (build+test+deploy)  
+- `.github/workflows/release.yml` → Publicação releases batch otímizado  
+- `build.js` → Script customizado de compilação com verificação pós-build  
+
+---
+
+<div style="border-left: 4px solid #28a745; padding-left: 15px; margin-top: 2rem;">
+## ✅ Checklist Build Antes do Release Oficial!
+
+Antes publicar release ao GitHub Releases, verifique:  
+- [ ] Todos testes vitest passando (`pnpm test`)  
+- [ ] Lint limpo sem warnings/eslintrc errors (`.eslint` rules ativadas)  
+- [ ] TypeScript compila sem erros críticos (`tsc --noEmit`)  
+- [ ] Executável roda em modo portable + instalador NSIS alternativos funcionais  
+- [ ] Release notes completo em PT-PT com todas funcionalidades listadas  
+- [ ] Build verificado manualmente rodando em Windows 10/11 limpo sem erros  
+
+---
+
+<div style="border-left: 4px solid #ffc107; padding-left: 20px;">
+## ⚠️ Notas Importantes!
+
+- Builds locais podem conter bugs/features não lançadas - **teste rigorosamente antes deploy produção** em sistemas reais de utilizadores  
+- Releases oficiais GitHub mais conservadoras (menos riscos para usuários gerais)  
+- GPL-V3 licença significa código auditável publicamente + contribuições bem-vindas!  
+
+---
+
+<div style="border-left: 4px solid #17a2b8; padding-left: 15px; margin-top: 1rem;">
+## 📝 Template Release Notes (Em Português PT!)
+
+Use este template ao publicar nova release no GitHub Releases page:
+
+```markdown
+# ChibangaRx vX.Y.Z - Atualizações Completas! ✨
+
+## Novidades Principais  
+- Otimizações GPU NVIDIA+AMD agora disponíveis automaticamente 🇵🇹
+- Telemetria desligada por padrão (configs PT edition 2025)
+
+### Correções de Bugs  
+- Fix: Issue #142 - Limpador não remove arquivos protegidos Windows Update  
+- Fix: Atualizações persistem após Windows update automático v2025+  
+
+### Melhorias UI/UX  
+- Tema "Spider-Man Boy" adicionado com visual personalizado 🎨  
+- Dashboard performance otimizada com indicadores real-time CPU/GPU  
+
+## Instalação Rápida
+```powershell
+irm https://raw.githubusercontent.com/chibangar/chibangarx/main/get.ps1 | iex
+# Ou descarregar instalador desde Releases page!
+
+## Créditos & Contribuições  
+Obrigado a todos que contribuíram com pull requests, bug reports e translations PT-PT! 🇵🇹✨  
+
+**[Ver commits](./commits) • [Release históricas](./releases)**
+
+---
+© 2025 ChibangaRx Team - GPL-V3 Open Source | Feito em Portugal 🇵🇹  
+```
+
+</div>
+
+---
+
+<div align="center">
+
+## 🇵🇹 **Feito com ❤️ pelo chibangar Team em Portugal!**
+
+**© 2025 ChibangaRx GPL-V3 Open Source**  🚀  
+*"Debloat Windows & Otimizar Performance - Feito para Utilizadores de PT"*  
+
+- 🔗 Releases: https://github.com/chibangar/chibangarx/releases/latest  
+- 💬 Suporte Issues: https://github.com/chibangar/chibangarx/issues  
+
+</div>
+
+---
 
 2. The script will:
    - Update `package.json` with the new version

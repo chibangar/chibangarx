@@ -2,12 +2,12 @@ import {
   app,
   shell,
   BrowserWindow,
-  ipcMain,
   desktopCapturer,
   globalShortcut,
   session,
   dialog,
 } from "electron"
+import { ipcMain } from "./secure-ipc"
 import { promises as fs } from "fs"
 import path, { join } from "path"
 import { pathToFileURL } from "url"
@@ -28,6 +28,8 @@ import { createTray } from "@main/tray"
 import Store from "electron-store"
 import { is } from "@main/utils"
 import { startDiscordRPC } from "@main/rpc"
+import { rendererDocumentUrl } from "./secure-ipc"
+import { isAllowedExternalUrl, isTrustedDocument, secureWebPreferences } from "./runtime-policy"
 
 console.log = log.log
 console.error = log.error
@@ -41,35 +43,6 @@ const store = new Store()
 let shouldQuit = false
 
 let selectedCaptureSourceId: string | null = null
-
-ipcMain.handle("clips:get-sources", async () => {
-  const sources = await desktopCapturer.getSources({
-    types: ["window", "screen"],
-    thumbnailSize: { width: 320, height: 180 },
-  })
-
-  return sources.map((source) => ({
-    id: source.id,
-    name: source.name,
-    thumbnail: source.thumbnail.toDataURL(),
-  }))
-})
-
-ipcMain.handle("clips:set-source", (_event: Electron.IpcMainInvokeEvent, sourceId: string) => {
-  selectedCaptureSourceId = sourceId
-})
-
-ipcMain.handle(
-  "clips:save",
-  async (_event: Electron.IpcMainInvokeEvent, payload: { data: ArrayBuffer }) => {
-    const clipsDirectory = join(app.getPath("videos"), "ChibangaRx Clips")
-    await fs.mkdir(clipsDirectory, { recursive: true })
-    const timestamp = new Date().toISOString().replace(/[.:]/g, "-")
-    const filePath = join(clipsDirectory, `clip-${timestamp}.webm`)
-    await fs.writeFile(filePath, Buffer.from(payload.data))
-    return filePath
-  },
-)
 
 ipcMain.handle("open-clips-folder", async () => {
   const clipsDirectory = join(app.getPath("videos"), "ChibangaRx Clips")
@@ -116,10 +89,8 @@ function createWindow(): void {
       autoHideMenuBar: true,
       icon: iconPath,
       webPreferences: {
+        ...secureWebPreferences(app.isPackaged),
         preload: join(__dirname, "../preload/index.js"),
-        devTools: app.isPackaged ? false : true,
-        sandbox: false,
-        webviewTag: true,
         spellcheck: false,
       },
     })
@@ -138,9 +109,19 @@ function createWindow(): void {
   }
 
   mainWindow.webContents.setWindowOpenHandler((details: Electron.HandlerDetails) => {
-    shell.openExternal(details.url)
+    if (isAllowedExternalUrl(details.url)) void shell.openExternal(details.url).catch(console.error)
     return { action: "deny" }
   })
+  mainWindow.webContents.on("will-navigate", (event, url) => {
+    if (!isTrustedDocument(url, rendererDocumentUrl())) event.preventDefault()
+  })
+  mainWindow.webContents.on("will-frame-navigate", (event) => {
+    if (!event.isMainFrame || !isTrustedDocument(event.url, rendererDocumentUrl())) event.preventDefault()
+  })
+  mainWindow.webContents.on("will-redirect", (event, url) => {
+    if (!isTrustedDocument(url, rendererDocumentUrl())) event.preventDefault()
+  })
+  mainWindow.webContents.on("will-attach-webview", (event) => event.preventDefault())
 
   if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
     console.log("[ChibangaRx]: Loading renderer from URL:", process.env["ELECTRON_RENDERER_URL"])
@@ -170,14 +151,18 @@ function createWindow(): void {
     },
   )
 }
-app.commandLine.appendSwitch("no-sandbox")
 app
   .whenReady()
   .then(() => {
-    session.defaultSession.setDisplayMediaRequestHandler(async (_request, callback) => {
+    session.defaultSession.setDisplayMediaRequestHandler(async (request, callback) => {
+      if (!mainWindow || request.frame !== mainWindow.webContents.mainFrame ||
+          !isTrustedDocument(request.frame.url, rendererDocumentUrl()) || !selectedCaptureSourceId) {
+        callback({})
+        return
+      }
       const sources = await desktopCapturer.getSources({ types: ["window", "screen"] })
       const selected = sources.find((source) => source.id === selectedCaptureSourceId)
-      callback({ video: selected ?? sources[0] })
+      callback(selected ? { video: selected } : {})
     })
     console.log("[ChibangaRx]: App ready, creating window...")
     try {
@@ -209,7 +194,7 @@ app
     })
 
     // Setup handlers de clips com buffer circular + metadados
-    setupClipsHandlers()
+    setupClipsHandlers((sourceId) => { selectedCaptureSourceId = sourceId })
 
     // Iniciar buffer circular por defeito (60 segundos)
     initClipBufferSystem({ enabled: true, duration: 60 })
@@ -309,7 +294,7 @@ app
     })
 
     ipcMain.handle("open-devtools", () => {
-      if (mainWindow) {
+      if (!app.isPackaged && mainWindow) {
         mainWindow.webContents.openDevTools()
       }
     })

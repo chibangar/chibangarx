@@ -1,4 +1,5 @@
-import { ipcMain } from "electron"
+import { } from "electron"
+import { ipcMain } from "./secure-ipc"
 import os from "os"
 import si from "systeminformation"
 import log from "electron-log"

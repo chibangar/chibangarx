@@ -1,5 +1,6 @@
 import { exec } from "child_process"
-import { ipcMain, IpcMainInvokeEvent } from "electron"
+import { IpcMainInvokeEvent } from "electron"
+import { ipcMain } from "./secure-ipc"
 import fs from "fs"
 import log from "electron-log"
 

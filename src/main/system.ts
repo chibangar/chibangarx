@@ -1,5 +1,6 @@
 import os from "os"
-import { app, ipcMain } from "electron"
+import { app, } from "electron"
+import { ipcMain } from "./secure-ipc"
 import si from "systeminformation"
 import { exec, execFile } from "child_process"
 import util from "util"

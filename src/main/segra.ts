@@ -1,4 +1,5 @@
-import { app, ipcMain, BrowserWindow, desktopCapturer } from 'electron'
+import { app, BrowserWindow, desktopCapturer } from 'electron'
+import { ipcMain } from "./secure-ipc"
 import { promises as fs } from 'fs'
 import { exec } from 'child_process'
 import { promisify } from 'util'

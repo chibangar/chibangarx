@@ -1,4 +1,5 @@
-import { ipcMain, app, IpcMainInvokeEvent } from "electron"
+import { app, IpcMainInvokeEvent } from "electron"
+import { ipcMain } from "./secure-ipc"
 import fs from "fs/promises"
 import fsSync from "fs"
 import path from "path"

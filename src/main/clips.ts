@@ -1,6 +1,8 @@
-import { app, ipcMain } from "electron"
+import { app, desktopCapturer } from "electron"
+import { ipcMain } from "./secure-ipc"
 import path from "path"
 import fs from "fs/promises"
+import { randomUUID } from "crypto"
 
 const clipsDirectory = path.join(app.getPath("videos"), "ChibangaRx Clips")
 
@@ -39,9 +41,8 @@ export function initClipBufferSystem(config: { enabled: boolean; duration: numbe
   })
 }
 
-export function setupClipsHandlers() {
+export function setupClipsHandlers(selectSource: (sourceId: string) => void = () => {}) {
   ipcMain.handle("clips:get-sources", async () => {
-    const { desktopCapturer } = require("electron")
     const sources = await desktopCapturer.getSources({
       types: ["window", "screen"],
       thumbnailSize: { width: 320, height: 180 },
@@ -55,6 +56,10 @@ export function setupClipsHandlers() {
   })
 
   ipcMain.handle("clips:set-source", async (_event: any, sourceId: string) => {
+    if (typeof sourceId !== "string") throw new Error("Invalid capture source")
+    const sources = await desktopCapturer.getSources({ types: ["window", "screen"] })
+    if (!sources.some((source) => source.id === sourceId)) throw new Error("Unknown capture source")
+    selectSource(sourceId)
     console.log("[Clips] Selected source:", sourceId)
     return { success: true, id: sourceId }
   })
@@ -63,12 +68,20 @@ export function setupClipsHandlers() {
     "clips:save",
     async (_event: any, payload: { data: ArrayBuffer; name?: string; game?: string | null }) => {
       try {
+        if (!payload || !(payload.data instanceof ArrayBuffer) || payload.data.byteLength > 512 * 1024 * 1024 ||
+            (payload.name !== undefined && (typeof payload.name !== "string" || payload.name.length > 200)) ||
+            (payload.game != null && (typeof payload.game !== "string" || payload.game.length > 200))) {
+          throw new Error("Invalid clip payload")
+        }
+        await fs.mkdir(clipsDirectory, { recursive: true })
+        if ((await fs.lstat(clipsDirectory)).isSymbolicLink()) throw new Error("Clip directory cannot be a symbolic link")
         const clipName = payload.name || (payload.game || "Clip") + " " + Math.floor(Date.now() / 1000)
-        const filePath = path.join(clipsDirectory, `${clipName}.webm`)
-        await fs.writeFile(filePath, Buffer.from(payload.data))
+        const clipId = randomUUID()
+        const filePath = path.join(clipsDirectory, `${clipId}.webm`)
+        await fs.writeFile(filePath, Buffer.from(payload.data), { flag: "wx" })
 
         const metadata: ClipMetadata = {
-          id: `clip-${Date.now()}`,
+          id: clipId,
           filePath,
           name: clipName,
           duration: 60,
@@ -81,7 +94,15 @@ export function setupClipsHandlers() {
         }
 
         const metadataPath = path.join(clipsDirectory, "clips.json")
-        await fs.writeFile(metadataPath, JSON.stringify([metadata], null, 2), "utf-8")
+        let previous: ClipMetadata[] = []
+        try {
+          if ((await fs.lstat(metadataPath)).isSymbolicLink()) throw new Error("Invalid metadata file")
+          previous = JSON.parse(await fs.readFile(metadataPath, "utf-8"))
+          if (!Array.isArray(previous)) throw new Error("Invalid metadata")
+        } catch (error: any) {
+          if (error.code !== "ENOENT") throw error
+        }
+        await fs.writeFile(metadataPath, JSON.stringify([...previous, metadata], null, 2), "utf-8")
 
         return filePath
       } catch (err: any) {

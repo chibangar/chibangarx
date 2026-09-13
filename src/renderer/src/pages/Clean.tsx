@@ -45,35 +45,8 @@ export const cleanups: CleanupType[] = [
     path: "C:\\Windows\\Temp",
     description: "Remove system and user temporary files.",
     icon: <FileX className="w-5 h-5" />,
-    script: `
-      $systemTemp = "$env:SystemRoot\\Temp"
-      $userTemp = [System.IO.Path]::GetTempPath()
-      $foldersToClean = @($systemTemp, $userTemp)
-      $totalSizeBefore = 0
-      
-      foreach ($folder in $foldersToClean) {
-          if (Test-Path $folder) {
-              $folderSize = (Get-ChildItem -Path $folder -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-              $totalSizeBefore += if ($folderSize) { $folderSize } else { 0 }
-              Get-ChildItem -Path $folder -Recurse -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-          }
-      }
-      
-      Write-Output $totalSizeBefore
-    `,
-    sizeScript: `
-      $systemTemp = "$env:SystemRoot\\Temp"
-      $userTemp = [System.IO.Path]::GetTempPath()
-      $foldersToClean = @($systemTemp, $userTemp)
-      $totalSize = 0
-      foreach ($folder in $foldersToClean) {
-          if (Test-Path $folder) {
-              $folderSize = (Get-ChildItem -Path $folder -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-              $totalSize += if ($folderSize) { $folderSize } else { 0 }
-          }
-      }
-      Write-Output $totalSize
-    `,
+    script: "cleanup-temp",
+    sizeScript: "size-temp",
   },
   {
     id: "prefetch",
@@ -81,23 +54,8 @@ export const cleanups: CleanupType[] = [
     path: "C:\\Windows\\Prefetch",
     description: "Delete files from the Windows Prefetch folder.",
     icon: <Gauge className="w-5 h-5" />,
-    script: `
-      $prefetch = "$env:SystemRoot\\Prefetch"
-      $totalSizeBefore = 0
-      if (Test-Path $prefetch) {
-          $totalSizeBefore = (Get-ChildItem -Path "$prefetch\\*" -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-          Remove-Item "$prefetch\\*" -Force -Recurse -ErrorAction SilentlyContinue
-      }
-      Write-Output $totalSizeBefore
-    `,
-    sizeScript: `
-      $prefetch = "$env:SystemRoot\\Prefetch"
-      $totalSize = 0
-      if (Test-Path $prefetch) {
-          $totalSize = (Get-ChildItem -Path "$prefetch\\*" -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-      }
-      Write-Output $totalSize
-    `,
+    script: "cleanup-prefetch",
+    sizeScript: "size-prefetch",
   },
   {
     id: "recyclebin",
@@ -105,23 +63,8 @@ export const cleanups: CleanupType[] = [
     path: "Recycle Bin",
     description: "Permanently remove files from the Recycle Bin.",
     icon: <Trash2 className="w-5 h-5" />,
-    script: `
-      $recycleBinSize = 0
-      $shell = New-Object -ComObject Shell.Application
-      $recycleBin = $shell.Namespace(0xA)
-      $recycleBinSize = ($recycleBin.Items() | Measure-Object -Property Size -Sum).Sum
-      if ($null -eq $recycleBinSize) { $recycleBinSize = 0 }
-      Clear-RecycleBin -Force -ErrorAction SilentlyContinue
-      Write-Output $recycleBinSize
-    `,
-    sizeScript: `
-      $recycleBinSize = 0
-      $shell = New-Object -ComObject Shell.Application
-      $recycleBin = $shell.Namespace(0xA)
-      $recycleBinSize = ($recycleBin.Items() | Measure-Object -Property Size -Sum).Sum
-      if ($null -eq $recycleBinSize) { $recycleBinSize = 0 }
-      Write-Output $recycleBinSize
-    `,
+    script: "cleanup-recyclebin",
+    sizeScript: "size-recyclebin",
   },
   {
     id: "windows-update",
@@ -129,23 +72,8 @@ export const cleanups: CleanupType[] = [
     path: "C:\\Windows\\SoftwareDistribution\\Download",
     description: "Remove Windows Update downloaded installation files.",
     icon: <Download className="w-5 h-5" />,
-    script: `
-      $windowsUpdateDownload = "$env:SystemRoot\\SoftwareDistribution\\Download"
-      $totalSizeBefore = 0
-      if (Test-Path $windowsUpdateDownload) {
-          $totalSizeBefore = (Get-ChildItem -Path "$windowsUpdateDownload\\*" -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-          Remove-Item "$windowsUpdateDownload\\*" -Force -Recurse -ErrorAction SilentlyContinue
-      }
-      Write-Output $totalSizeBefore
-    `,
-    sizeScript: `
-      $windowsUpdateDownload = "$env:SystemRoot\\SoftwareDistribution\\Download"
-      $totalSize = 0
-      if (Test-Path $windowsUpdateDownload) {
-          $totalSize = (Get-ChildItem -Path "$windowsUpdateDownload\\*" -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-      }
-      Write-Output $totalSize
-    `,
+    script: "cleanup-windows-update",
+    sizeScript: "size-windows-update",
   },
   {
     id: "thumbnails",
@@ -153,25 +81,8 @@ export const cleanups: CleanupType[] = [
     path: "C:\\Users\\<User>\\AppData\\Local\\Microsoft\\Windows\\Explorer",
     description: "Remove cached thumbnail images used by File Explorer.",
     icon: <Image className="w-5 h-5" />,
-    script: `
-      $thumbCache = "$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer"
-      $totalSizeBefore = 0
-      $thumbFiles = Get-ChildItem "$thumbCache\\thumbcache_*.db" -ErrorAction SilentlyContinue
-      if ($thumbFiles) {
-          $totalSizeBefore = ($thumbFiles | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-          Remove-Item "$thumbCache\\thumbcache_*.db" -Force -ErrorAction SilentlyContinue
-      }
-      Write-Output $totalSizeBefore
-    `,
-    sizeScript: `
-      $thumbCache = "$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer"
-      $totalSize = 0
-      $thumbFiles = Get-ChildItem "$thumbCache\\thumbcache_*.db" -ErrorAction SilentlyContinue
-      if ($thumbFiles) {
-          $totalSize = ($thumbFiles | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-      }
-      Write-Output $totalSize
-    `,
+    script: "cleanup-thumbnails",
+    sizeScript: "size-thumbnails",
   },
   {
     id: "errorreports",
@@ -179,23 +90,8 @@ export const cleanups: CleanupType[] = [
     path: "C:\\Users\\<User>\\AppData\\Local\\CrashDumps",
     description: "Remove error report and crash dump files.",
     icon: <Bug className="w-5 h-5" />,
-    script: `
-      $crashDumps = "$env:LOCALAPPDATA\\CrashDumps"
-      $totalSizeBefore = 0
-      if (Test-Path $crashDumps) {
-          $totalSizeBefore = (Get-ChildItem -Path "$crashDumps\\*" -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-          Remove-Item "$crashDumps\\*" -Force -Recurse -ErrorAction SilentlyContinue
-      }
-      Write-Output $totalSizeBefore
-    `,
-    sizeScript: `
-      $crashDumps = "$env:LOCALAPPDATA\\CrashDumps"
-      $totalSize = 0
-      if (Test-Path $crashDumps) {
-          $totalSize = (Get-ChildItem -Path "$crashDumps\\*" -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-      }
-      Write-Output $totalSize
-    `,
+    script: "cleanup-errorreports",
+    sizeScript: "size-errorreports",
   },
 ]
 
@@ -231,8 +127,8 @@ function Clean() {
         .map(async (cleanup) => {
           try {
             const result = await invoke({
-              channel: "run-powershell",
-              payload: { script: cleanup.sizeScript, name: `size-${cleanup.id}` },
+              channel: "maintenance:run",
+              payload: { operation: cleanup.sizeScript },
             })
             const resultStr = result?.output || "0"
             setCurrentSizes((prev) => ({
@@ -275,8 +171,8 @@ function Clean() {
       const toastId = toast.loading(`${t("clean.running")} ${translatedLabel}...`)
         try {
         const result = await invoke({
-          channel: "run-powershell",
-          payload: { script: cleanup.script, name: `cleanup-${cleanup.id}` },
+          channel: "maintenance:run",
+          payload: { operation: cleanup.script },
         })
 
         const resultStr = result?.output || "0"

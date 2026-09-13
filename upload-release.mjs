@@ -40,7 +40,7 @@ async function main() {
   console.log("📦 Iniciando upload aos GitHub Releases...\n");
 
   for (const file of files) {
-    const result = await uploadToGithub(token, "chibangar", "chibangarx", "387917510", file.name, file.path);
+    await uploadToGithub(token, "chibangar", "chibangarx", "387917510", file.name, file.path);
   }
 
   console.log("\n✅ Upload completo!");

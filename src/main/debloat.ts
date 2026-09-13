@@ -1,4 +1,5 @@
-import { ipcMain, app } from "electron"
+import { app } from "electron"
+import { ipcMain } from "./secure-ipc"
 import { executePowerShell } from "@main/powershell"
 import { mainWindow } from "@main/windowState"
 import log from "electron-log"

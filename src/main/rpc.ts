@@ -1,4 +1,5 @@
-import { ipcMain } from "electron"
+import { } from "electron"
+import { ipcMain } from "./secure-ipc"
 import { Client, PresenceBuilder, ActivityType } from "discord-rpc-new"
 import jsonData from "../../package.json"
 import log from "electron-log"

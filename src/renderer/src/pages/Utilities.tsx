@@ -50,7 +50,7 @@ const utilities: Utility[] = [
     icon: <HardDrive />,
     type: "button",
     buttonKey: "utilities.diskCleanerButton",
-    runScript: "cleanmgr /sagerun:1",
+    runScript: "run-utilities.diskCleaner",
   },
   {
     key: "utilities.storageSense",
@@ -58,25 +58,9 @@ const utilities: Utility[] = [
     state: true,
     icon: <Computer />,
     type: "toggle",
-    checkScript: `
-$path = "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy"
-if (Test-Path $path) {
-  $value = Get-ItemProperty -Path $path -Name "01" -ErrorAction SilentlyContinue
-  if ($value."01" -eq 1) { Write-Output "enabled" } else { Write-Output "disabled" }
-} else {
-  Write-Output "disabled"
-}`,
-    applyScript: `
-$path = "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy"
-if (-not (Test-Path $path)) {
-  New-Item -Path $path -Force | Out-Null
-}
-Set-ItemProperty -Path $path -Name "01" -Value 1`,
-    unapplyScript: `
-$path = "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy"
-if (Test-Path $path) {
-  Set-ItemProperty -Path $path -Name "01" -Value 0
-}`,
+    checkScript: "check-utilities.storageSense",
+    applyScript: "apply-utilities.storageSense",
+    unapplyScript: "unapply-utilities.storageSense",
   },
   {
     key: "utilities.systemInformation",
@@ -86,7 +70,7 @@ if (Test-Path $path) {
     icon: <Monitor />,
     type: "button",
     buttonKey: "utilities.systemInformationButton",
-    runScript: "msinfo32",
+    runScript: "run-utilities.systemInformation",
   },
   {
     key: "utilities.fastStartup",
@@ -94,24 +78,9 @@ if (Test-Path $path) {
     state: false,
     icon: <Zap />,
     type: "toggle",
-    checkScript: `
-$path = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power"
-if (Test-Path $path) {
-    $value = Get-ItemProperty -Path $path -Name "HiberbootEnabled" -ErrorAction SilentlyContinue
-    if ($value.HiberbootEnabled -eq 1) { Write-Output "enabled" } else { Write-Output "disabled" }
-} else {
-    Write-Output "disabled"
-}`,
-    applyScript: `
-powercfg /hibernate on
-$path = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power"
-if (!(Test-Path $path)) { New-Item -Path $path -Force | Out-Null }
-Set-ItemProperty -Path $path -Name "HiberbootEnabled" -Type DWord -Value 1
-`,
-    unapplyScript: `
-$path = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power"
-if (Test-Path $path) { Set-ItemProperty -Path $path -Name "HiberbootEnabled" -Type DWord -Value 0 }
-`,
+    checkScript: "check-utilities.fastStartup",
+    applyScript: "apply-utilities.fastStartup",
+    unapplyScript: "unapply-utilities.fastStartup",
   },
   {
     key: "utilities.graphicsDriver",
@@ -120,20 +89,7 @@ if (Test-Path $path) { Set-ItemProperty -Path $path -Name "HiberbootEnabled" -Ty
     icon: <GpuIcon />,
     type: "button",
     buttonKey: "utilities.graphicsDriverButton",
-    runScript: `
-$gpus = Get-PnpDevice -Class Display -Status OK -ErrorAction SilentlyContinue
-if ($gpus) {
-    foreach ($gpu in $gpus) {
-        Write-Output "Restarting $($gpu.FriendlyName)..."
-        Disable-PnpDevice -InstanceId $gpu.InstanceId -Confirm:$false
-        Start-Sleep -Seconds 2
-        Enable-PnpDevice -InstanceId $gpu.InstanceId -Confirm:$false
-    }
-    Write-Output "Graphics driver restart completed."
-} else {
-    Write-Output "No active display devices found."
-}
-`,
+    runScript: "run-utilities.graphicsDriver",
   },
   {
     key: "utilities.windowsSearch",
@@ -142,22 +98,7 @@ if ($gpus) {
     icon: <Monitor />,
     type: "button",
     buttonKey: "utilities.windowsSearchButton",
-    runScript: `
-try {
-    Get-AppxPackage Microsoft.Windows.Search | Reset-AppxPackage
-    Write-Output "Microsoft.Windows.Search restart completed."
-}
-catch {
-    Write-Output "An error occured while resetting Microsoft.Windows.Search."
-}
-try {
-    Get-AppxPackage MicrosoftWindows.Client.CBS | Reset-AppxPackage
-    Write-Output "MicrosoftWindows.Client.CBS restart completed."
-}
-catch {
-    Write-Output "An error occured while resetting MicrosoftWindows.Client.CBS."
-}
-`,
+    runScript: "run-utilities.windowsSearch",
   },
   {
     key: "utilities.powerPlan",
@@ -166,36 +107,12 @@ catch {
     icon: <Monitor />,
     type: "dropdown",
     options: ["Balanced", "High Performance", "Power Saver", "Ultimate Performance"],
-    checkScript: `
-$current = powercfg /getactivescheme
-if ($current -match "Power saver") { Write-Output "Power Saver" }
-elseif ($current -match "High performance") { Write-Output "High Performance" }
-elseif ($current -match "Ultimate Performance") { Write-Output "Ultimate Performance" }
-else { Write-Output "Balanced" }
-`,
+    checkScript: "check-utilities.powerPlan",
     applyScript: {
-      Balanced: `powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e`,
-      "High Performance": `powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c`,
-      "Power Saver": `powercfg /setactive a1841308-3541-4fab-bc81-f71556f20b4a`,
-      "Ultimate Performance": `
-$ultimatePlan = powercfg -l | Select-String "Ultimate Performance"
-
-if (-not $ultimatePlan) {
-    Write-Host "Ultimate Performance plan not found. Creating..."
-    powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
-} else {
-    Write-Host "Ultimate Performance plan already exists."
-}
-
-$ultimatePlanGUID = (powercfg -l | Select-String "Ultimate Performance").ToString().Split()[3]
-
-if ($ultimatePlanGUID) {
-    powercfg -setactive $ultimatePlanGUID 2>$null
-    Write-Host "Ultimate Performance power plan is now active."
-} else {
-    Write-Host "Failed to find Ultimate Performance plan GUID."
-}
-`,
+      Balanced: "apply-utilities.powerPlan-Balanced",
+      "High Performance": "apply-utilities.powerPlan-High Performance",
+      "Power Saver": "apply-utilities.powerPlan-Power Saver",
+      "Ultimate Performance": "apply-utilities.powerPlan-Ultimate Performance",
     },
   },
   {
@@ -206,10 +123,7 @@ if ($ultimatePlanGUID) {
     icon: <GlobeIcon />,
     type: "button",
     buttonKey: "utilities.flushDnsCacheButton",
-    runScript: `
-ipconfig /flushdns
-Write-Output "DNS cache flushed."
-`,
+    runScript: "run-utilities.flushDnsCache",
   },
   {
     key: "utilities.releaseIp",
@@ -219,10 +133,7 @@ Write-Output "DNS cache flushed."
     icon: <NetworkIcon />,
     type: "button",
     buttonKey: "utilities.releaseIpButton",
-    runScript: `
-ipconfig /release
-Write-Output "IP address released. You are temporarily disconnected from the network."
-`,
+    runScript: "run-utilities.releaseIp",
   },
   {
     key: "utilities.renewIp",
@@ -232,10 +143,7 @@ Write-Output "IP address released. You are temporarily disconnected from the net
     icon: <NetworkIcon />,
     type: "button",
     buttonKey: "utilities.renewIpButton",
-    runScript: `
-ipconfig /renew
-Write-Output "New IP address obtained successfully."
-`,
+    runScript: "run-utilities.renewIp",
   },
   {
     key: "utilities.fixBluetooth",
@@ -244,11 +152,7 @@ Write-Output "New IP address obtained successfully."
     icon: <BluetoothIcon />,
     type: "button",
     buttonKey: "utilities.fixBluetoothButton",
-    runScript: `
-Stop-Service -Name "bthserv" -Force -ErrorAction SilentlyContinue
-Start-Service -Name "bthserv" -ErrorAction SilentlyContinue
-Write-Output "Bluetooth services restarted."
-`,
+    runScript: "run-utilities.fixBluetooth",
   },
   {
     key: "utilities.systemFileChecker",
@@ -258,10 +162,7 @@ Write-Output "Bluetooth services restarted."
     icon: <Wrench />,
     type: "button",
     buttonKey: "utilities.systemFileCheckerButton",
-    runScript: `
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "sfc /scannow; Write-Output 'System File Checker completed'"
-
-`,
+    runScript: "run-utilities.systemFileChecker",
   },
   {
     key: "utilities.dismHealthRestore",
@@ -271,10 +172,7 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "sfc /scannow; Wri
     icon: <Star />,
     type: "button",
     buttonKey: "utilities.dismHealthRestoreButton",
-    runScript: `
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "dism /online /cleanup-image /restorehealth; Write-Output 'DISM Health Restore completed'"
-
-`,
+    runScript: "run-utilities.dismHealthRestore",
   },
   {
     key: "utilities.checkDisk",
@@ -284,10 +182,7 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "dism /online /cle
     icon: <HardDrive />,
     type: "button",
     buttonKey: "utilities.checkDiskButton",
-    runScript: `
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "chkdsk /f /r /x; Write-Output 'Check Disk completed'"
-
-`,
+    runScript: "run-utilities.checkDisk",
   },
   {
     key: "utilities.restartAudioService",
@@ -296,11 +191,7 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "chkdsk /f /r /x; 
     icon: <Volume2Icon />,
     type: "button",
     buttonKey: "utilities.restartAudioServiceButton",
-    runScript: `
-Stop-Service -Name "Audiosrv" -Force -ErrorAction SilentlyContinue
-Start-Service -Name "Audiosrv" -ErrorAction SilentlyContinue
-Write-Output "Audio service restarted."
-`,
+    runScript: "run-utilities.restartAudioService",
   },
   {
     key: "utilities.networkReset",
@@ -310,11 +201,7 @@ Write-Output "Audio service restarted."
     icon: <WifiIcon />,
     type: "button",
     buttonKey: "utilities.networkResetButton",
-    runScript: `
-netsh winsock reset
-netsh int ip reset
-Write-Output "Network stack reset. Restart your PC to apply changes."
-`,
+    runScript: "run-utilities.networkReset",
   },
 ]
 
@@ -345,10 +232,9 @@ function Utilities() {
           setLoadingStates((prev) => ({ ...prev, [util.key]: true }))
           try {
             const result = await invoke({
-              channel: "run-powershell",
+              channel: "maintenance:run",
               payload: {
-                script: util.checkScript,
-                name: `check-${util.key}`,
+                operation: util.checkScript,
               },
             })
             if (result.success) {
@@ -365,10 +251,9 @@ function Utilities() {
           setLoadingStates((prev) => ({ ...prev, [util.key]: true }))
           try {
             const result = await invoke({
-              channel: "run-powershell",
+              channel: "maintenance:run",
               payload: {
-                script: util.checkScript,
-                name: `check-${util.key}`,
+                operation: util.checkScript,
               },
             })
             if (result.success) {
@@ -402,10 +287,9 @@ function Utilities() {
       )
       try {
         const result = await invoke({
-          channel: "run-powershell",
+          channel: "maintenance:run",
           payload: {
-            script,
-            name: `${newState ? "apply" : "unapply"}-${util.key}`,
+            operation: script,
           },
         })
         if (!result.success) {
@@ -443,10 +327,9 @@ function Utilities() {
         const loadingToastId = toast.loading(`${t("utilities.applying")} ${t(util.key)}: ${value}...`)
         try {
           const result = await invoke({
-            channel: "run-powershell",
+            channel: "maintenance:run",
             payload: {
-              script,
-              name: `apply-${util.key}-${value}`,
+              operation: script,
             },
           })
           if (!result.success) {
@@ -479,10 +362,9 @@ function Utilities() {
       const loadingToastId = toast.loading(`${t("utilities.running")} ${t(util.key)}...`)
       try {
         const result = await invoke({
-          channel: "run-powershell",
+          channel: "maintenance:run",
           payload: {
-            script: util.runScript,
-            name: `run-${util.key}`,
+            operation: util.runScript,
           },
         })
         if (!result.success) {

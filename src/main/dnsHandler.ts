@@ -1,4 +1,5 @@
-import { ipcMain, IpcMainInvokeEvent } from "electron"
+import { IpcMainInvokeEvent } from "electron"
+import { ipcMain } from "./secure-ipc"
 import { executePowerShell } from "@main/powershell"
 import { exec } from "child_process"
 import log from "electron-log"

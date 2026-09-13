@@ -1,25 +1,30 @@
 import { promises as fsp } from "fs"
 import path from "path"
 import util from "util"
-import { exec, spawn } from "child_process"
-import { app, ipcMain } from "electron"
+import { execFile, spawn } from "child_process"
+import { app, } from "electron"
+import { ipcMain } from "./secure-ipc"
 import { mainWindow } from "@main/windowState"
 import fs from "fs"
 import log from "electron-log"
-const execPromise = util.promisify(exec)
+import { randomUUID } from "crypto"
+import { resolveOperation } from "./operations"
+import { confirmOperation } from "./secure-ipc"
+const execFilePromise = util.promisify(execFile)
 
 console.log = log.log
 console.error = log.error
 console.warn = log.warn
 
 function isSafeId(id: string): boolean {
-  return /^[a-zA-Z0-9._-]+$/.test(id)
+  return typeof id === "string" && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(id)
 }
 
 function ensureDirectoryExists(dirPath) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true })
   }
+  if (fs.lstatSync(dirPath).isSymbolicLink()) throw new Error("Script directory cannot be a symbolic link")
 }
 
 export async function executePowerShell(_, props) {
@@ -28,16 +33,16 @@ export async function executePowerShell(_, props) {
   try {
     const tempDir = path.join(app.getPath("userData"), "scripts")
     ensureDirectoryExists(tempDir)
-    const tempFile = path.join(tempDir, `${name}-${Date.now()}.ps1`)
+    const tempFile = path.join(tempDir, `${randomUUID()}.ps1`)
 
     const fullScript = script + "\nexit $LASTEXITCODE"
-    await fsp.writeFile(tempFile, fullScript)
+    await fsp.writeFile(tempFile, fullScript, { flag: "wx", mode: 0o600 })
 
-    const { stdout, stderr } = await execPromise(
-      `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "${tempFile}"`,
-    )
-
-    await fsp.unlink(tempFile).catch(console.error)
+    const { stdout, stderr } = await execFilePromise(
+      path.join(process.env.SystemRoot || "C:\\Windows", "System32", "WindowsPowerShell", "v1.0", "powershell.exe"),
+      ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", tempFile],
+      { windowsHide: true, timeout: 300_000, maxBuffer: 4 * 1024 * 1024 },
+    ).finally(() => fsp.unlink(tempFile).catch(console.error))
 
     if (stderr) {
       console.warn(`PowerShell stderr [${name}]:`, stderr)
@@ -74,20 +79,21 @@ export function executePowerShellStreaming(
   return new Promise(async (resolve) => {
     const tempDir = path.join(app.getPath("userData"), "scripts")
     ensureDirectoryExists(tempDir)
-    const tempFile = path.join(tempDir, `${name}-${Date.now()}.ps1`)
+    const tempFile = path.join(tempDir, `${randomUUID()}.ps1`)
 
     const fullScript = script + "\nexit $LASTEXITCODE"
-    await fsp.writeFile(tempFile, fullScript)
+    await fsp.writeFile(tempFile, fullScript, { flag: "wx", mode: 0o600 })
 
     let fullOutput = ""
 
-    const child = spawn("powershell.exe", [
+    const child = spawn(path.join(process.env.SystemRoot || "C:\\Windows", "System32", "WindowsPowerShell", "v1.0", "powershell.exe"), [
       "-NoProfile",
+      "-NonInteractive",
       "-ExecutionPolicy",
       "Bypass",
       "-File",
       tempFile,
-    ])
+    ], { windowsHide: true, timeout: 900_000 })
 
     child.stdout?.on("data", (data: Buffer) => {
       const text = data.toString()
@@ -121,29 +127,6 @@ export function executePowerShellStreaming(
   })
 }
 
-async function runPowerShellInWindow(_, { script, name = "script", noExit = true }) {
-  try {
-    const tempDir = path.join(app.getPath("userData"), "scripts")
-    ensureDirectoryExists(tempDir)
-
-    const tempFile = path.join(tempDir, `${name}-${Date.now()}.ps1`)
-    await fsp.writeFile(tempFile, script)
-    const noExitFlag = noExit ? "-NoExit" : ""
-    const command = `start powershell.exe ${noExitFlag} -ExecutionPolicy Bypass -File "${tempFile}"`
-
-    exec(command, (error) => {
-      if (error) {
-        console.error(`Error launching PowerShell window [${name}]:`, error)
-      }
-    })
-
-    return { success: true }
-  } catch (error: any) {
-    console.error(`Error in runPowerShellInWindow [${name}]:`, error)
-    return { success: false, error: error.message }
-  }
-}
-
 export async function checkChocolatey(): Promise<{ success: boolean; installed: boolean }> {
   try {
     const chocoPath = path.join("C:\\ProgramData\\chocolatey\\bin\\choco.exe")
@@ -161,8 +144,11 @@ export async function checkChocolatey(): Promise<{ success: boolean; installed: 
 }
 
 export const setupPowerShellHandlers = (): void => {
-  ipcMain.handle("run-powershell-window", runPowerShellInWindow)
-  ipcMain.handle("run-powershell", executePowerShell)
+  ipcMain.handle("maintenance:run", async (event, request: unknown) => {
+    const operation = resolveOperation(request)
+    if (operation.requiresConfirmation) await confirmOperation((request as { operation: string }).operation)
+    return executePowerShell(event, { script: operation.script, name: "maintenance" })
+  })
   ipcMain.handle("check-chocolatey", async () => checkChocolatey())
   ipcMain.handle("install-chocolatey", async (event) => {
     try {
@@ -181,6 +167,10 @@ export const setupPowerShellHandlers = (): void => {
     }
   })
   ipcMain.handle("handle-apps", async (event, { action, apps, source }) => {
+    if (!["install", "uninstall", "check-installed"].includes(action) ||
+        !["Chocolatey", "Winget"].includes(source) || !Array.isArray(apps) ||
+        apps.length > 200 || !apps.every(isSafeId)) throw new Error("Invalid package request")
+    if (action !== "check-installed") await confirmOperation(`${action}: ${apps.join(", ")}`)
     switch (action) {
       case "install":
         for (const appId of apps) {
@@ -316,8 +306,7 @@ export const setupPowerShellHandlers = (): void => {
 }
 
 export const cleanupPowerShellHandlers = (): void => {
-  ipcMain.removeHandler("run-powershell-window")
-  ipcMain.removeHandler("run-powershell")
+  ipcMain.removeHandler("maintenance:run")
   ipcMain.removeHandler("check-chocolatey")
   ipcMain.removeHandler("install-chocolatey")
   ipcMain.removeHandler("handle-apps")

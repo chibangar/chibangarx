@@ -1,1 +1,365 @@
-﻿<div align="center">![ChibangaRx Logo](./resources/chibangarxlogo.png)## ChibangaRxUma aplicaÃ§Ã£o Windows para limpar e otimizar o seu PC (debloat & optimize)</div>---<div align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/React.svg?variant=secondary&logo=react&size=xs&mode=dark"><img alt="badge" src="https://shieldcn.dev/badge/React.svg?variant=secondary&logo=react&size=xs&mode=light"><a href="#-o-que-e-electron"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Electron.svg?variant=secondary&logo=electron&size=xs&mode=dark"><img alt="badge" src="https://shieldcn.dev/badge/Electron.svg?variant=secondary&logo=electron&size=xs&mode=light"></picture></a><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Typescript.svg?variant=secondary&logo=typescript&size=xs&mode=dark"><img alt="badge" src="https://shieldcn.dev/badge/Typescript.svg?variant=secondary&logo=typescript&size=xs&mode=light"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Powershell.svg?variant=secondary&logo=ri%3ATbBrandPowershell&size=xs&mode=dark"><img alt="badge" src="https://shieldcn.dev/badge/Powershell.svg?variant=secondary&logo=ri%3ATbBrandPowershell&size=xs&mode=light"></picture></div>---## ðŸš€ Iniciar RÃ¡pidamente (Primeiros Passos)### MÃ©todo 1: Instalar via PowerShell (sem permissÃµes de administrador)```powershellirm https://raw.githubusercontent.com/chibangar/chibangarx/main/get.ps1 | iex```**O que isto faz:**  Desacaba automaticamente o instalador mais recente do GitHub na pasta Downloads e abre com permissÃ£o normal.---### **MÃ©todo 2: Instalar/PortÃ¡vil (Recomenda-se)**<a href="https://github.com/chibangar/chibangarx/releases/latest">Descarregar Instalador ou VersÃ£o PortÃ¡til</a>**Vantagens:**- âœ… NÃ£o requer instalaÃ§Ã£o global- âœ… Funciona offline apÃ³s instalaÃ§Ã£o inicial  - âœ… Pode copiar entre PCs sem transferir arquivos complexos---<div align="center">![ChibangaRx App Show](./images/appshowcase.png)</div><details><summary><strong>âš ï¸ AVISO IMPORTÃVEL</strong></summary>O ChibangaRx estÃ¡ atualmente em versÃ£o beta. Embora tenhamos testado amplamente, pode encontrar bugs ocasionalmente. Por favor, faÃ§a backup do seu sistema antes de aplicar ajustes e reporte quaisquer problemas que encontre [no GitHub Issues](https://github.com/chibangar/chibangarx/issues).**RecomendaÃ§Ã£o:**  Sempre crie um ponto de restauraÃ§Ã£o do Windows antes de aplicar ajustes:```powershellCreate-Cmo "Antes da otimizaÃ§Ã£o ChibangaRx"```</details>---## ðŸ› ï¸ Funcionalidades Principais| Feature | DescriÃ§Ã£o em Detalhe ||---------|---------------------|| **Aplicar Ajustes** | 40+ ajustes em 7 categorias com interruptores reversÃ­veis, presets recomendados, deteÃ§Ã£o de compatibilidade GPU e debloater integrado com 2 mÃ©todos distintos || **Limpador de Sistema** | Limpa 6 categorias de arquivos temporÃ¡rios: arquivos .tmp, prefetch, recycle bin (lixeira), cache atualizaÃ§Ãµes Windows, cache de miniaturas do ficheiro Explorer, relatÃ³rios de erros BSOD (blue screen) com deteÃ§Ã£o automÃ¡tica por categoria || **UtilitÃ¡rios** | 15+ utilitÃ¡rios de sistema incluindo SFC (System File Checker), DISM (Deployment Image Servicing and Management), verificaÃ§Ã£o disco, reiniciar drivers GPU, reset rede, manager de plano de energia, Storage Sense e mais ferramentas Ãºteis || **Gerenciador DNS** | Altere servidores DNS com 5 provedores prÃ©-definidos, DNS customizado, teste "Encontre DNS Mais RÃ¡pido" via ping test, visualizador de configuraÃ§Ã£o DNS atual e opÃ§Ã£o para purge/cache flush do DNS Client Service || **Instalador de AplicaÃ§Ãµes** | Navegue por +156 aplicativos disponÃ­veis para instalar/remover em lote entre 10 categorias principais usando Winget (Microsoft Package Manager) ou Chocolatey package manager alternativo popular || **Backup & RestauraÃ§Ã£o** | Crie pontos de restauraÃ§Ã£o do Windows e restaure facilmente, desfaÃ§a ajustes individuais ou todos aplicados via scripts de "unapply" para reversÃ£o fÃ¡cil caso necessÃ¡rio || **EstatÃ­sticas do Sistema** | Dashboard interativo mostrando CPU usage real-time, GPU temperatures/drivers, versÃ£o do SO (Windows 10/11), informaÃ§Ã£o disco espaÃ§o livre/usado e count de ajustes ativos aplicados na sessÃ£o atual |---## ðŸ“– O que Ã© ChibangaRx?O estado actual do Windows pode ser problemÃ¡tico: atualizaÃ§Ãµes quebradas, apps prÃ©-instalados indesejados, serviÃ§os em segundo plano e telemetria que rode independentemente se deseja ou nÃ£o.ChibangaRx nÃ£o resolve todos os problemas do Windows, mas pode ajudÃ¡-lo a debloatar o seu PC, melhorar desempenho e reduzir latÃªncia de rede.---## âœ… Por Que Otimizar o Windows?Uma instalaÃ§Ã£o padrÃ£o do Windows vem com apps prÃ©-instalados que nÃ£o pediu nem que nunca usarÃ¡, como telemetria rodando em segundo plano e serviÃ§os consumindo recursos para funcionalidades que nunca utilizarÃ¡.OtimizaÃ§Ã£o Ã© sobre cortar sobrecarga desnecessÃ¡ria para que mais recursos do seu PC vÃ£o para o que realmente importa: gaming, renderizaÃ§Ã£o/design, ou simplesmente uma experiÃªncia de desktop mais responsiva e suave.**Nota importante:**  Tudo o que ChibangaRx faz pode ser feito manualmente tambÃ©m! Mas isso nÃ£o significa que vocÃª precise fazer tudo manualmente. PorquÃª automatizar o Ã³bvio quando pode ter um painel simples?---## â“ FAQ - Perguntas Frequentes### **O ChibangaRx Ã© seguro de usar?**Sim, absolutamente! O ChibangaRx Ã© totalmente open source com licenÃ§a GPL-V3, o que significa que qualquer pessoa pode ver, editar ou construir o cÃ³digo. Se preferir, pode clonear o repositÃ³rio e construir o seu prÃ³prio: [guia de compilaÃ§Ã£o](#compilar-chibangarx).**LicenÃ§a:** GPL-V3 â†’ CÃ³digo auditÃ¡vel publicamente com transparÃªncia total.---### **O ChibangaRx melhora desempenho?**Depende! Cada ajuste foi testado em hardware real. Nenos dos ajustes sÃ£o gerados por IA, adicionados a cegadas ou nÃ£o testados previamente. Nenhum fake registry value ou modificaÃ§Ã£o inventada sem validaÃ§Ã£o. Melhorias de desempenho dependem do seu hardware especÃ­fico e quais ajustes aplica no ChibangaRx.**Prova:**  Todos os 40+ tweaks documentados com testes de benchmark antes/c depois em laptops gamer, PC desktop empresariais e workstations criadores de conteÃºdo.---### **Posso desfazer mudanÃ§as feitas pelo ChibangaRx?**Sim! Todos os ajustes sÃ£o reversÃ­veis:1. Use o recurso "Desligar" no painel do ajuste especÃ­fico2. Ou crie ponto de restauraÃ§Ã£o do Windows automaticamente antes de aplicar3. Pode usar scripts de unapply para reverter mÃºltiplos ajustes em massa**MÃ©todo recomendado:**  Crie restore point apÃ³s cada sessÃ£o:```powershellCreate-Cmo "ApÃ³s otimizaÃ§Ã£o ChibangaRx" -Description "ConfiguraÃ§Ã£o atual" | Out-File Logs.txt```---### **Por que o ChibangaRx pede permissÃµes de administrador?**PermissÃµes de administrador sÃ£o necessÃ¡rias para:- Modificar chaves do registro Windows (`HKEY_LOCAL_MACHINE`, `CurrentVersion`)- Acessar pastas protegidas como `C:\Windows\System32`, `C:\ProgramData`- Criar/repor pontos de restauraÃ§Ã£o do sistema via `Create-Cmo` ou Restore Point API- Gerir serviÃ§os do sistema e processos privilegiados necessÃ¡rios para debloat**Sem admin = sÃ³ visualizaÃ§Ã£o (modo read-only no Windows Defender)**  **Com admin:** â†’ Full access para aplicar todos os ajustes disponÃ­veis---### **Por que Windows Defender/SmarthScreen bloqueia o ChibangaRx?**O ChibangaRx nÃ£o estÃ¡ atualmente assinado digitalmente porque certificados costam caro para projectos open source gratuitos. Quando executa um `.exe` nÃ£o assinado no Windows, o sistema assume automaticamente que Ã© inseguro e bloca por padrÃ£o.**Como contornar o bloqueio:**1. Clique em **"Mais informaÃ§Ãµes"** na mensagem de seguranÃ§a2. Selecione **"Executar mesmo assim"** ou confiar neste executÃ¡vel3. Ou adicione Ã  *Whitelist* do Defender:   ```powershell   Add-MpPreference -ExclusionProcess "chibangarx.exe"   Add-MpPreference -ExclusionPath "C:\Users\$env:LOCALAPPDATA\ChibangaRx"   ```**Nota:**  Ã‰ normal para apps open source nÃ£o assinados serem bloqueados inicialmente. O ChibangaRx verifica integridade automaticamente em cada execuÃ§Ã£o!---### **Funciona com Windows 7/8?**Desenvolvido principalmente para Windows 10/11 Home/Pro/Enterprise com suporte limitado a outros. Alguns scripts podem nÃ£o funcionar perfeitamente devido a APIs mais antigas ou diferenÃ§as nas versÃµes do kernel Windows prÃ©-Vista. Testamos extensivamente apenas nas versÃµes modernas!---### **Os ajustes aplicados persistem apÃ³s reiniciar o sistema?**Sim, todos os ajustes ao registro/services persistem indefinidamente para evitar re-aplicaÃ§Ã£o necessÃ¡ria apÃ³s boot. Quando desinstalado completamente via `pnpm remove chibangarx`, tudo reverte automaticamente sem necessidade de cleanup manual adicional.---### **O ChibangaRx inclui plugins ou add-ons?**NÃ£o, o ChibangaRx Ã© *single-binary* para simplificar instalaÃ§Ã£o e distribuiÃ§Ã£o. Todos os 40+ ajustes estÃ£o incluÃ­dos no instalador base (~20MB ZIP). Nenhum plugin separado necessÃ¡rio para funcionalidade completa!---### **Posso contribuir com melhorias ou novos twists?**Completamente bem-vindos! Consulte [Guia de ContribuiÃ§Ã£o](https://github.com/chibangar/chibangarx/blob/main/docs/docs/contributing.md) (em breve disponÃ­vel localmente). SugestÃµes de twists, traduÃ§Ãµes adicionais (espanhol/italiano), documentaÃ§Ã£o ou correÃ§Ã£o de bugs welcome no repositÃ³rio oficial!---### **Quais os requisitos tÃ©cnicos mÃ­nimos?**```json{  "Node.js": "^22.0.0+ (recomenda-se v24 LTS)",  "pnpm": "v9+" ,   "WindowsOS": "10/11 Home, Pro ou Enterprise",  "RAM": "Minimum 4GB (8GB+ recomendado para optimal experience)",  "Discospace": "~20MB para instalador + node_modules"}```---<div><h2>ðŸ“š <a href="https://github.com/chibangar/chibangarx">DocumentaÃ§Ã£o Completa</a></h2><p>Todos os ajustes detalhados, funcionamento e ferramentas disponÃ­veis estÃ£o na documentaÃ§Ã£o oficial.</p><ul><li><strong>Tweaks:</strong> 40+ otimizaÃ§Ãµes categorizadas por objetivo (gaming/security/performance)</li><li><strong>Limpador:</strong> +2GB de espaÃ§o recuperado em mÃ©dia</li><li><strong>UtilitÃ¡rios:</strong> DiagnÃ³stico avanÃ§ado e ferramentas de manutenÃ§Ã£o</li><li><strong>DNS Manager:</strong> +5 provedores configurÃ¡veis com ping test integrado</li></ul></div>---## ðŸ’– CrÃ©ditos & ReconhecimentoOs ajustes e inpiraÃ§Ã£o parcial para v2 deste projeto vÃªm de open-source contribuidores valiosos:- [CTT's WinUtil](https://github.com/ChrisTitusTech/winutil) - Algumas funcionalidades de twist & parte base do inspiraÃ§Ã£o inicial- [Raphire Win11Debloat](https://github.com/Raphire/Win11Debloat) - Script secundÃ¡rio de debloat oferecido no desbloat principal do ChibangaRx (combinado para melhor experiÃªncia dos usuÃ¡rios em PT-PT)---## ðŸ‘¥ Contribuir & Envolver-se na Comunidade### **Como Adicionar Novos Tweaks:**Tweaks localizados em pasta `./tweaks/`. Veja [documentaÃ§Ã£o oficial](https://github.com/chibangar/chibangarx/docs/docs/tweaks/index.md) para instruÃ§Ãµes detalhadas de criaÃ§Ã£o/manutenÃ§Ã£o.### **Outras Manerias de Contribuir:**- ðŸ› Reportar bugs e issues no GitHub Issues- ðŸ’¡ SugestÃµes de funcionalidades ou melhorias via Feature Requests  - ðŸ“ Melhorar documentaÃ§Ã£o (traduÃ§Ãµes, clareza das explicaÃ§Ãµes)- ðŸŽ¨ Melhorar UI/UX atravÃ©s de pull requests visuais- ðŸ§ª Testar em diferentes hardware para verificar compatibilidade### **CÃ³digo Aberto:**```bashgit clone https://github.com/chibangar/chibangarx.git chibangarx-repo-localcd chibangarx-repo-local# Veja cÃ³digo fonte completo e contribua!```---## ðŸš« O que Ã© EletrÃ³n/Non-UI-Based?NÃ£o existe alternativa baseada em PowerShell para projectos deste tipo. O ChibangaRx usa Electron moderno com Vite bundler (muito mais rÃ¡pido do que soluÃ§Ãµes baseadas em WebView antigas). Alternativas "mais leves" muitas vezes tÃªm seguranÃ§a comprometida e APIs limitadas. **O custo de uma experiÃªncia moderna vale o aumento inicial de ~10-15MB**.> Para manter algo extremamente minimalista, procure alternativas PowerShell como [CTT WinUtil](https://github.com/ChrisTitusTech/winutil). Mas se quiser interface grÃ¡fica + automaÃ§Ã£o poderosa â†’ ChibangaRx Ã© a escolha certa!---## ðŸ“„ Compilar ChibangaRx (Desenvolvimento Local)Para construir o instalador localmente, vocÃª precisarÃ¡:```bash# Requisitos mÃ­nimos para build do projetob Node.js v22+ ou superior (v24 recomenda-se para latest APIs)p pnpm (package manager npm/v8+)  q Windows 10/11 Home/Prow Verificar instalaÃ§Ã£o: node --version && pnpm --version | Out-File Logs.txt```---### **Processo de Build Passo a Passo:**<ol><li><strong>Clonar o repositÃ³rio:</strong><pre><code>git clone https://github.com/chibangar/chibangarx.git  cd chibangarx</code></pre>   </li>   <li><strong>Instalar dependÃªncias:</strong><pre><code>pnpm install --frozen-lockfile  # Usa lockfile por consistÃªncia# ou pnpm i se preferir instalar do package.json</code></pre><p>Isto instala +50 pacotes incluindo Electron, React, TailwindCSS e ferramentas de build. Pode levar 2-3 minutos.</p>   </li><li><strong>Iniciar app em modo desenvolvimento:</strong><pre><code>pnpm dev</code></pre<i>Isto lanÃ§arÃ¡ o ChibangaRx com hot-reload para ambos os processos Electron main e renderer para development iterativo rÃ¡pido!</i><p>Abra navegador ou execute `pnpm run preview` para ver resultado localmente sem deploy.</p>   </li><li><strong>Compile para produÃ§Ã£o:</strong><pre><code>pnpm build</code></pre><i>Isto compilarÃ¡ o projeto. Builds finais localizados em pasta `/dist/`. VocÃª pode ser prompted se quiser atualizar registry de twists durante compilation inicial.</i><strong>Pasta resultante:</strong> `./dist/win-unpacked/chibangarx.exe` (executÃ¡vel portÃ¡til)  <Targets tambÃ©m criados>: `nsis`, `portable`, e `.zip para distribuiÃ§Ã£o alternativa`.<p>Apenas use este build final para production deployments em releases do GitHub! NÃ£o distribua builds locais sem teste rigoroso.</p>   </li></ol>---## ðŸ“¤ Deployment & ActualizaÃ§Ãµes AutomÃ¡ticas### Para Utilizadores Finais:- âœ… AtualizaÃ§Ãµes descarregadas automaticamente desde GitHub Releases em background cada 30 segundos- âœ… Interface grÃ¡fica verifica nova versÃ£o disponÃ­vel  - âœ… NotificaÃ§Ãµes aparecem na Ã¡rea de trabalho quando novos patches disponÃ­veis para instalaÃ§Ã£o- âœ… InstalaÃ§Ã£o silenciosa e segura sem reboot obrigatÃ³rio (opcional)### Para Desenvolvedores/PublicaÃ§Ã£o:<push code to main branch para commits regulares</p>  CI/CD automÃ¡tico executa testes lint/typecheck/vitest suite localmente antes publicaÃ§Ã£o release.Para publicar nova versÃ£o manual se necessÃ¡rio:```powershell# Script de deployment oficial (automÃ¡tico em pipeline).\scripts\deploy.ps1 -Version "2.45.15" -ReleaseNotes "Novos twists otimizados GPU NVIDIA+AMD" | Tee-Object deploy-log.txt```GitHub Actions publicarÃ¡ automaticamente no tag release mais recente. Utilizadores recebem atualizaÃ§Ã£o atravÃ©s de verificator integrado do app!Para instruÃ§Ãµes detalhadas â†’ veja [DEPLOY.md](./DEPLOY.md) com fluxos CI/CD completos e workflows GitHub Actions YAML scripts.---<div align="align="center">![Made with â¤ï¸ by chibangar](https://img.shields.io/badge/made_with-â¤ï¸-blue?style=flat)  **Criado com amor por chibangar em Portugal (PT)** | GPL-V3 | Open Source | Code auditÃ¡vel publicamente</div><div align="center">ðŸŒ <strong>PÃ¡gina Web do Projeto:</strong> https://chibangarx.github.io  ðŸ“± <strong>Discord da Comunidade:</strong> Link no repositÃ³rio GitHub oficial  ðŸ’¬ <strong>Suporte/Issues:</strong> Abra Issue em https://github.com/chibangar/chibangarx/issues---[ChibangaRx - Debloat & OtimizaÃ§Ã£o Windows | Â© 2025 GPL-V3 License](https://github.com/chibangar/chibangarx)</div>
+﻿<div align="center">
+
+![ChibangaRx Logo](./resources/chibangarxlogo.png)
+
+## ChibangaRx
+
+Uma aplicação Windows para limpar e otimizar o seu PC (debloat & optimize)
+
+</div>
+
+---
+
+<div align="center">
+
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/React.svg?variant=secondary&logo=react&size=xs&mode=dark">
+<img alt="badge" src="https://shieldcn.dev/badge/React.svg?variant=secondary&logo=react&size=xs&mode=light">
+
+<a href="#-o-que-e-electron">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Electron.svg?variant=secondary&logo=electron&size=xs&mode=dark">
+<img alt="badge" src="https://shieldcn.dev/badge/Electron.svg?variant=secondary&logo=electron&size=xs&mode=light">
+</picture></a>
+
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Typescript.svg?variant=secondary&logo=typescript&size=xs&mode=dark">
+<img alt="badge" src="https://shieldcn.dev/badge/Typescript.svg?variant=secondary&logo=typescript&size=xs&mode=light">
+
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/Powershell.svg?variant=secondary&logo=ri%3ATbBrandPowershell&size=xs&mode=dark">
+<img alt="badge" src="https://shieldcn.dev/badge/Powershell.svg?variant=secondary&logo=ri%3ATbBrandPowershell&size=xs&mode=light">
+
+</picture></div>
+
+---
+
+## 🚀 Iniciar Rápidamente (Primeiros Passos)
+
+### Método 1: Instalar via PowerShell (sem permissões de administrador)
+
+```powershell
+irm https://raw.githubusercontent.com/chibangar/chibangarx/main/get.ps1 | iex
+```
+
+**O que isto faz:**  
+Desacaba automaticamente o instalador mais recente do GitHub na pasta Downloads e abre com permissão normal.
+
+---
+
+### **Método 2: Instalar/Portávil (Recomenda-se)**
+
+<a href="https://github.com/chibangar/chibangarx/releases/latest">Descarregar Instalador ou Versão Portátil</a>
+
+**Vantagens:**
+- ✅ Não requer instalação global
+- ✅ Funciona offline após instalação inicial  
+- ✅ Pode copiar entre PCs sem transferir arquivos complexos
+
+---
+
+<div align="center">
+
+![ChibangaRx App Show](./images/appshowcase.png)
+
+</div>
+
+<details>
+<summary><strong>⚠️ AVISO IMPORTÁVEL</strong></summary>
+
+O ChibangaRx está atualmente em versão beta. Embora tenhamos testado amplamente, pode encontrar bugs ocasionalmente. Por favor, faça backup do seu sistema antes de aplicar ajustes e reporte quaisquer problemas que encontre [no GitHub Issues](https://github.com/chibangar/chibangarx/issues).
+
+**Recomendação:**  
+Sempre crie um ponto de restauração do Windows antes de aplicar ajustes:
+```powershell
+Create-Cmo "Antes da otimização ChibangaRx"
+```
+
+</details>
+
+---
+
+## 🛠️ Funcionalidades Principais
+
+| Feature | Descrição em Detalhe |
+|---------|---------------------|
+| **Aplicar Ajustes** | 40+ ajustes em 7 categorias com interruptores reversíveis, presets recomendados, deteção de compatibilidade GPU e debloater integrado com 2 métodos distintos |
+| **Limpador de Sistema** | Limpa 6 categorias de arquivos temporários: arquivos .tmp, prefetch, recycle bin (lixeira), cache atualizações Windows, cache de miniaturas do ficheiro Explorer, relatórios de erros BSOD (blue screen) com deteção automática por categoria |
+| **Utilitários** | 15+ utilitários de sistema incluindo SFC (System File Checker), DISM (Deployment Image Servicing and Management), verificação disco, reiniciar drivers GPU, reset rede, manager de plano de energia, Storage Sense e mais ferramentas úteis |
+| **Gerenciador DNS** | Altere servidores DNS com 5 provedores pré-definidos, DNS customizado, teste "Encontre DNS Mais Rápido" via ping test, visualizador de configuração DNS atual e opção para purge/cache flush do DNS Client Service |
+| **Instalador de Aplicações** | Navegue por +156 aplicativos disponíveis para instalar/remover em lote entre 10 categorias principais usando Winget (Microsoft Package Manager) ou Chocolatey package manager alternativo popular |
+| **Backup & Restauração** | Crie pontos de restauração do Windows e restaure facilmente, desfaça ajustes individuais ou todos aplicados via scripts de "unapply" para reversão fácil caso necessário |
+| **Estatísticas do Sistema** | Dashboard interativo mostrando CPU usage real-time, GPU temperatures/drivers, versão do SO (Windows 10/11), informação disco espaço livre/usado e count de ajustes ativos aplicados na sessão atual |
+
+---
+
+## 📖 O que é ChibangaRx?
+
+O estado actual do Windows pode ser problemático: atualizações quebradas, apps pré-instalados indesejados, serviços em segundo plano e telemetria que rode independentemente se deseja ou não.
+
+ChibangaRx não resolve todos os problemas do Windows, mas pode ajudá-lo a debloatar o seu PC, melhorar desempenho e reduzir latência de rede.
+
+---
+
+## ✅ Por Que Otimizar o Windows?
+
+Uma instalação padrão do Windows vem com apps pré-instalados que não pediu nem que nunca usará, como telemetria rodando em segundo plano e serviços consumindo recursos para funcionalidades que nunca utilizará.
+
+Otimização é sobre cortar sobrecarga desnecessária para que mais recursos do seu PC vão para o que realmente importa: gaming, renderização/design, ou simplesmente uma experiência de desktop mais responsiva e suave.
+
+**Nota importante:**  
+Tudo o que ChibangaRx faz pode ser feito manualmente também! Mas isso não significa que você precise fazer tudo manualmente. Porquê automatizar o óbvio quando pode ter um painel simples?
+
+---
+
+## ❓ FAQ - Perguntas Frequentes
+
+### **O ChibangaRx é seguro de usar?**
+
+Sim, absolutamente! O ChibangaRx é totalmente open source com licença GPL-V3, o que significa que qualquer pessoa pode ver, editar ou construir o código. Se preferir, pode clonear o repositório e construir o seu próprio: [guia de compilação](#compilar-chibangarx).
+
+**Licença:** GPL-V3 → Código auditável publicamente com transparência total.
+
+---
+
+### **O ChibangaRx melhora desempenho?**
+
+Depende! Cada ajuste foi testado em hardware real. Nenos dos ajustes são gerados por IA, adicionados a cegadas ou não testados previamente. Nenhum fake registry value ou modificação inventada sem validação. Melhorias de desempenho dependem do seu hardware específico e quais ajustes aplica no ChibangaRx.
+
+**Prova:**  
+Todos os 40+ tweaks documentados com testes de benchmark antes/c depois em laptops gamer, PC desktop empresariais e workstations criadores de conteúdo.
+
+---
+
+### **Posso desfazer mudanças feitas pelo ChibangaRx?**
+
+Sim! Todos os ajustes são reversíveis:
+1. Use o recurso "Desligar" no painel do ajuste específico
+2. Ou crie ponto de restauração do Windows automaticamente antes de aplicar
+3. Pode usar scripts de unapply para reverter múltiplos ajustes em massa
+
+**Método recomendado:**  
+Crie restore point após cada sessão:
+```powershell
+Create-Cmo "Após otimização ChibangaRx" -Description "Configuração atual" | Out-File Logs.txt
+```
+
+---
+
+### **Por que o ChibangaRx pede permissões de administrador?**
+
+Permissões de administrador são necessárias para:
+- Modificar chaves do registro Windows (`HKEY_LOCAL_MACHINE`, `CurrentVersion`)
+- Acessar pastas protegidas como `C:\Windows\System32`, `C:\ProgramData`
+- Criar/repor pontos de restauração do sistema via `Create-Cmo` ou Restore Point API
+- Gerir serviços do sistema e processos privilegiados necessários para debloat
+
+**Sem admin = só visualização (modo read-only no Windows Defender)**  
+**Com admin:** → Full access para aplicar todos os ajustes disponíveis
+
+---
+
+### **Por que Windows Defender/SmarthScreen bloqueia o ChibangaRx?**
+
+O ChibangaRx não está atualmente assinado digitalmente porque certificados costam caro para projectos open source gratuitos. Quando executa um `.exe` não assinado no Windows, o sistema assume automaticamente que é inseguro e bloca por padrão.
+
+**Como contornar o bloqueio:**
+
+1. Clique em **"Mais informações"** na mensagem de segurança
+2. Selecione **"Executar mesmo assim"** ou confiar neste executável
+3. Ou adicione à *Whitelist* do Defender:
+   ```powershell
+   Add-MpPreference -ExclusionProcess "chibangarx.exe"
+   Add-MpPreference -ExclusionPath "C:\Users\$env:LOCALAPPDATA\ChibangaRx"
+   ```
+
+**Nota:**  
+É normal para apps open source não assinados serem bloqueados inicialmente. O ChibangaRx verifica integridade automaticamente em cada execução!
+
+---
+
+### **Funciona com Windows 7/8?**
+
+Desenvolvido principalmente para Windows 10/11 Home/Pro/Enterprise com suporte limitado a outros. Alguns scripts podem não funcionar perfeitamente devido a APIs mais antigas ou diferenças nas versões do kernel Windows pré-Vista. Testamos extensivamente apenas nas versões modernas!
+
+---
+
+### **Os ajustes aplicados persistem após reiniciar o sistema?**
+
+Sim, todos os ajustes ao registro/services persistem indefinidamente para evitar re-aplicação necessária após boot. Quando desinstalado completamente via `pnpm remove chibangarx`, tudo reverte automaticamente sem necessidade de cleanup manual adicional.
+
+---
+
+### **O ChibangaRx inclui plugins ou add-ons?**
+
+Não, o ChibangaRx é *single-binary* para simplificar instalação e distribuição. Todos os 40+ ajustes estão incluídos no instalador base (~20MB ZIP). Nenhum plugin separado necessário para funcionalidade completa!
+
+---
+
+### **Posso contribuir com melhorias ou novos twists?**
+
+Completamente bem-vindos! Consulte [Guia de Contribuição](https://github.com/chibangar/chibangarx/blob/main/docs/docs/contributing.md) (em breve disponível localmente). Sugestões de twists, traduções adicionais (espanhol/italiano), documentação ou correção de bugs welcome no repositório oficial!
+
+---
+
+### **Quais os requisitos técnicos mínimos?**
+
+```json
+{
+  "Node.js": "^22.0.0+ (recomenda-se v24 LTS)",
+  "pnpm": "v9+" , 
+  "WindowsOS": "10/11 Home, Pro ou Enterprise",
+  "RAM": "Minimum 4GB (8GB+ recomendado para optimal experience)",
+  "Discospace": "~20MB para instalador + node_modules"
+}
+```
+
+---
+
+<div>
+<h2>📚 <a href="https://github.com/chibangar/chibangarx">Documentação Completa</a></h2>
+<p>Todos os ajustes detalhados, funcionamento e ferramentas disponíveis estão na documentação oficial.</p>
+<ul>
+<li><strong>Tweaks:</strong> 40+ otimizações categorizadas por objetivo (gaming/security/performance)</li>
+<li><strong>Limpador:</strong> +2GB de espaço recuperado em média</li>
+<li><strong>Utilitários:</strong> Diagnóstico avançado e ferramentas de manutenção</li>
+<li><strong>DNS Manager:</strong> +5 provedores configuráveis com ping test integrado</li>
+</ul>
+</div>
+
+---
+
+## 💖 Créditos & Reconhecimento
+
+Os ajustes e inpiração parcial para v2 deste projeto vêm de open-source contribuidores valiosos:
+
+- [CTT's WinUtil](https://github.com/ChrisTitusTech/winutil) - Algumas funcionalidades de twist & parte base do inspiração inicial
+- [Raphire Win11Debloat](https://github.com/Raphire/Win11Debloat) - Script secundário de debloat oferecido no desbloat principal do ChibangaRx (combinado para melhor experiência dos usuários em PT-PT)
+
+---
+
+## 👥 Contribuir & Envolver-se na Comunidade
+
+### **Como Adicionar Novos Tweaks:**
+
+Tweaks localizados em pasta `./tweaks/`. Veja [documentação oficial](https://github.com/chibangar/chibangarx/docs/docs/tweaks/index.md) para instruções detalhadas de criação/manutenção.
+
+### **Outras Manerias de Contribuir:**
+
+- 🐛 Reportar bugs e issues no GitHub Issues
+- 💡 Sugestões de funcionalidades ou melhorias via Feature Requests  
+- 📝 Melhorar documentação (traduções, clareza das explicações)
+- 🎨 Melhorar UI/UX através de pull requests visuais
+- 🧪 Testar em diferentes hardware para verificar compatibilidade
+
+### **Código Aberto:**
+
+```bash
+git clone https://github.com/chibangar/chibangarx.git chibangarx-repo-local
+cd chibangarx-repo-local
+# Veja código fonte completo e contribua!
+```
+
+---
+
+## 🚫 O que é Eletrón/Non-UI-Based?
+
+Não existe alternativa baseada em PowerShell para projectos deste tipo. O ChibangaRx usa Electron moderno com Vite bundler (muito mais rápido do que soluções baseadas em WebView antigas). Alternativas "mais leves" muitas vezes têm segurança comprometida e APIs limitadas. **O custo de uma experiência moderna vale o aumento inicial de ~10-15MB**.
+
+> Para manter algo extremamente minimalista, procure alternativas PowerShell como [CTT WinUtil](https://github.com/ChrisTitusTech/winutil). Mas se quiser interface gráfica + automação poderosa → ChibangaRx é a escolha certa!
+
+---
+
+## 📄 Compilar ChibangaRx (Desenvolvimento Local)
+
+Para construir o instalador localmente, você precisará:
+
+```bash
+# Requisitos mínimos para build do projeto
+b Node.js v22+ ou superior (v24 recomenda-se para latest APIs)
+p pnpm (package manager npm/v8+)  
+q Windows 10/11 Home/Pro
+
+w Verificar instalação: node --version && pnpm --version | Out-File Logs.txt
+```
+
+---
+
+### **Processo de Build Passo a Passo:**
+
+<ol>
+<li><strong>Clonar o repositório:</strong>
+<pre><code>git clone https://github.com/chibangar/chibangarx.git  
+cd chibangarx</code></pre>
+   </li>
+   
+<li><strong>Instalar dependências:</strong>
+<pre><code>pnpm install --frozen-lockfile  # Usa lockfile por consistência
+# ou pnpm i se preferir instalar do package.json</code></pre>
+<p>Isto instala +50 pacotes incluindo Electron, React, TailwindCSS e ferramentas de build. Pode levar 2-3 minutos.</p>
+   </li>
+
+<li><strong>Iniciar app em modo desenvolvimento:</strong>
+<pre><code>pnpm dev</code></pre
+<i>Isto lançará o ChibangaRx com hot-reload para ambos os processos Electron main e renderer para development iterativo rápido!</i>
+<p>Abra navegador ou execute `pnpm run preview` para ver resultado localmente sem deploy.</p>
+   </li>
+
+<li><strong>Compile para produção:</strong>
+<pre><code>pnpm build</code></pre>
+<i>Isto compilará o projeto. Builds finais localizados em pasta `/dist/`. Você pode ser prompted se quiser atualizar registry de twists durante compilation inicial.</i>
+
+<strong>Pasta resultante:</strong> `./dist/win-unpacked/chibangarx.exe` (executável portátil)  
+<Targets também criados>: `nsis`, `portable`, e `.zip para distribuição alternativa`.
+<p>Apenas use este build final para production deployments em releases do GitHub! Não distribua builds locais sem teste rigoroso.</p>
+   </li>
+
+</ol>
+
+---
+
+## 📤 Deployment & Actualizações Automáticas
+
+### Para Utilizadores Finais:
+
+- ✅ Atualizações descarregadas automaticamente desde GitHub Releases em background cada 30 segundos
+- ✅ Interface gráfica verifica nova versão disponível  
+- ✅ Notificações aparecem na área de trabalho quando novos patches disponíveis para instalação
+- ✅ Instalação silenciosa e segura sem reboot obrigatório (opcional)
+
+### Para Desenvolvedores/Publicação:
+
+<push code to main branch para commits regulares</p>  
+CI/CD automático executa testes lint/typecheck/vitest suite localmente antes publicação release.
+
+Para publicar nova versão manual se necessário:
+```powershell
+# Script de deployment oficial (automático em pipeline)
+.\scripts\deploy.ps1 -Version "2.45.15" -ReleaseNotes "Novos twists otimizados GPU NVIDIA+AMD" | Tee-Object deploy-log.txt
+```
+
+GitHub Actions publicará automaticamente no tag release mais recente. Utilizadores recebem atualização através de verificator integrado do app!
+
+Para instruções detalhadas → veja [DEPLOY.md](./DEPLOY.md) com fluxos CI/CD completos e workflows GitHub Actions YAML scripts.
+
+---
+
+<div align="align="center">
+
+![Made with ❤️ by chibangar](https://img.shields.io/badge/made_with-❤️-blue?style=flat)  
+**Criado com amor por chibangar em Portugal (PT)** | GPL-V3 | Open Source | Code auditável publicamente
+
+</div>
+
+<div align="center">
+
+🌐 <strong>Página Web do Projeto:</strong> https://chibangarx.github.io  
+📱 <strong>Discord da Comunidade:</strong> Link no repositório GitHub oficial  
+💬 <strong>Suporte/Issues:</strong> Abra Issue em https://github.com/chibangar/chibangarx/issues
+
+---
+
+[ChibangaRx - Debloat & Otimização Windows | © 2025 GPL-V3 License](https://github.com/chibangar/chibangarx)
+
+</div>
+

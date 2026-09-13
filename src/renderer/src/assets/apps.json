@@ -1410,7 +1410,6 @@
     },
     {
       "name": "Visual C++ 2015-2022 Redistributable (x64)",
-      "chocolatey": "visualstudio-2015-vc-redist-x64",,
       "id": "Microsoft.VCRedist.2015-2022.x64",
       "chocolatey": "visualstudio-2015-vc-redist-x64",
       "category": "graphics",
@@ -1420,7 +1419,7 @@
     },
     {
       "name": "Visual C++ 2015-2022 Redistributable (x86)",
-      "chocolatey": "visualstudio-2015-vc-redist-x86",,
+      "chocolatey": "visualstudio-2015-vc-redist-x86",
       "id": "Microsoft.VCRedist.2015-2022.x86",
       "category": "graphics",
       "info": "32-bit runtime for legacy applications and games.",
@@ -1429,7 +1428,7 @@
     },
     {
       "name": "Visual C++ 2015-2022 Redistributable All-in-One",
-      "chocolatey": "visualstudio-2015-vc-redist-all",,
+      "chocolatey": "visualstudio-2015-vc-redist-all",
       "id": "Microsoft.VCRedist.2015-2022.All",
       "category": "graphics",
       "info": "All-in-one package containing all x86 and x64 redistributables.",

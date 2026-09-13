@@ -101,27 +101,36 @@ function TitleBar({
               playMinimize()
               minimize()
             }}
-            className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
+            type="button"
+            aria-label={t("titlebar.minimize")}
+            className="h-9 w-9 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent/70 rounded transition-all duration-150 active:scale-95 group focus:outline-hidden"
+            title={t("titlebar.minimize")}
           >
-            <Minus size={16} />
+            <Minus size={13} className="group-hover:text-white transition-colors" />
           </button>
           <button
             onClick={() => {
               playMaximize()
               toggleMaximize()
             }}
-            className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent transition-colors"
+            type="button"
+            aria-label={t("titlebar.maximize")}
+            className="h-9 w-9 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-chibangarx-accent/70 rounded transition-all duration-150 active:scale-95 group focus:outline-hidden"
+            title={t("titlebar.maximize")}
           >
-            <Square size={14} />
+            <Square size={12} className="group-hover:text-white transition-colors" />
           </button>
           <button
             onClick={() => {
               playClose()
               close()
             }}
-            className="h-12.5 w-12 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-red-600 hover:text-white transition-colors"
+            type="button"
+            aria-label={t("titlebar.close")}
+            className="h-9 w-9 inline-flex items-center justify-center text-chibangarx-text-secondary hover:bg-red-600 hover:text-white rounded transition-all duration-150 active:scale-95 group focus:outline-hidden"
+            title={t("titlebar.close")}
           >
-            <X size={16} />
+            <X size={13} className="group-hover:text-white transition-colors" />
           </button>
         </div>
       </div>

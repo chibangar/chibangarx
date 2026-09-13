@@ -130,8 +130,10 @@ All user data (settings, preferences, tweaks configs) is stored in `app.getPath(
 
 Each release must include these files:
 
-1. `ChibangaRx-{version}-win.zip` — Portable ZIP (main update file)
-2. `latest.yml` — Version metadata for electron-updater
+1. `chibangarx-{version}-Setup.exe` — NSIS installer (Quick Start `get.ps1` option 1)
+2. `chibangarx-{version}-Setup.exe.blockmap` — Differential update metadata
+3. `chibangarx-{version}-portable.exe` — Portable exe (Quick Start `get.ps1` option 2)
+4. `latest.yml` — Version metadata for electron-updater
 
 ## Release Checklist
 

@@ -15,7 +15,7 @@
 
 ## Quick Start
 
-Install with Powershell (non admin) :
+Install with Powershell (non admin), choose Setup or Portable :
 
 ```powershell
 irm https://raw.githubusercontent.com/chibangar/chibangarx/main/get.ps1 | iex
